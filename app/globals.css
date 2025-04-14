@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-v47-latin-regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-v47-latin-italic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-v47-latin-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-v47-latin-500italic.woff2') format('woff2');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-v47-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-v47-latin-600italic.woff2') format('woff2');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-v47-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/roboto-v47-latin-700italic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Anton';
+  src: url('/fonts/anton-v25-latin-regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --pm-nav-orange: #CB5C0D;
+  --pm-text-dark: #404040;
+  --pm-white: #ffffff;
+  --pm-nav-orange-hover: #b34f0b;
+}
+
+body {
+  @apply bg-pm-white text-pm-text-dark font-roboto;
+}
+
+.container {
+  @apply mx-auto max-w-6xl px-4;
+}
+
+h1, h2, h3 {
+  @apply font-anton text-pm-text-dark;
+}
+
+h1 {
+  @apply text-3xl;
+}
+
+h2 {
+  @apply text-2xl;
+}
+
+a {
+  @apply transition-colors duration-200;
+}
+
+button, .btn {
+  @apply bg-pm-nav-orange text-pm-white px-4 py-2 rounded hover:bg-pm-nav-orange-hover;
+}
+
+nav {
+  @apply bg-pm-nav-orange text-pm-white shadow-md;
+}
+
+nav a {
+  @apply hover:text-pm-white/80;
+}
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+
+.font-anton {
+  font-family: 'Anton', cursive;
+  font-weight: normal;
+}
+
+/* Custom styles for Planet Mado theme */
+.bg-pm-nav-orange {
+  background-color: #e65517;
+}
+
+.text-pm-white {
+  color: #ffffff;
+}
+
+.font-anton {
+  font-family: 'Anton', sans-serif;
+}
