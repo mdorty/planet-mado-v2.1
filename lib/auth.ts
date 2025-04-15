@@ -1,11 +1,78 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { PrismaAdapter } from '@auth/prisma-adapter';
 import { db } from './prisma';
 import bcrypt from 'bcrypt';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(db),
+  adapter: {
+    createUser: async (user) => {
+      const createdUser = await db.user.create({
+        data: {
+          email: user.email,
+          username: user.name || user.email.split('@')[0],
+          password: '', // Password will be set via credentials provider if needed
+          role: 'user', // Default role for new users
+        },
+      });
+      return {
+        id: createdUser.id,
+        email: createdUser.email,
+        name: createdUser.username,
+        role: createdUser.role,
+        emailVerified: null,
+      };
+    },
+    getUser: async (id) => {
+      const user = await db.user.findUnique({ where: { id } });
+      if (!user) return null;
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.username,
+        role: user.role,
+        emailVerified: null,
+      };
+    },
+    getUserByEmail: async (email) => {
+      const user = await db.user.findUnique({ where: { email } });
+      if (!user) return null;
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.username,
+        role: user.role,
+        emailVerified: null,
+      };
+    },
+    getUserByAccount: async (providerAccount) => {
+      // Implement logic if you have a table linking providers to users
+      return null;
+    },
+    linkAccount: async (account) => {
+      // Implement logic to link an account to a user
+      return undefined;
+    },
+    createSession: async (session) => {
+      // Implement session creation with proper type
+      return {
+        sessionToken: session.sessionToken,
+        userId: session.userId,
+        expires: session.expires
+      };
+    },
+    getSessionAndUser: async (sessionToken) => {
+      // Implement session retrieval if needed
+      return null;
+    },
+    updateSession: async (session) => {
+      // Implement session update if needed
+      return undefined;
+    },
+    deleteSession: async (sessionToken) => {
+      // Implement session deletion if needed
+      return undefined;
+    },
+  },
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -17,22 +84,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-
         const user = await db.user.findUnique({
           where: { email: credentials.email },
         });
-
         if (!user || !user.password) {
           return null;
         }
-
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-
+        const password = user.password as string;
+        const isValid = await bcrypt.compare(credentials.password, password);
         if (!isValid) {
           return null;
         }
-
-        return { id: user.id, email: user.email, username: user.username, role: user.role };
+        return { id: user.id, email: user.email, name: user.username, role: user.role };
       },
     }),
   ],
