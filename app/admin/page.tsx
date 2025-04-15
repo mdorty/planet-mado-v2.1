@@ -14,7 +14,7 @@ export default function AdminPage() {
     return <div className="text-center">Loading...</div>;
   }
 
-  if (status !== 'authenticated' || session?.user?.role !== 'admin') {
+  if (!session || status !== 'authenticated' || session?.user?.role !== 'admin') {
     return (
       <div className="text-center">
         <p>Access denied. Admins only.</p>
