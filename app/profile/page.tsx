@@ -106,9 +106,9 @@ export default function ProfilePage() {
             <button
               type="submit"
               className="bg-pm-nav-orange text-pm-white px-4 py-2 rounded hover:bg-pm-nav-orange-hover disabled:opacity-50"
-              disabled={changePassword.isLoading}
+              disabled={changePassword.isPending}
             >
-              {changePassword.isLoading ? 'Changing...' : 'Change Password'}
+              {changePassword.isPending ? 'Changing...' : 'Change Password'}
             </button>
           </form>
         </div>
