@@ -82,10 +82,10 @@ export default function CharactersPage() {
             </div>
             <button
               type="submit"
-              disabled={createCharacter.isLoading}
+              disabled={createCharacter.isPending}
               className="bg-dbz-blue text-white px-4 py-2 rounded hover:bg-dbz-blue/80 disabled:opacity-50"
             >
-              {createCharacter.isLoading ? 'Creating...' : 'Create Character'}
+              {createCharacter.isPending ? 'Creating...' : 'Create Character'}
             </button>
           </form>
         </div>
