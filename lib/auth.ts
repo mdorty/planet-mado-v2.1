@@ -119,6 +119,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log('Missing credentials');
           return null;
         }
         const email = credentials.email as string;
@@ -127,13 +128,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email: email },
         });
         if (!user || !user.password) {
+          console.log('User not found or no password set for:', email);
           return null;
         }
         const password = user.password as string;
         const isValid = await bcrypt.compare(passwordInput, password);
         if (!isValid) {
+          console.log('Invalid password for:', email);
           return null;
         }
+        console.log('Authentication successful for:', email);
         return { id: user.id, email: user.email, name: user.username, role: user.role };
       },
     }),
