@@ -84,14 +84,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
+        const email = credentials.email as string;
+        const passwordInput = credentials.password as string;
         const user = await db.user.findUnique({
-          where: { email: credentials.email },
+          where: { email: email },
         });
         if (!user || !user.password) {
           return null;
         }
         const password = user.password as string;
-        const isValid = await bcrypt.compare(credentials.password, password);
+        const isValid = await bcrypt.compare(passwordInput, password);
         if (!isValid) {
           return null;
         }
