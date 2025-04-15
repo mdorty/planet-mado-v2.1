@@ -53,23 +53,57 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return undefined;
     },
     createSession: async (session) => {
-      // Implement session creation with proper type
+      const createdSession = await db.session.create({
+        data: {
+          sessionToken: session.sessionToken,
+          userId: session.userId,
+          expires: session.expires
+        }
+      });
       return {
-        sessionToken: session.sessionToken,
-        userId: session.userId,
-        expires: session.expires
+        sessionToken: createdSession.sessionToken,
+        userId: createdSession.userId,
+        expires: createdSession.expires
       };
     },
     getSessionAndUser: async (sessionToken) => {
-      // Implement session retrieval if needed
-      return null;
+      const session = await db.session.findUnique({
+        where: { sessionToken },
+        include: { user: true }
+      });
+      if (!session) return null;
+      return {
+        session: {
+          sessionToken: session.sessionToken,
+          userId: session.userId,
+          expires: session.expires
+        },
+        user: {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.username,
+          role: session.user.role,
+          emailVerified: null
+        }
+      };
     },
     updateSession: async (session) => {
-      // Implement session update if needed
-      return undefined;
+      const updatedSession = await db.session.update({
+        where: { sessionToken: session.sessionToken },
+        data: {
+          expires: session.expires
+        }
+      });
+      return {
+        sessionToken: updatedSession.sessionToken,
+        userId: updatedSession.userId,
+        expires: updatedSession.expires
+      };
     },
     deleteSession: async (sessionToken) => {
-      // Implement session deletion if needed
+      await db.session.delete({
+        where: { sessionToken }
+      });
       return undefined;
     },
   },
