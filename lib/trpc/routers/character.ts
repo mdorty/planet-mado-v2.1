@@ -6,7 +6,9 @@ import { auth } from '../../auth';
 
 export const characterRouter = router({
   getUserCharacters: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.session?.user?.id) {
+    // Use type assertion to access user data in session
+    const session = ctx.session as any;
+    if (!session || !session.user || !session.user.id) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You must be logged in to view characters',
@@ -15,7 +17,7 @@ export const characterRouter = router({
 
     try {
       const characters = await db.character.findMany({
-        where: { userId: ctx.session.user.id },
+        where: { userId: session.user.id },
         orderBy: { createdAt: 'desc' },
       });
       return characters;
@@ -35,7 +37,9 @@ export const characterRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.session?.user?.id) {
+      // Use type assertion to access user data in session
+      const session = ctx.session as any;
+      if (!session || !session.user || !session.user.id) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You must be logged in to create a character',
@@ -46,7 +50,7 @@ export const characterRouter = router({
         const character = await db.character.create({
           data: {
             name: input.name,
-            userId: ctx.session.user.id,
+            userId: session.user.id,
             level: 1,
             health: 100,
             energy: 50,
