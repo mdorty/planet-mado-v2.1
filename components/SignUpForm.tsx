@@ -11,7 +11,7 @@ export function SignUpForm() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const signupMutation = trpc.auth.signup.useMutation({
+  const signupMutation = trpc.auth.signUp.useMutation({
     onSuccess: () => {
       router.push('/auth/signin');
     },
@@ -75,10 +75,10 @@ export function SignUpForm() {
       </div>
       <button
         type="submit"
-        disabled={signupMutation.isLoading}
+        disabled={signupMutation.isPending}
         className="w-full bg-dbz-blue text-white p-2 rounded hover:bg-dbz-blue/80 disabled:opacity-50"
       >
-        {signupMutation.isLoading ? 'Signing Up...' : 'Sign Up'}
+        {signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
       </button>
       <p className="text-sm">
         Already have an account?{' '}
