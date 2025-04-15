@@ -13,6 +13,7 @@ export function SignInForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    console.log('Attempting sign in with endpoint:', window.location.origin + '/api/auth/callback/credentials');
 
     const result = await signIn('credentials', {
       redirect: false,
