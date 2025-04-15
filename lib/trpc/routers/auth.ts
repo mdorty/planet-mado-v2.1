@@ -53,49 +53,41 @@ export const authRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.session?.user?.id) {
+      // Use type assertion to access user data in session
+      const session = ctx.session as any;
+      if (!session || !session.user || !session.user.id) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'You must be logged in to change your password',
         });
       }
 
-      try {
-        const user = await db.user.findUnique({
-          where: { id: ctx.session.user.id },
-        });
+      const userId = session.user.id;
+      const user = await ctx.db.user.findUnique({
+        where: { id: userId },
+      });
 
-        if (!user || !user.password) {
-          throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'User not found',
-          });
-        }
-
-        const isValid = await bcrypt.compare(input.currentPassword, user.password);
-        if (!isValid) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'Current password is incorrect',
-          });
-        }
-
-        const hashedPassword = await bcrypt.hash(input.newPassword, 10);
-        await db.user.update({
-          where: { id: ctx.session.user.id },
-          data: { password: hashedPassword },
-        });
-
-        return { success: true };
-      } catch (error) {
-        console.error('[AuthRouter] changePassword error:', error);
-        if (error instanceof TRPCError) {
-          throw error;
-        }
+      if (!user) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to change password',
+          code: 'NOT_FOUND',
+          message: 'User not found',
         });
       }
+
+      const isValid = await bcrypt.compare(input.currentPassword, user.password as string);
+      if (!isValid) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Current password is incorrect',
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(input.newPassword, 10);
+      await ctx.db.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+      });
+
+      return { success: true };
     }),
 });
