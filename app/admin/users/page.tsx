@@ -60,9 +60,20 @@ export default function AdminUsersPage() {
     e.preventDefault();
     setUserError('');
     if (userForm.id) {
-      updateUser.mutate(userForm);
+      updateUser.mutate({
+        id: userForm.id,
+        username: userForm.username,
+        email: userForm.email,
+        password: userForm.password,
+        role: userForm.role === 'admin' ? 'admin' : 'user'
+      });
     } else {
-      createUser.mutate(userForm);
+      createUser.mutate({
+        username: userForm.username,
+        email: userForm.email,
+        password: userForm.password,
+        role: userForm.role === 'admin' ? 'admin' : 'user'
+      });
     }
   };
 
