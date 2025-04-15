@@ -6,7 +6,8 @@ import bcrypt from 'bcrypt';
 
 export const adminRouter = router({
   getUsers: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.session?.user?.id || ctx.session.user.role !== 'admin') {
+    const session = ctx.session as any;
+    if (!session || !session.user || session.user.role !== 'admin') {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'Admin access required',
@@ -35,7 +36,8 @@ export const adminRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.session?.user?.id || ctx.session.user.role !== 'admin') {
+      const session = ctx.session as any;
+      if (!session || !session.user || session.user.role !== 'admin') {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Admin access required',
@@ -84,7 +86,8 @@ export const adminRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.session?.user?.id || ctx.session.user.role !== 'admin') {
+      const session = ctx.session as any;
+      if (!session || !session.user || session.user.role !== 'admin') {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Admin access required',
@@ -127,7 +130,8 @@ export const adminRouter = router({
   deleteUser: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.session?.user?.id || ctx.session.user.role !== 'admin') {
+      const session = ctx.session as any;
+      if (!session || !session.user || session.user.role !== 'admin') {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Admin access required',
@@ -146,7 +150,8 @@ export const adminRouter = router({
     }),
 
   getCharacters: publicProcedure.query(async ({ ctx }) => {
-    if (!ctx.session?.user?.id || ctx.session.user.role !== 'admin') {
+    const session = ctx.session as any;
+    if (!session || !session.user || session.user.role !== 'admin') {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'Admin access required',
@@ -185,7 +190,8 @@ export const adminRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.session?.user?.id || ctx.session.user.role !== 'admin') {
+      const session = ctx.session as any;
+      if (!session || !session.user || session.user.role !== 'admin') {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Admin access required',
@@ -245,7 +251,8 @@ export const adminRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.session?.user?.id || ctx.session.user.role !== 'admin') {
+      const session = ctx.session as any;
+      if (!session || !session.user || session.user.role !== 'admin') {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Admin access required',
@@ -284,7 +291,8 @@ export const adminRouter = router({
   deleteCharacter: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      if (!ctx.session?.user?.id || ctx.session.user.role !== 'admin') {
+      const session = ctx.session as any;
+      if (!session || !session.user || session.user.role !== 'admin') {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'Admin access required',
