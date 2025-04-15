@@ -4,6 +4,9 @@ import { db } from './prisma';
 import bcrypt from 'bcrypt';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  // Temporarily set trustHost to true for debugging in production environments like Digital Ocean
+  // TODO: Revisit this for a more secure solution, possibly using trusted hosts list or proxy headers
+  trustHost: true,
   adapter: {
     createUser: async (user) => {
       const createdUser = await db.user.create({
