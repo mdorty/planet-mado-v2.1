@@ -3,7 +3,7 @@
 import { Card, CardHeader, CardBody } from '@heroui/react';
 import { HeroUIWrapper } from '../../../components/HeroUIWrapper';
 import { SignInForm } from '../../../components/SignInForm';
-import { ForgotPasswordForm } from '../../../components/ForgotPasswordForm';
+import { ResetPasswordForm } from '../../../components/ResetPasswordForm';
 import { useState } from 'react';
 
 export default function SignInPage() {
@@ -31,10 +31,10 @@ export default function SignInPage() {
           {showForgotPassword && (
             <Card className="shadow-md rounded-lg p-6 max-w-md mx-auto w-full">
               <CardHeader className="border-b pb-3 mb-6">
-                <h2 className="text-xl font-anton">Forgot Password?</h2>
+                <h2 className="text-xl font-anton">Reset Password</h2>
               </CardHeader>
               <CardBody>
-                <ForgotPasswordForm />
+                <ResetPasswordForm />
               </CardBody>
             </Card>
           )}
