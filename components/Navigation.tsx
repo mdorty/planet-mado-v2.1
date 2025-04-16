@@ -6,12 +6,28 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button } from '@heroui/react';
 
+const navLinks = [
+  { href: '/how-to-play', label: 'How to Play' },
+  { href: '/races', label: 'Races' },
+  { href: '/planets', label: 'Planets' },
+  { href: '/items', label: 'Items' },
+  { href: '/basic-techniques', label: 'Basic Techniques' },
+  { href: '/members', label: 'Members' },
+  { href: '/join', label: 'Join the RPG' },
+  { href: '/rule-book', label: 'Rule Book' },
+];
+
 export function Navigation() {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [rpgDropdownOpen, setRpgDropdownOpen] = useState(false);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  const toggleRpgDropdown = () => {
+    setRpgDropdownOpen(!rpgDropdownOpen);
   };
 
   return (
@@ -90,66 +106,92 @@ export function Navigation() {
           )}
         </NavbarContent>
       </NavbarContent>
-      <NavbarMenu className={`bg-white z-50 opacity-100 pt-2 md:pt-0 overflow-y-auto max-h-[80vh] md:max-h-full ${menuOpen ? 'block' : 'hidden'}`}> 
+      <NavbarMenu className="bg-[#CB5C0D] text-white pt-4 h-full w-full md:w-auto md:h-auto overflow-y-auto md:overflow-visible z-50">
+        <NavbarMenuItem>
+          <Link href="/" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+            Home
+          </Link>
+        </NavbarMenuItem>
         <NavbarMenuItem>
           <div className="relative group w-full">
-            <button className="flex items-center justify-between w-full text-left font-roboto py-2 border-b border-gray-200">
+            <button className="flex items-center justify-between w-full text-left font-roboto py-2 border-b border-gray-200" onClick={toggleRpgDropdown}>
               The RPG
-              <svg className="ml-1 w-5 h-5 transform group-hover:rotate-180 transition-transform" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+              <svg className={`ml-1 w-5 h-5 transform ${rpgDropdownOpen ? 'rotate-180' : ''} transition-transform`} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
             </button>
-            <div className="bg-white w-full left-0 top-full opacity-100 group-hover:block space-y-1 pt-2 pb-4 px-2">
-              <Link href="/how-to-play" className="block py-2 hover:bg-gray-100 font-roboto">How to Play</Link>
-              <Link href="/races" className="block py-2 hover:bg-gray-100 font-roboto">Races</Link>
-              <Link href="/planets" className="block py-2 hover:bg-gray-100 font-roboto">Planets</Link>
-              <Link href="/items" className="block py-2 hover:bg-gray-100 font-roboto">Items</Link>
-              <Link href="/basic-techniques" className="block py-2 hover:bg-gray-100 font-roboto">Basic Techniques</Link>
-              <Link href="/members" className="block py-2 hover:bg-gray-100 font-roboto">Members</Link>
-              <Link href="/join" className="block py-2 hover:bg-gray-100 font-roboto">Join the RPG</Link>
-              <Link href="/rule-book" className="block py-2 hover:bg-gray-100 font-roboto">Rule Book</Link>
+            <div className={`absolute left-0 mt-2 w-full bg-[#CB5C0D] shadow-lg rounded-lg ${rpgDropdownOpen ? 'opacity-100 block' : 'opacity-0 hidden'} transition-opacity duration-300 z-50 md:w-48 md:left-full md:top-0 md:mt-0 md:group-hover:block md:${rpgDropdownOpen ? 'block' : 'hidden'} `}>
+              {navLinks.map((link) => (
+                <Link key={link.href} href={link.href} className="block px-4 py-2 text-sm font-roboto hover:bg-orange-700 rounded-t-lg" onClick={() => { setMenuOpen(false); setRpgDropdownOpen(false); }}>
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link href="/about" className="block py-2 border-b border-white/30 text-white font-roboto">About</Link>
+          <Link href="/about" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+            About
+          </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link href="/forums" className="block py-2 border-b border-white/30 text-white font-roboto">Forums</Link>
+          <Link href="/forums" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+            Forums
+          </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link href="/contact" className="block py-2 border-b border-white/30 text-white font-roboto">Contact</Link>
+          <Link href="/join" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+            Join
+          </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link href="/store" className="block py-2 border-b border-white/30 text-white font-roboto">Store</Link>
+          <Link href="/members" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+            Members
+          </Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <Link href="/contact" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+            Contact
+          </Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <Link href="/store" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+            Store
+          </Link>
         </NavbarMenuItem>
         {session ? (
           <>
             <NavbarMenuItem>
-              <Link href="/profile" className="block py-2 border-b border-white/30 text-white font-roboto">Profile</Link>
+              <Link href="/profile" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+                Profile
+              </Link>
             </NavbarMenuItem>
             <NavbarMenuItem>
-              <Link href="/characters" className="block py-2 border-b border-white/30 text-white font-roboto">Characters</Link>
+              <Link href="/characters" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+                Characters
+              </Link>
             </NavbarMenuItem>
-            {session.user.role === 'admin' && (
+            {session.user?.role === 'admin' && (
               <NavbarMenuItem>
-                <Link href="/admin" className="block py-2 border-b border-white/30 text-white font-roboto">Staff</Link>
+                <Link href="/admin" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+                  Staff
+                </Link>
               </NavbarMenuItem>
             )}
             <NavbarMenuItem>
-              <Button
-                onClick={() => signOut({ callbackUrl: '/' })}
-                variant="solid"
-                className="hover:bg-gray-100 font-roboto font-medium w-full text-left justify-start py-2"
+              <button
+                onClick={() => {
+                  signOut({ callbackUrl: '/' });
+                  setMenuOpen(false);
+                }}
+                className="text-left font-roboto py-2 border-b border-gray-200 w-full"
               >
                 Sign Out
-              </Button>
+              </button>
             </NavbarMenuItem>
           </>
         ) : (
           <NavbarMenuItem>
-            <Link href="/auth/signin">
-              <Button variant="solid" className="hover:bg-gray-100 font-roboto font-medium w-full text-left justify-start py-2">
-                Sign In
-              </Button>
+            <Link href="/auth/signin" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+              Sign In
             </Link>
           </NavbarMenuItem>
         )}
