@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import Link from "next/link";
+import { Button, Card, CardHeader, CardBody } from '@heroui/react';
 
 /**
  * Admin Maps Management Page
@@ -74,95 +75,111 @@ export default function MapsAdmin() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8 bg-pm-white text-pm-text-dark min-h-screen">
-      <h1 className="text-3xl font-anton mb-6">Manage Game Maps</h1>
+    <div className="min-h-screen bg-gray-100 p-4">
+      <div className="container mx-auto">
+        <h1 className="text-3xl font-anton mb-6">Map Management</h1>
+        <Link href="/admin" className="inline-block mb-4 hover:underline font-roboto">
+          Back to Admin Dashboard
+        </Link>
 
-      {/* Map Creation/Edit Form */}
-      <div className="mb-8 bg-gray-50 p-6 rounded-lg shadow-sm">
-        <h2 className="text-2xl font-anton mb-4">{editingMap ? "Edit Map" : "Create New Map"}</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block font-roboto font-medium mb-1">Map Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
-              required
-            />
-          </div>
-          <div>
-            <label className="block font-roboto font-medium mb-1">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
-              rows={3}
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-pm-nav-orange text-white font-roboto font-medium py-2 px-4 rounded-md hover:opacity-90 transition-opacity"
-          >
-            {editingMap ? "Update Map" : "Create Map"}
-          </button>
-          {editingMap && (
-            <button
-              type="button"
-              onClick={() => {
-                setEditingMap(null);
-                setName("");
-                setDescription("");
-              }}
-              className="ml-2 bg-gray-200 text-gray-700 font-roboto font-medium py-2 px-4 rounded-md hover:opacity-90 transition-opacity"
-            >
-              Cancel Edit
-            </button>
-          )}
-        </form>
-      </div>
+        <Card className="p-6 rounded shadow-md mb-8">
+          <CardHeader className="border-b pb-2 mb-4">
+            <h2 className="text-2xl font-anton">Create New Map</h2>
+          </CardHeader>
+          <CardBody>
+            <form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-4">
+              <div>
+                <label className="block font-roboto font-medium mb-1">Map Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-roboto font-medium mb-1">Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
+                  rows={3}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button type="submit" variant="solid" className="bg-blue-600 text-white hover:bg-blue-700 font-roboto font-medium">
+                  Create Map
+                </Button>
+              </div>
+            </form>
+          </CardBody>
+        </Card>
 
-      {/* Maps Table */}
-      <div className="bg-gray-50 p-6 rounded-lg shadow-sm overflow-x-auto">
-        <h2 className="text-2xl font-anton mb-4">Existing Maps</h2>
-        {maps && maps.length > 0 ? (
-          <table className="min-w-full border-collapse">
-            <thead>
-              <tr className="bg-pm-nav-orange text-white">
-                <th className="font-roboto p-3 text-left">ID</th>
-                <th className="font-roboto p-3 text-left">Name</th>
-                <th className="font-roboto p-3 text-left">Description</th>
-                <th className="font-roboto p-3 text-left">Created</th>
-                <th className="font-roboto p-3 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {maps.map((map: any) => (
-                <tr key={map.id} className="border-b border-gray-200 hover:bg-gray-100">
-                  <td className="font-roboto p-3">{map.id}</td>
-                  <td className="font-roboto p-3">{map.name}</td>
-                  <td className="font-roboto p-3">{map.description || "-"}</td>
-                  <td className="font-roboto p-3">{new Date(map.createdAt).toLocaleDateString()}</td>
-                  <td className="font-roboto p-3">
-                    <button
-                      onClick={() => handleEdit(map)}
-                      className="bg-gray-200 text-gray-700 font-roboto font-medium py-1 px-2 rounded-md hover:opacity-90 transition-opacity mr-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(map.id)}
-                      className="bg-pm-nav-orange text-white font-roboto font-medium py-1 px-2 rounded-md hover:opacity-90 transition-opacity"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="font-roboto text-gray-500">No maps found. Create your first map above.</p>
+        <Card className="p-6 rounded shadow-md mb-8">
+          <CardHeader className="border-b pb-2 mb-4">
+            <h2 className="text-2xl font-anton">Existing Maps</h2>
+          </CardHeader>
+          <CardBody>
+            {maps && maps.length > 0 ? (
+              <div className="space-y-4">
+                {maps.map((map: any) => (
+                  <div key={map.id} className="flex justify-between items-center mb-4">
+                    <span className="font-roboto">{map.name}</span>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" className="border-gray-300 text-gray-700 hover:bg-gray-100 font-roboto font-medium" onClick={() => handleEdit(map)}>
+                        Edit
+                      </Button>
+                      <Button variant="solid" className="bg-red-600 text-white hover:bg-red-700 font-roboto font-medium" onClick={() => handleDelete(map.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="font-roboto text-gray-500">No maps found. Create your first map above.</p>
+            )}
+          </CardBody>
+        </Card>
+
+        {editingMap && (
+          <Card className="p-6 rounded shadow-md mb-8">
+            <CardHeader className="border-b pb-2 mb-4">
+              <h2 className="text-2xl font-anton">Edit Map</h2>
+            </CardHeader>
+            <CardBody>
+              <form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-4">
+                <div>
+                  <label className="block font-roboto font-medium mb-1">Map Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-roboto font-medium mb-1">Description</label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
+                    rows={3}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button type="submit" variant="solid" className="bg-blue-600 text-white hover:bg-blue-700 font-roboto font-medium">
+                    Save
+                  </Button>
+                  <Button type="button" variant="ghost" className="border-gray-300 text-gray-700 hover:bg-gray-100 font-roboto font-medium" onClick={() => setEditingMap(null)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardBody>
+          </Card>
         )}
       </div>
     </div>

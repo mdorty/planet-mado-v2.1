@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Card, CardHeader, CardBody, Button, Input } from '@heroui/react';
+import { HeroUIWrapper } from '../../../components/HeroUIWrapper';
 
 // Page for resetting password using a token
 export default function ResetPasswordPage({ searchParams }: { searchParams: { token?: string } }) {
@@ -81,69 +83,99 @@ export default function ResetPasswordPage({ searchParams }: { searchParams: { to
   };
 
   if (checkingToken) {
-    return <div className="container mx-auto max-w-6xl px-4 py-8">Checking token...</div>;
+    return (
+      <HeroUIWrapper>
+        <div className="container mx-auto max-w-6xl px-4 py-8 min-h-screen flex items-center justify-center">
+          <Card className="shadow-md rounded-lg p-6 w-full max-w-md">
+            <CardBody>
+              <p>Checking token...</p>
+            </CardBody>
+          </Card>
+        </div>
+      </HeroUIWrapper>
+    );
   }
 
   if (!tokenValid) {
     return (
-      <div className="container mx-auto max-w-6xl px-4 py-8">
-        <h1 className="text-3xl font-anton mb-6">Reset Password</h1>
-        <p className="text-red-500">{error}</p>
-        <p className="mt-4">
-          <a href="/auth/signin" className="text-blue-500 hover:underline">Return to Sign In</a>
-        </p>
-      </div>
+      <HeroUIWrapper>
+        <div className="container mx-auto max-w-6xl px-4 py-8 min-h-screen flex items-center justify-center">
+          <Card className="shadow-md rounded-lg p-6 w-full max-w-md">
+            <CardHeader className="border-b pb-3 mb-6">
+              <h1 className="text-3xl font-anton">Reset Password</h1>
+            </CardHeader>
+            <CardBody>
+              <p className="text-red-500">{error}</p>
+              <p className="mt-4">
+                <a href="/auth/signin" className="text-blue-500 hover:underline">Return to Sign In</a>
+              </p>
+            </CardBody>
+          </Card>
+        </div>
+      </HeroUIWrapper>
     );
   }
 
   if (success) {
     return (
-      <div className="container mx-auto max-w-6xl px-4 py-8">
-        <h1 className="text-3xl font-anton mb-6">Reset Password</h1>
-        <p className="text-green-500">Password reset successful! You will be redirected to the sign-in page shortly.</p>
-      </div>
+      <HeroUIWrapper>
+        <div className="container mx-auto max-w-6xl px-4 py-8 min-h-screen flex items-center justify-center">
+          <Card className="shadow-md rounded-lg p-6 w-full max-w-md">
+            <CardHeader className="border-b pb-3 mb-6">
+              <h1 className="text-3xl font-anton">Reset Password</h1>
+            </CardHeader>
+            <CardBody>
+              <p className="text-green-500">Password reset successful! You will be redirected to the sign-in page shortly.</p>
+            </CardBody>
+          </Card>
+        </div>
+      </HeroUIWrapper>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8">
-      <h1 className="text-3xl font-anton mb-6">Reset Password</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
-        {error && <p className="text-red-500">{error}</p>}
-        <div>
-          <label htmlFor="new-password" className="block text-sm font-medium">
-            New Password
-          </label>
-          <input
-            id="new-password"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="confirm-password" className="block text-sm font-medium">
-            Confirm New Password
-          </label>
-          <input
-            id="confirm-password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-dbz-blue text-white p-2 rounded hover:bg-dbz-blue/80 disabled:bg-gray-400"
-        >
-          {loading ? 'Resetting...' : 'Reset Password'}
-        </button>
-      </form>
-    </div>
+    <HeroUIWrapper>
+      <div className="container mx-auto max-w-6xl px-4 py-8 min-h-screen flex items-center justify-center">
+        <Card className="shadow-md rounded-lg p-6 w-full max-w-md">
+          <CardHeader className="border-b pb-3 mb-6">
+            <h1 className="text-3xl font-anton">Reset Password</h1>
+          </CardHeader>
+          <CardBody>
+            {error && <p className="text-red-500">{error}</p>}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="new-password" className="block text-sm font-medium">
+                  New Password
+                </label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="confirm-password" className="block text-sm font-medium">
+                  Confirm New Password
+                </label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <Button type="submit" variant="solid" className="bg-blue-600 text-white hover:bg-blue-700 font-roboto font-medium w-full mt-4">
+                {loading ? 'Resetting...' : 'Reset Password'}
+              </Button>
+            </form>
+          </CardBody>
+        </Card>
+      </div>
+    </HeroUIWrapper>
   );
 }

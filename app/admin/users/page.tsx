@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { trpc } from '@/lib/trpc/client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { Button, Card, CardHeader, CardBody, Input } from '@heroui/react';
 
 export default function AdminUsersPage() {
   const { data: session, status } = useSession();
@@ -84,99 +85,134 @@ export default function AdminUsersPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto">
-        <h1 className="text-3xl mb-6">User Management</h1>
-        <Link href="/admin" className="inline-block mb-4 hover:underline">
+        <h1 className="text-3xl font-anton mb-6">User Management</h1>
+        <Link href="/admin" className="inline-block mb-4 hover:underline font-roboto">
           Back to Admin Dashboard
         </Link>
 
-        {/* Users Section */}
-        <div className="bg-white p-6 rounded shadow-md mb-8">
-          <h2 className="text-xl mb-4">Manage Users</h2>
-          {userError && <p className="text-red-500 mb-4">{userError}</p>}
-          <form onSubmit={handleUserSubmit} className="space-y-4 mb-6">
-            <div>
-              <label className="block text-sm">Username</label>
-              <input
-                type="text"
-                value={userForm.username}
-                onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm">Email</label>
-              <input
-                type="email"
-                value={userForm.email}
-                onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            {!userForm.id && (
+        <Card className="p-6 rounded shadow-md mb-8">
+          <CardHeader className="border-b pb-2 mb-4">
+            <h2 className="text-xl font-anton">{userForm.id ? 'Edit User' : 'Create New User'}</h2>
+          </CardHeader>
+          <CardBody>
+            {userError && <p className="text-red-500 mb-4 font-roboto">{userError}</p>}
+            <form onSubmit={handleUserSubmit} className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm">Password</label>
-                <input
-                  type="password"
-                  value={userForm.password}
-                  onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                  className="w-full p-2 border rounded"
+                <label htmlFor="username" className="block font-roboto font-medium mb-1">Username</label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={userForm.username}
+                  onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
+                  className="w-full"
                   required
                 />
               </div>
-            )}
-            <div>
-              <label className="block text-sm">Role</label>
-              <select
-                value={userForm.role}
-                onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
-                className="w-full p-2 border rounded"
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-            <button type="submit" className="p-2 rounded hover:opacity-90 transition-opacity">
-              {userForm.id ? 'Update User' : 'Create User'}
-            </button>
-            {userForm.id && (
-              <button
-                type="button"
-                onClick={() => setUserForm({ id: '', username: '', email: '', password: '', role: 'user' })}
-                className="ml-2 bg-gray-300 text-black p-2 rounded hover:opacity-90 transition-opacity"
-              >
-                Cancel Edit
-              </button>
-            )}
-          </form>
-
-          <h3 className="text-lg mt-6 mb-2">Current Users</h3>
-          <div className="space-y-2 max-h-96 overflow-y-auto">
-            {users.map((user) => (
-              <div key={user.id} className="flex justify-between items-center p-2 border rounded">
-                <div>
-                  <p>{user.username}</p>
-                  <p className="text-sm text-gray-500">{user.email} - {user.role}</p>
-                </div>
-                <div>
-                  <button
-                    onClick={() => editUser(user)}
-                    className="bg-blue-500 text-white p-1 rounded hover:opacity-90 transition-opacity mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteUser.mutate({ id: user.id })}
-                    className="bg-red-500 text-white p-1 rounded hover:opacity-90 transition-opacity"
-                  >
-                    Delete
-                  </button>
-                </div>
+              <div>
+                <label htmlFor="email" className="block font-roboto font-medium mb-1">Email</label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={userForm.email}
+                  onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                  className="w-full"
+                  required
+                />
               </div>
-            ))}
-          </div>
-        </div>
+              <div>
+                <label htmlFor="password" className="block font-roboto font-medium mb-1">Password {userForm.id && '(Leave blank to keep unchanged)'}</label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={userForm.password}
+                  onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                  className="w-full"
+                  required={!userForm.id}
+                />
+              </div>
+              <div>
+                <label htmlFor="role" className="block font-roboto font-medium mb-1">Role</label>
+                <select
+                  id="role"
+                  value={userForm.role}
+                  onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <Button type="submit" variant="solid" className="bg-blue-600 text-white hover:bg-blue-700 font-roboto font-medium w-full sm:w-auto">
+                {userForm.id ? 'Update User' : 'Create User'}
+              </Button>
+              {userForm.id && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="ml-2 border-gray-300 text-gray-700 hover:bg-gray-100 font-roboto font-medium"
+                  onClick={() => setUserForm({ id: '', username: '', email: '', password: '', role: 'user' })}
+                >
+                  Cancel Edit
+                </Button>
+              )}
+            </form>
+          </CardBody>
+        </Card>
+
+        <Card className="p-6 rounded shadow-md mb-8">
+          <CardHeader className="border-b pb-2 mb-4">
+            <h2 className="text-xl font-anton">Existing Users</h2>
+          </CardHeader>
+          <CardBody>
+            <div className="overflow-x-auto">
+              {users.length > 0 ? (
+                <table className="min-w-full border-collapse border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th className="font-roboto p-3 text-left border-b border-gray-300">ID</th>
+                      <th className="font-roboto p-3 text-left border-b border-gray-300">Username</th>
+                      <th className="font-roboto p-3 text-left border-b border-gray-300">Email</th>
+                      <th className="font-roboto p-3 text-left border-b border-gray-300">Role</th>
+                      <th className="font-roboto p-3 text-left border-b border-gray-300">Created</th>
+                      <th className="font-roboto p-3 text-left border-b border-gray-300">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user: any) => (
+                      <tr key={user.id} className="border-b border-gray-300 hover:bg-gray-100">
+                        <td className="font-roboto p-3 border-b border-gray-300">{user.id}</td>
+                        <td className="font-roboto p-3 border-b border-gray-300">{user.username}</td>
+                        <td className="font-roboto p-3 border-b border-gray-300">{user.email}</td>
+                        <td className="font-roboto p-3 border-b border-gray-300">{user.role}</td>
+                        <td className="font-roboto p-3 border-b border-gray-300">{new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td className="font-roboto p-3 border-b border-gray-300">
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              className="border-gray-300 text-gray-700 hover:bg-gray-100 font-roboto font-medium"
+                              onClick={() => editUser(user)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="solid"
+                              className="bg-red-600 text-white hover:bg-red-700 font-roboto font-medium"
+                              onClick={() => deleteUser.mutate(user.id)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="font-roboto text-gray-500">No users found.</p>
+              )}
+            </div>
+          </CardBody>
+        </Card>
       </div>
     </div>
   );
