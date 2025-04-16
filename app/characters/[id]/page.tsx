@@ -20,6 +20,7 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
 
   useEffect(() => {
     if (error) {
+      console.error('Error fetching character:', error);
       router.push('/characters');
     }
   }, [error, router]);
