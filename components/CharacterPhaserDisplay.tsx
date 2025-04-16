@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
 
-const CharacterPhaserDisplay = ({ characterData }) => {
+const CharacterPhaserDisplay = ({ characterData }: { characterData: { powerLevel: number; inventory: string[] } }) => {
   const gameRef = useRef(null);
 
   useEffect(() => {
