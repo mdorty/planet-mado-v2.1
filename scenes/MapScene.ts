@@ -17,8 +17,8 @@ export default class MapScene extends Phaser.Scene {
 
   preload() {
     // Load assets if necessary
-    this.load.image('tiles', '/public/assets/tiles.jpg');
-    this.load.image('player', '/public/assets/player.jpg');
+    this.load.image('tiles', '/assets/tiles.jpg');
+    this.load.image('player', '/assets/player.jpg');
   }
 
   create() {
