@@ -4,15 +4,10 @@ const config: Config = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
+    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
-      colors: {
-        'pm-nav-orange': '#CB5C0D',
-        'pm-text-dark': '#404040',
-        'pm-white': '#ffffff',
-        'pm-nav-orange-hover': '#b34f0b',
-      },
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],
         anton: ['Anton', 'cursive'],
@@ -25,6 +20,7 @@ const config: Config = {
       },
     },
   },
+  darkMode: "class",
   plugins: [],
 };
 export default config;

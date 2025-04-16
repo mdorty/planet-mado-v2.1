@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { trpc } from '@/lib/trpc/client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { HeroUIProvider, Button, Input, Card, CardHeader, CardBody, CardFooter } from '@heroui/react';
 
 export default function CharactersPage() {
   const { data: session, status } = useSession();
@@ -47,9 +48,9 @@ export default function CharactersPage() {
 
   if (status !== 'authenticated') {
     return (
-      <div className="text-center">
-        <p>Please sign in to view your characters.</p>
-        <Link href="/auth/signin" className="text-dbz-orange hover:underline">
+      <div className="text-center p-8">
+        <p className="font-roboto text-pm-text-dark">You must be logged in to view or create characters.</p>
+        <Link href="/auth/signin" className="font-roboto font-medium text-blue-600 hover:underline">
           Sign In
         </Link>
       </div>
@@ -57,63 +58,66 @@ export default function CharactersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="container mx-auto">
-        <h1 className="text-3xl text-dbz-orange mb-4">Your Characters</h1>
+    <HeroUIProvider>
+      <div className="container mx-auto p-8 max-w-6xl">
+        <h1 className="text-3xl font-anton text-pm-text-dark mb-6">My Characters</h1>
 
-        {/* Character Creation Form */}
-        <div className="bg-white p-6 rounded shadow-md mb-6">
-          <h2 className="text-xl mb-4">Create a New Character</h2>
-          <form onSubmit={handleCreateCharacter} className="space-y-4">
-            {error && <p className="text-red-500">{error}</p>}
-            <div>
-              <label htmlFor="characterName" className="block text-sm">
-                Character Name
-              </label>
-              <input
-                id="characterName"
-                type="text"
-                value={characterName}
-                onChange={(e) => setCharacterName(e.target.value)}
-                className="w-full p-2 border rounded"
-                placeholder="e.g., Goku"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={createCharacter.isPending}
-              className="bg-dbz-blue text-white px-4 py-2 rounded hover:bg-dbz-blue/80 disabled:opacity-50"
-            >
-              {createCharacter.isPending ? 'Creating...' : 'Create Character'}
-            </button>
-          </form>
-        </div>
+        {/* Form to create a new character */}
+        <Card className="bg-pm-white shadow-md rounded-lg p-6 mb-8">
+          <CardHeader className="border-b pb-3 mb-6">
+            <h2 className="text-xl font-anton text-pm-text-dark">Create New Character</h2>
+          </CardHeader>
+          <CardBody>
+            <form onSubmit={handleCreateCharacter} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="font-roboto font-medium text-pm-text-dark">Character Name</label>
+                <Input
+                  type="text"
+                  value={characterName}
+                  onChange={(e) => setCharacterName(e.target.value)}
+                  placeholder="Enter character name"
+                  required
+                  className="w-full"
+                />
+              </div>
+              {error && <p className="text-red-500 font-roboto text-sm">{error}</p>}
+              <Button
+                type="submit"
+                variant="solid"
+                className="bg-green-600 text-white hover:bg-green-700 font-roboto font-medium w-full sm:w-auto"
+                disabled={createCharacter.isPending}
+              >
+                {createCharacter.isPending ? 'Creating...' : 'Create Character'}
+              </Button>
+            </form>
+          </CardBody>
+        </Card>
 
-        {/* Character List */}
-        <div className="bg-white p-6 rounded shadow-md">
-          <h2 className="text-xl mb-4">Your Characters</h2>
+        {/* List of user's characters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {characters.length === 0 ? (
-            <p className="text-gray-500">No characters yet. Create one above!</p>
+            <p className="font-roboto text-pm-text-dark text-center col-span-full">You have no characters yet. Create one to get started!</p>
           ) : (
-            <ul className="space-y-4">
-              {characters.map((character) => (
-                <li key={character.id} className="border-b pb-2">
-                  <Link
-                    href={`/characters/${character.id}`}
-                    className="text-dbz-orange hover:underline"
-                  >
-                    {character.name} (Level {character.level})
+            characters.map((char: any) => (
+              <Card key={char.id} className="bg-pm-white shadow-md rounded-lg overflow-hidden transition-all hover:shadow-lg">
+                <CardHeader className="border-b pb-2 bg-gray-50">
+                  <h3 className="font-anton text-lg text-pm-text-dark truncate">{char.name}</h3>
+                </CardHeader>
+                <CardBody className="p-4 flex flex-col gap-2">
+                  <p className="font-roboto text-sm text-gray-600">Power Level: {char.powerLevel || 'N/A'}</p>
+                </CardBody>
+                <CardFooter className="p-4 pt-0">
+                  <Link href={`/characters/${char.id}`}>
+                    <Button variant="solid" className="bg-blue-600 text-white hover:bg-blue-700 font-roboto font-medium w-full">
+                      View Details
+                    </Button>
                   </Link>
-                  <p className="text-sm text-gray-600">
-                    Health: {character.health}, Energy: {character.energy}
-                  </p>
-                </li>
-              ))}
-            </ul>
+                </CardFooter>
+              </Card>
+            ))
           )}
         </div>
       </div>
-    </div>
+    </HeroUIProvider>
   );
 }

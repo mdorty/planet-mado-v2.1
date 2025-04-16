@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { trpc } from '@/lib/trpc/client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { HeroUIProvider, Button, Input, Card, CardHeader, CardBody, CardFooter } from '@heroui/react';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -50,9 +51,9 @@ export default function ProfilePage() {
 
   if (status !== 'authenticated') {
     return (
-      <div className="text-center text-pm-text-dark">
-        <p>Please sign in to change your password.</p>
-        <Link href="/auth/signin" className="text-pm-nav-orange hover:text-pm-nav-orange-hover">
+      <div className="text-center p-8">
+        <p className="font-roboto text-pm-text-dark">You must be logged in to view your profile.</p>
+        <Link href="/auth/signin" className="font-roboto font-medium text-blue-600 hover:underline">
           Sign In
         </Link>
       </div>
@@ -60,59 +61,62 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-pm-white p-4">
-      <div className="container max-w-md">
-        <h1 className="text-3xl font-anton text-pm-text-dark mb-6">Change Password</h1>
-        <div className="bg-pm-white border border-gray-300 p-6 rounded shadow-md">
-          {error && <p className="text-red-600 mb-4">{error}</p>}
-          {success && <p className="text-green-600 mb-4">{success}</p>}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-pm-text-dark">
-                Current Password
-              </label>
-              <input
-                type="password"
-                value={form.currentPassword}
-                onChange={(e) => setForm({ ...form, currentPassword: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded bg-pm-white text-pm-text-dark"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-pm-text-dark">
-                New Password
-              </label>
-              <input
-                type="password"
-                value={form.newPassword}
-                onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded bg-pm-white text-pm-text-dark"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-pm-text-dark">
-                Confirm New Password
-              </label>
-              <input
-                type="password"
-                value={form.confirmPassword}
-                onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded bg-pm-white text-pm-text-dark"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-pm-nav-orange text-pm-white px-4 py-2 rounded hover:bg-pm-nav-orange-hover disabled:opacity-50"
-              disabled={changePassword.isPending}
-            >
-              {changePassword.isPending ? 'Changing...' : 'Change Password'}
-            </button>
-          </form>
-        </div>
+    <HeroUIProvider>
+      <div className="container mx-auto p-8 max-w-6xl">
+        <h1 className="text-3xl font-anton text-pm-text-dark mb-6">Profile</h1>
+        <Card className="bg-pm-white shadow-md rounded-lg p-6 max-w-lg mx-auto">
+          <CardHeader className="border-b pb-3 mb-6">
+            <h2 className="text-xl font-anton text-pm-text-dark">Change Password</h2>
+          </CardHeader>
+          <CardBody>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block font-roboto font-medium text-pm-text-dark mb-1">Current Password</label>
+                <Input
+                  type="password"
+                  value={form.currentPassword}
+                  onChange={(e) => setForm({ ...form, currentPassword: e.target.value })}
+                  placeholder="Enter current password"
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div>
+                <label className="block font-roboto font-medium text-pm-text-dark mb-1">New Password</label>
+                <Input
+                  type="password"
+                  value={form.newPassword}
+                  onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
+                  placeholder="Enter new password"
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div>
+                <label className="block font-roboto font-medium text-pm-text-dark mb-1">Confirm New Password</label>
+                <Input
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                  placeholder="Confirm new password"
+                  required
+                  className="w-full"
+                />
+              </div>
+              {error && <p className="text-red-500 font-roboto text-sm">{error}</p>}
+              {success && <p className="text-green-500 font-roboto text-sm">{success}</p>}
+              <Button type="submit" variant="solid" className="bg-blue-600 text-white hover:bg-blue-700 font-roboto font-medium w-full mt-4">
+                Update Password
+              </Button>
+            </form>
+          </CardBody>
+          <CardFooter className="border-t pt-3 mt-6 text-center">
+            <Link href="/" className="font-roboto font-medium text-blue-600 hover:underline">
+              Back to Home
+            </Link>
+          </CardFooter>
+        </Card>
       </div>
-    </div>
+    </HeroUIProvider>
   );
 }

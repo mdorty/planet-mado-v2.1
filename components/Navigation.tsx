@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button } from '@heroui/react';
 
 export function Navigation() {
   const { data: session } = useSession();
@@ -14,86 +15,145 @@ export function Navigation() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-pm-nav-orange text-pm-white p-4 shadow-md z-20">
-      <div className="container flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-          <Image src="/images/planet_mado_logo-smaller.png" alt="Planet Mado" width={150} height={50} style={{ maxWidth: '6rem' }} priority />
-        </Link>
-        <div className="hidden md:flex items-center space-x-4">
-          <div className="relative group">
-            <button className="text-white hover:text-gray-300 transition-colors duration-200 flex items-center">
-              The RPG
-              <svg className="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-            </button>
-            <div className="absolute z-10 hidden bg-pm-white border border-gray-200 rounded-lg shadow-lg group-hover:block w-48 left-0 top-full hover:block">
-              <Link href="/how-to-play" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100">How to Play</Link>
-              <Link href="/races" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100">Races</Link>
-              <Link href="/planets" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100">Planets</Link>
-              <Link href="/items" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100">Items</Link>
-              <Link href="/basic-techniques" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100">Basic Techniques</Link>
-              <Link href="/members" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100">Members</Link>
-              <Link href="/join" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100">Join the RPG</Link>
-              <Link href="/rule-book" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100">Rule Book</Link>
-            </div>
-          </div>
-          <Link href="/about" className="text-white hover:text-gray-300 transition-colors duration-200">About</Link>
-          <Link href="/forums" className="text-white hover:text-gray-300 transition-colors duration-200">Forums</Link>
-          <Link href="/contact" className="text-white hover:text-gray-300 transition-colors duration-200">Contact</Link>
-          {session ? (
-            <>
-              <Link href="/profile" className="text-white hover:text-gray-300 transition-colors duration-200">Profile</Link>
-              <Link href="/characters" className="text-white hover:text-gray-300 transition-colors duration-200">Dashboard</Link>
-              {session.user && session.user.email === 'admin@dbz.com' && (
-                <Link href="/admin" className="text-white hover:text-gray-300 transition-colors duration-200">Admin</Link>
-              )}
-              <button onClick={() => signOut()} className="text-white hover:text-gray-300 transition-colors duration-200">Sign Out</button>
-            </>
-          ) : (
-            <Link href="/auth/signin" className="text-white hover:text-gray-300 transition-colors duration-200">Log In</Link>
-          )}
-        </div>
-        <button className="md:hidden text-pm-text-dark" onClick={toggleMenu}>
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
-        {menuOpen && (
-          <div className="md:hidden absolute inset-0 bg-pm-nav-orange z-50 flex flex-col items-center justify-center space-y-4 text-xl">
-            <button className="absolute top-4 right-4 text-pm-text-dark" onClick={toggleMenu}>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <div className="relative group inline-block">
-              <button className="text-white hover:text-gray-300 transition-colors duration-200 flex items-center">
+    <Navbar className="p-4 shadow-md z-20" maxWidth="xl">
+      <NavbarContent>
+        <NavbarMenuToggle onClick={toggleMenu} className="md:hidden" />
+        <NavbarBrand>
+          <Link href="/" className="flex items-center">
+            <Image src="/images/planet_mado_logo-smaller.png" alt="Planet Mado" width={150} height={50} style={{ maxWidth: '6rem' }} priority />
+          </Link>
+        </NavbarBrand>
+        <NavbarContent className="hidden md:flex justify-center" justify="center">
+          <NavbarItem>
+            <div className="relative group">
+              <button className="flex items-center font-roboto">
                 The RPG
                 <svg className="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
               </button>
-              <div className="absolute z-10 hidden bg-pm-white border border-gray-200 rounded-lg shadow-lg group-hover:block w-48 left-0 top-full hover:block">
-                <Link href="/how-to-play" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100" onClick={toggleMenu}>How to Play</Link>
-                <Link href="/races" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100" onClick={toggleMenu}>Races</Link>
-                <Link href="/planets" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100" onClick={toggleMenu}>Planets</Link>
-                <Link href="/items" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100" onClick={toggleMenu}>Items</Link>
-                <Link href="/basic-techniques" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100" onClick={toggleMenu}>Basic Techniques</Link>
-                <Link href="/members" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100" onClick={toggleMenu}>Members</Link>
-                <Link href="/join" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100" onClick={toggleMenu}>Join the RPG</Link>
-                <Link href="/rule-book" className="block px-4 py-2 text-pm-text-dark hover:bg-gray-100" onClick={toggleMenu}>Rule Book</Link>
+              <div className="absolute z-30 border border-gray-200 rounded-lg shadow-lg hidden group-hover:block w-48 left-0 top-full opacity-100">
+                <Link href="/how-to-play" className="block px-4 py-2 hover:bg-gray-100 font-roboto">How to Play</Link>
+                <Link href="/races" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Races</Link>
+                <Link href="/planets" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Planets</Link>
+                <Link href="/items" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Items</Link>
+                <Link href="/basic-techniques" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Basic Techniques</Link>
+                <Link href="/members" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Members</Link>
+                <Link href="/join" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Join the RPG</Link>
+                <Link href="/rule-book" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Rule Book</Link>
               </div>
             </div>
-            <Link href="/about" className="text-white hover:text-gray-300 transition-colors duration-200" onClick={toggleMenu}>About</Link>
-            <Link href="/forums" className="text-white hover:text-gray-300 transition-colors duration-200" onClick={toggleMenu}>Forums</Link>
-            <Link href="/contact" className="text-white hover:text-gray-300 transition-colors duration-200" onClick={toggleMenu}>Contact</Link>
-            {session ? (
-              <>
-                <Link href="/profile" className="text-white hover:text-gray-300 transition-colors duration-200" onClick={toggleMenu}>Profile</Link>
-                <Link href="/characters" className="text-white hover:text-gray-300 transition-colors duration-200" onClick={toggleMenu}>Dashboard</Link>
-                {session.user && session.user.email === 'admin@dbz.com' && (
-                  <Link href="/admin" className="text-white hover:text-gray-300 transition-colors duration-200" onClick={toggleMenu}>Admin</Link>
-                )}
-                <button onClick={() => { signOut(); toggleMenu(); }} className="text-white hover:text-gray-300 transition-colors duration-200">Sign Out</button>
-              </>
-            ) : (
-              <Link href="/auth/signin" className="text-white hover:text-gray-300 transition-colors duration-200" onClick={toggleMenu}>Log In</Link>
-            )}
+          </NavbarItem>
+          <NavbarItem>
+            <Link href="/about" className="font-roboto transition-colors duration-200">About</Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Link href="/forums" className="font-roboto transition-colors duration-200">Forums</Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Link href="/contact" className="font-roboto transition-colors duration-200">Contact</Link>
+          </NavbarItem>
+          <NavbarItem>
+            <Link href="/store" className="font-roboto transition-colors duration-200">Store</Link>
+          </NavbarItem>
+        </NavbarContent>
+        <NavbarContent justify="end">
+          {session ? (
+            <>
+              <NavbarItem className="hidden md:block">
+                <Link href="/profile" className="font-roboto transition-colors duration-200">Profile</Link>
+              </NavbarItem>
+              <NavbarItem className="hidden md:block">
+                <Link href="/characters" className="font-roboto transition-colors duration-200">Characters</Link>
+              </NavbarItem>
+              {session.user.role === 'admin' && (
+                <NavbarItem className="hidden md:block">
+                  <Link href="/admin" className="font-roboto transition-colors duration-200">Staff</Link>
+                </NavbarItem>
+              )}
+              <NavbarItem>
+                <Button
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  variant="solid"
+                  className="hover:bg-gray-100 font-roboto font-medium"
+                >
+                  Sign Out
+                </Button>
+              </NavbarItem>
+            </>
+          ) : (
+            <NavbarItem>
+              <Link href="/auth/signin">
+                <Button variant="solid" className="hover:bg-gray-100 font-roboto font-medium">
+                  Sign In
+                </Button>
+              </Link>
+            </NavbarItem>
+          )}
+        </NavbarContent>
+      </NavbarContent>
+      <NavbarMenu className={`md:hidden pt-4 pb-8 px-6 space-y-6 overflow-auto z-10 ${menuOpen ? 'block' : 'hidden'}`}> 
+        <NavbarMenuItem>
+          <div className="relative group w-full">
+            <button className="flex items-center justify-between w-full text-left font-roboto py-2 border-b border-gray-200">
+              The RPG
+              <svg className="ml-1 w-5 h-5 transform group-hover:rotate-180 transition-transform" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+            </button>
+            <div className="bg-white w-full left-0 top-full opacity-100 group-hover:block space-y-1 pt-2 pb-4 px-2">
+              <Link href="/how-to-play" className="block py-2 hover:bg-gray-100 font-roboto">How to Play</Link>
+              <Link href="/races" className="block py-2 hover:bg-gray-100 font-roboto">Races</Link>
+              <Link href="/planets" className="block py-2 hover:bg-gray-100 font-roboto">Planets</Link>
+              <Link href="/items" className="block py-2 hover:bg-gray-100 font-roboto">Items</Link>
+              <Link href="/basic-techniques" className="block py-2 hover:bg-gray-100 font-roboto">Basic Techniques</Link>
+              <Link href="/members" className="block py-2 hover:bg-gray-100 font-roboto">Members</Link>
+              <Link href="/join" className="block py-2 hover:bg-gray-100 font-roboto">Join the RPG</Link>
+              <Link href="/rule-book" className="block py-2 hover:bg-gray-100 font-roboto">Rule Book</Link>
+            </div>
           </div>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <Link href="/about" className="block py-2 border-b border-white/30 text-white font-roboto">About</Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <Link href="/forums" className="block py-2 border-b border-white/30 text-white font-roboto">Forums</Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <Link href="/contact" className="block py-2 border-b border-white/30 text-white font-roboto">Contact</Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <Link href="/store" className="block py-2 border-b border-white/30 text-white font-roboto">Store</Link>
+        </NavbarMenuItem>
+        {session ? (
+          <>
+            <NavbarMenuItem>
+              <Link href="/profile" className="block py-2 border-b border-white/30 text-white font-roboto">Profile</Link>
+            </NavbarMenuItem>
+            <NavbarMenuItem>
+              <Link href="/characters" className="block py-2 border-b border-white/30 text-white font-roboto">Characters</Link>
+            </NavbarMenuItem>
+            {session.user.role === 'admin' && (
+              <NavbarMenuItem>
+                <Link href="/admin" className="block py-2 border-b border-white/30 text-white font-roboto">Staff</Link>
+              </NavbarMenuItem>
+            )}
+            <NavbarMenuItem>
+              <Button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                variant="solid"
+                className="hover:bg-gray-100 font-roboto font-medium w-full text-left justify-start py-2"
+              >
+                Sign Out
+              </Button>
+            </NavbarMenuItem>
+          </>
+        ) : (
+          <NavbarMenuItem>
+            <Link href="/auth/signin">
+              <Button variant="solid" className="hover:bg-gray-100 font-roboto font-medium w-full text-left justify-start py-2">
+                Sign In
+              </Button>
+            </Link>
+          </NavbarMenuItem>
         )}
-      </div>
-    </header>
+      </NavbarMenu>
+    </Navbar>
   );
 }

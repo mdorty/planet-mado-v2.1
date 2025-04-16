@@ -24,7 +24,7 @@ export function AuthButton() {
   return (
     <Link
       href="/auth/signin"
-      className="bg-dbz-blue text-white px-4 py-2 rounded hover:bg-dbz-blue/80"
+      className="px-4 py-2 rounded hover:bg-dbz-blue/80"
     >
       Sign In
     </Link>

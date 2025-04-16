@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Input, Button } from '@heroui/react';
 
 export function SignInForm() {
   const [email, setEmail] = useState('');
@@ -29,42 +30,41 @@ export function SignInForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500 font-roboto">{error}</p>}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium">
+        <label htmlFor="email" className="block font-roboto font-medium mb-1">
           Email
         </label>
-        <input
+        <Input
           id="email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 border rounded"
+          placeholder="Enter your email"
           required
+          className="w-full"
         />
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium">
+        <label htmlFor="password" className="block font-roboto font-medium mb-1">
           Password
         </label>
-        <input
+        <Input
           id="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border rounded"
+          placeholder="Enter your password"
           required
+          className="w-full"
         />
       </div>
-      <button
-        type="submit"
-        className="w-full bg-dbz-blue text-white p-2 rounded hover:bg-dbz-blue/80"
-      >
+      <Button type="submit" variant="solid" className="w-full font-roboto font-medium">
         Sign In
-      </button>
+      </Button>
       <p className="text-sm">
         Don't have an account?{' '}
-        <a href="/auth/signup" className="text-dbz-orange hover:underline">
+        <a href="/auth/signup" className="hover:underline">
           Sign Up
         </a>
       </p>

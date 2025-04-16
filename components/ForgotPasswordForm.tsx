@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
+import { Input, Button } from '@heroui/react';
 
 // Component for requesting a password reset
 export function ForgotPasswordForm() {
@@ -43,32 +44,40 @@ export function ForgotPasswordForm() {
       <h2 className="text-xl font-bold mb-4">Forgot Password</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="forgot-email" className="block text-sm font-medium">
+          <label htmlFor="forgot-email" className="block font-roboto font-medium text-pm-text-dark mb-1">
             Email
           </label>
-          <input
+          <Input
             id="forgot-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded"
+            placeholder="Enter your email"
             required
+            className="w-full"
           />
         </div>
-        <button
+        <Button
           type="submit"
+          variant="solid"
           disabled={loading}
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-500/80 disabled:bg-gray-400"
+          className="bg-pm-nav-orange text-white hover:bg-orange-700 w-full font-roboto font-medium"
         >
-          {loading ? 'Requesting...' : 'Request Reset Link'}
-        </button>
+          {loading ? 'Sending...' : 'Reset Password'}
+        </Button>
+        {result && (
+          <div className="mt-4 font-roboto text-pm-text-dark">
+            {result}
+            {resetUrl && (
+              <div className="mt-2">
+                <a href={resetUrl} className="text-blue-600 hover:underline font-medium">
+                  Click here to reset your password
+                </a>
+              </div>
+            )}
+          </div>
+        )}
       </form>
-      {result && <p className="mt-4 text-center text-sm">{result}</p>}
-      {resetUrl && (
-        <p className="mt-2 text-center text-sm">
-          <a href={resetUrl} className="text-blue-500 hover:underline">Click here to reset your password</a>
-        </p>
-      )}
     </div>
   );
 }

@@ -82,7 +82,7 @@
 }
 
 body {
-  @apply bg-pm-white text-pm-text-dark font-roboto;
+  @apply font-roboto;
 }
 
 .container {
@@ -90,7 +90,7 @@ body {
 }
 
 h1, h2, h3 {
-  @apply font-anton text-pm-text-dark;
+  @apply font-anton;
 }
 
 h1 {
@@ -106,15 +106,11 @@ a {
 }
 
 button, .btn {
-  @apply bg-pm-nav-orange text-pm-white px-4 py-2 rounded hover:bg-pm-nav-orange-hover;
+  @apply px-4 py-2 rounded;
 }
 
 nav {
-  @apply bg-pm-nav-orange text-pm-white shadow-md;
-}
-
-nav a {
-  @apply hover:text-pm-white/80;
+  @apply shadow-md;
 }
 
 .font-roboto {
@@ -124,15 +120,6 @@ nav a {
 .font-anton {
   font-family: 'Anton', cursive;
   font-weight: normal;
-}
-
-/* Custom styles for Planet Mado theme */
-.bg-pm-nav-orange {
-  background-color: #e65517;
-}
-
-.text-pm-white {
-  color: #ffffff;
 }
 
 .font-anton {

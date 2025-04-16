@@ -1,10 +1,8 @@
-'use client';
-
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 // Page for resetting password using a token
-export default function ResetPasswordPage() {
+export default function ResetPasswordPage({ searchParams }: { searchParams: { token?: string } }) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,8 +11,7 @@ export default function ResetPasswordPage() {
   const [tokenValid, setTokenValid] = useState(false);
   const [checkingToken, setCheckingToken] = useState(true);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.token || '';
 
   useEffect(() => {
     const checkToken = async () => {

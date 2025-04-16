@@ -3,8 +3,9 @@
 import './globals.css';
 import '@fontsource/anton';
 import { SessionProvider } from 'next-auth/react';
-import { TRPCProvider } from '../components/TRPCProvider';
+import { TRPCProvider } from './_trpc/Provider';
 import { Navigation } from '@/components/Navigation';
+import { Providers } from "./providers";
 
 export const metadata = {
   title: 'Planet Mado - DBZ RPG',
@@ -19,10 +20,12 @@ export default function RootLayout({
   return (
     <SessionProvider>
       <html lang="en">
-        <body className="bg-pm-white text-pm-text-dark font-roboto">
+        <body className="font-roboto">
           <TRPCProvider>
-            <Navigation />
-            <main className="container pt-20 pb-8">{children}</main>
+            <Providers>
+              <Navigation />
+              {children}
+            </Providers>
           </TRPCProvider>
         </body>
       </html>

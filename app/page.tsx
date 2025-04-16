@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { HeroUIProvider, Button } from '@heroui/react';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -11,21 +12,24 @@ export default function Home() {
   }
 
   return (
-    <div className="text-center">
-      <h1 className="text-4xl text-dbz-orange mb-4">
+    <HeroUIProvider>
+    <div className="text-center p-8">
+      <h1 className="text-4xl text-dbz-orange mb-4 font-anton">
         Welcome to DBZ RPG!
       </h1>
-      <p className="text-lg mb-6">
+      <p className="text-lg mb-6 font-roboto text-pm-text-dark">
         {status === 'authenticated'
           ? `Welcome back, ${session.user?.name}! Create your character and battle in the Dragon Ball Z universe.`
           : 'Sign up or sign in to create your character and battle in the Dragon Ball Z universe.'}
       </p>
       <Link
         href={status === 'authenticated' ? '/characters' : '/auth/signin'}
-        className="bg-dbz-blue text-white px-4 py-2 rounded hover:bg-dbz-blue/80"
       >
-        {status === 'authenticated' ? 'Go to Characters' : 'Get Started'}
+        <Button variant="solid" className="bg-dbz-blue text-white hover:bg-dbz-blue/80 font-roboto font-medium">
+          {status === 'authenticated' ? 'Go to Characters' : 'Get Started'}
+        </Button>
       </Link>
     </div>
+    </HeroUIProvider>
   );
 }

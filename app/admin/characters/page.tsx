@@ -145,7 +145,7 @@ export default function AdminCharactersPage() {
         </Link>
 
         {/* Characters Section */}
-        <div className="bg-white p-6 rounded shadow-md mb-8">
+        <div className="p-6 rounded shadow-md mb-8">
           <h2 className="text-xl font-anton mb-4">Manage Characters</h2>
           {charError && <p className="text-red-500 mb-4 font-roboto">{charError}</p>}
           
@@ -294,7 +294,7 @@ export default function AdminCharactersPage() {
                   className="w-full p-2 border rounded"
                 />
               </div>
-              <button type="submit" className="bg-pm-nav-orange text-white p-2 rounded hover:opacity-90 transition-opacity">
+              <button type="submit" className="p-2 rounded hover:opacity-90 transition-opacity">
                 {charForm.id ? 'Update Character' : 'Create Character'}
               </button>
               {charForm.id && (
@@ -319,7 +319,7 @@ export default function AdminCharactersPage() {
                       jobs: '',
                     })
                   }
-                  className="ml-2 bg-gray-300 text-black p-2 rounded hover:opacity-90 transition-opacity"
+                  className="ml-2 p-2 rounded hover:opacity-90 transition-opacity"
                 >
                   Cancel Edit
                 </button>
@@ -333,7 +333,7 @@ export default function AdminCharactersPage() {
               <div key={char.id} className="flex justify-between items-center p-2 border rounded">
                 <div>
                   <p>{char.name}</p>
-                  <p className="text-sm text-gray-500">User ID: {char.userId} - Power Level: {char.currentPowerlevel}</p>
+                  <p className="text-sm">User ID: {char.userId} - Power Level: {char.currentPowerlevel}</p>
                 </div>
                 <div>
                   <button

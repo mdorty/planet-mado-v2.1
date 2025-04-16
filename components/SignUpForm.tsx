@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { trpc } from '@/lib/trpc/client';
+import { Input, Button } from '@heroui/react';
 
 export function SignUpForm() {
   const [username, setUsername] = useState('');
@@ -33,56 +34,60 @@ export function SignUpForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500 font-roboto">{error}</p>}
       <div>
-        <label htmlFor="username" className="block text-sm font-medium">
+        <label htmlFor="username" className="block font-roboto font-medium mb-1">
           Username
         </label>
-        <input
+        <Input
           id="username"
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="w-full p-2 border rounded"
+          placeholder="Choose a username"
           required
+          className="w-full"
         />
       </div>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium">
+        <label htmlFor="email" className="block font-roboto font-medium mb-1">
           Email
         </label>
-        <input
+        <Input
           id="email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 border rounded"
+          placeholder="Enter your email"
           required
+          className="w-full"
         />
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium">
+        <label htmlFor="password" className="block font-roboto font-medium mb-1">
           Password
         </label>
-        <input
+        <Input
           id="password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border rounded"
+          placeholder="Create a password"
           required
+          className="w-full"
         />
       </div>
-      <button
+      <Button
         type="submit"
+        variant="solid"
         disabled={signupMutation.isPending}
-        className="w-full bg-dbz-blue text-white p-2 rounded hover:bg-dbz-blue/80 disabled:opacity-50"
+        className="w-full font-roboto font-medium"
       >
-        {signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
-      </button>
+        {signupMutation.isPending ? 'Creating Account...' : 'Sign Up'}
+      </Button>
       <p className="text-sm">
         Already have an account?{' '}
-        <a href="/auth/signin" className="text-dbz-orange hover:underline">
+        <a href="/auth/signin" className="hover:underline">
           Sign In
         </a>
       </p>
