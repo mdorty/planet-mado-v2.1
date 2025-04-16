@@ -5,41 +5,26 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export function SignInForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-    console.log('Email updated:', newEmail);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-    console.log('Password updated:', newPassword);
-  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     console.log('Attempting sign in with endpoint:', window.location.origin + '/api/auth/callback/credentials');
-    console.log('Credentials being sent from state:', { email, password });
     
-    // Fallback to get values directly from form inputs in case state isn't updating
+    // Get values directly from form inputs
     const form = e.currentTarget;
     const formEmail = form.elements.namedItem('email') as HTMLInputElement;
     const formPassword = form.elements.namedItem('password') as HTMLInputElement;
-    const directEmail = formEmail ? formEmail.value : '';
-    const directPassword = formPassword ? formPassword.value : '';
-    console.log('Credentials directly from form inputs:', { directEmail, directPassword });
+    const email = formEmail ? formEmail.value : '';
+    const password = formPassword ? formPassword.value : '';
+    console.log('Credentials directly from form inputs:', { email, password });
 
     const result = await signIn('credentials', {
       redirect: false,
-      email: directEmail || email,
-      password: directPassword || password,
+      email,
+      password,
     });
 
     if (result?.error) {
@@ -59,8 +44,6 @@ export function SignInForm() {
         <input
           id="email"
           type="email"
-          value={email}
-          onChange={handleEmailChange}
           className="w-full p-2 border rounded"
           required
         />
@@ -72,8 +55,6 @@ export function SignInForm() {
         <input
           id="password"
           type="password"
-          value={password}
-          onChange={handlePasswordChange}
           className="w-full p-2 border rounded"
           required
         />
