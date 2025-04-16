@@ -1,13 +1,20 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Phaser from 'phaser';
 import MapScene from '../scenes/MapScene';
 
-const CharacterPhaserDisplay = ({ characterData }: { characterData: { powerLevel: number; inventory: string[] } }) => {
+export default function CharacterPhaserDisplay({ characterData }: { characterData: any }) {
   const gameRef = useRef<Phaser.Game | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return; // Only proceed if on client-side
+    
     if (!gameRef.current) {
       const config = {
         type: Phaser.AUTO,
@@ -23,7 +30,6 @@ const CharacterPhaserDisplay = ({ characterData }: { characterData: { powerLevel
           }
         }
       };
-
       gameRef.current = new Phaser.Game(config);
     }
 
@@ -33,9 +39,7 @@ const CharacterPhaserDisplay = ({ characterData }: { characterData: { powerLevel
         gameRef.current = null;
       }
     };
-  }, [characterData]);
+  }, [characterData, isClient]);
 
   return <div id="phaser-game" style={{ width: '800px', height: '600px' }} />;
 };
-
-export default CharacterPhaserDisplay;
