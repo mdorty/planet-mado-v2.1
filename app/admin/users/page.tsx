@@ -49,7 +49,7 @@ export default function AdminUsersPage() {
     return (
       <div className="text-center">
         <p>Access denied. Admins only.</p>
-        <Link href="/" className="text-dbz-orange hover:underline">
+        <Link href="/" className="hover:underline">
           Back to Home
         </Link>
       </div>
@@ -84,8 +84,8 @@ export default function AdminUsersPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto">
-        <h1 className="text-3xl text-dbz-orange mb-6">User Management</h1>
-        <Link href="/admin" className="inline-block mb-4 text-dbz-orange hover:underline">
+        <h1 className="text-3xl mb-6">User Management</h1>
+        <Link href="/admin" className="inline-block mb-4 hover:underline">
           Back to Admin Dashboard
         </Link>
 
@@ -137,7 +137,7 @@ export default function AdminUsersPage() {
                 <option value="admin">Admin</option>
               </select>
             </div>
-            <button type="submit" className="bg-dbz-orange text-white p-2 rounded hover:opacity-90 transition-opacity">
+            <button type="submit" className="p-2 rounded hover:opacity-90 transition-opacity">
               {userForm.id ? 'Update User' : 'Create User'}
             </button>
             {userForm.id && (

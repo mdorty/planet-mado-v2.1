@@ -49,7 +49,7 @@ export default function CharactersPage() {
   if (status !== 'authenticated') {
     return (
       <div className="text-center p-8">
-        <p className="font-roboto text-pm-text-dark">You must be logged in to view or create characters.</p>
+        <p className="font-roboto">You must be logged in to view or create characters.</p>
         <Link href="/auth/signin" className="font-roboto font-medium text-blue-600 hover:underline">
           Sign In
         </Link>
@@ -60,17 +60,17 @@ export default function CharactersPage() {
   return (
     <HeroUIProvider>
       <div className="container mx-auto p-8 max-w-6xl">
-        <h1 className="text-3xl font-anton text-pm-text-dark mb-6">My Characters</h1>
+        <h1 className="text-3xl font-anton mb-6">My Characters</h1>
 
         {/* Form to create a new character */}
         <Card className="bg-pm-white shadow-md rounded-lg p-6 mb-8">
           <CardHeader className="border-b pb-3 mb-6">
-            <h2 className="text-xl font-anton text-pm-text-dark">Create New Character</h2>
+            <h2 className="text-xl font-anton">Create New Character</h2>
           </CardHeader>
           <CardBody>
             <form onSubmit={handleCreateCharacter} className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <label className="font-roboto font-medium text-pm-text-dark">Character Name</label>
+                <label className="font-roboto font-medium">Character Name</label>
                 <Input
                   type="text"
                   value={characterName}
@@ -96,12 +96,12 @@ export default function CharactersPage() {
         {/* List of user's characters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {characters.length === 0 ? (
-            <p className="font-roboto text-pm-text-dark text-center col-span-full">You have no characters yet. Create one to get started!</p>
+            <p className="font-roboto text-center col-span-full">You have no characters yet. Create one to get started!</p>
           ) : (
             characters.map((char: any) => (
               <Card key={char.id} className="bg-pm-white shadow-md rounded-lg overflow-hidden transition-all hover:shadow-lg">
                 <CardHeader className="border-b pb-2 bg-gray-50">
-                  <h3 className="font-anton text-lg text-pm-text-dark truncate">{char.name}</h3>
+                  <h3 className="font-anton text-lg truncate">{char.name}</h3>
                 </CardHeader>
                 <CardBody className="p-4 flex flex-col gap-2">
                   <p className="font-roboto text-sm text-gray-600">Power Level: {char.powerLevel || 'N/A'}</p>

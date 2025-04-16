@@ -18,7 +18,7 @@ export default function AdminPage() {
   if (!session || status !== 'authenticated' || session?.user?.role !== 'admin') {
     return (
       <div className="text-center p-8">
-        <p className="font-roboto text-pm-text-dark">Access denied. Admins only.</p>
+        <p className="font-roboto">Access denied. Admins only.</p>
         <Link href="/" className="font-roboto font-medium text-blue-600 hover:underline">
           Back to Home
         </Link>
@@ -30,13 +30,13 @@ export default function AdminPage() {
     <HeroUIProvider>
       <div className="min-h-screen bg-gray-100 p-4">
         <div className="container mx-auto max-w-6xl">
-          <h1 className="text-3xl font-anton text-pm-text-dark mb-6">Admin Dashboard</h1>
+          <h1 className="text-3xl font-anton mb-6">Admin Dashboard</h1>
 
           {/* Navigation Links to Separate Management Pages */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="bg-gray-50 p-6 rounded-lg shadow-sm text-center">
               <CardHeader className="border-b pb-2 mb-4">
-                <h2 className="text-xl font-anton text-pm-text-dark">Manage Users</h2>
+                <h2 className="text-xl font-anton">Manage Users</h2>
               </CardHeader>
               <CardBody>
                 <p className="font-roboto text-gray-600 mb-4">Create, update, or delete user accounts.</p>
@@ -50,7 +50,7 @@ export default function AdminPage() {
 
             <Card className="bg-gray-50 p-6 rounded-lg shadow-sm text-center">
               <CardHeader className="border-b pb-2 mb-4">
-                <h2 className="text-xl font-anton text-pm-text-dark">Manage Characters</h2>
+                <h2 className="text-xl font-anton">Manage Characters</h2>
               </CardHeader>
               <CardBody>
                 <p className="font-roboto text-gray-600 mb-4">View, edit, or remove character profiles.</p>

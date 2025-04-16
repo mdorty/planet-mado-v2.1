@@ -99,7 +99,7 @@ export default function AdminCharactersPage() {
     return (
       <div className="text-center">
         <p>Access denied. Admins only.</p>
-        <Link href="/" className="text-dbz-orange hover:underline">
+        <Link href="/" className="hover:underline">
           Back to Home
         </Link>
       </div>
@@ -139,8 +139,8 @@ export default function AdminCharactersPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto">
-        <h1 className="text-3xl font-anton text-pm-nav-orange mb-6">Character Management</h1>
-        <Link href="/admin" className="inline-block mb-4 text-pm-nav-orange hover:underline font-roboto">
+        <h1 className="text-3xl font-anton mb-6">Character Management</h1>
+        <Link href="/admin" className="inline-block mb-4 hover:underline font-roboto">
           Back to Admin Dashboard
         </Link>
 

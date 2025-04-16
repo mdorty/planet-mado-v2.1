@@ -14,10 +14,10 @@ export default function Home() {
   return (
     <HeroUIProvider>
     <div className="text-center p-8">
-      <h1 className="text-4xl text-dbz-orange mb-4 font-anton">
+      <h1 className="text-4xl mb-4 font-anton">
         Welcome to DBZ RPG!
       </h1>
-      <p className="text-lg mb-6 font-roboto text-pm-text-dark">
+      <p className="text-lg mb-6 font-roboto">
         {status === 'authenticated'
           ? `Welcome back, ${session.user?.name}! Create your character and battle in the Dragon Ball Z universe.`
           : 'Sign up or sign in to create your character and battle in the Dragon Ball Z universe.'}
@@ -25,7 +25,7 @@ export default function Home() {
       <Link
         href={status === 'authenticated' ? '/characters' : '/auth/signin'}
       >
-        <Button variant="solid" className="bg-dbz-blue text-white hover:bg-dbz-blue/80 font-roboto font-medium">
+        <Button variant="solid" className="text-white font-roboto font-medium">
           {status === 'authenticated' ? 'Go to Characters' : 'Get Started'}
         </Button>
       </Link>

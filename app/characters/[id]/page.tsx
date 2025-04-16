@@ -28,7 +28,7 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
     return (
       <div className="text-center">
         <p>Please sign in to view character details.</p>
-        <Link href="/auth/signin" className="text-dbz-orange hover:underline">
+        <Link href="/auth/signin" className="hover:underline">
           Sign In
         </Link>
       </div>
@@ -42,7 +42,7 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
     return (
       <div className="text-center">
         <p>Character not found or you don’t have access.</p>
-        <Link href="/characters" className="text-dbz-orange hover:underline">
+        <Link href="/characters" className="hover:underline">
           Back to Characters
         </Link>
       </div>
@@ -64,7 +64,7 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="container mx-auto">
-        <h1 className="text-3xl text-dbz-orange mb-4">{character.name}’s Stats</h1>
+        <h1 className="text-3xl mb-4">{character.name}’s Stats</h1>
 
         {/* Power Level */}
         <div className="bg-white p-6 rounded shadow-md mb-6">
