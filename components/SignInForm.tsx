@@ -22,16 +22,24 @@ export function SignInForm() {
     console.log('Password updated:', newPassword);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     console.log('Attempting sign in with endpoint:', window.location.origin + '/api/auth/callback/credentials');
-    console.log('Credentials being sent:', { email, password });
+    console.log('Credentials being sent from state:', { email, password });
+    
+    // Fallback to get values directly from form inputs in case state isn't updating
+    const form = e.currentTarget;
+    const formEmail = form.elements.namedItem('email') as HTMLInputElement;
+    const formPassword = form.elements.namedItem('password') as HTMLInputElement;
+    const directEmail = formEmail ? formEmail.value : '';
+    const directPassword = formPassword ? formPassword.value : '';
+    console.log('Credentials directly from form inputs:', { directEmail, directPassword });
 
     const result = await signIn('credentials', {
       redirect: false,
-      email,
-      password,
+      email: directEmail || email,
+      password: directPassword || password,
     });
 
     if (result?.error) {
