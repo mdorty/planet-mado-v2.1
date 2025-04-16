@@ -14,6 +14,7 @@ export function SignInForm() {
     e.preventDefault();
     setError('');
     console.log('Attempting sign in with endpoint:', window.location.origin + '/api/auth/callback/credentials');
+    console.log('Credentials being sent:', { email, password });
 
     const result = await signIn('credentials', {
       redirect: false,
