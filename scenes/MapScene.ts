@@ -52,20 +52,24 @@ export default class MapScene extends Phaser.Scene {
     this.input.on('pointerdown', this.handleClick, this);
 
     // Optionally set up keyboard input for debugging or alternative control
-    this.cursors = this.input.keyboard.createCursorKeys();
+    if (this.input.keyboard) {
+      this.cursors = this.input.keyboard.createCursorKeys();
+    } else {
+      console.warn('Keyboard input not available');
+    }
   }
 
   update() {
     // Handle keyboard input if needed for debugging
-    if (this.cursors.left.isDown) {
+    if (this.cursors && this.cursors.left.isDown) {
       this.player.x -= 5;
-    } else if (this.cursors.right.isDown) {
+    } else if (this.cursors && this.cursors.right.isDown) {
       this.player.x += 5;
     }
 
-    if (this.cursors.up.isDown) {
+    if (this.cursors && this.cursors.up.isDown) {
       this.player.y -= 5;
-    } else if (this.cursors.down.isDown) {
+    } else if (this.cursors && this.cursors.down.isDown) {
       this.player.y += 5;
     }
 
