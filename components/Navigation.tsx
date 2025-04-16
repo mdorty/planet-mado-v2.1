@@ -15,7 +15,7 @@ export function Navigation() {
   };
 
   return (
-    <Navbar className="p-4 shadow-md z-20" maxWidth="xl">
+    <Navbar className="p-4 shadow-md z-50" maxWidth="xl">
       <NavbarContent>
         <NavbarMenuToggle onClick={toggleMenu} className="md:hidden" />
         <NavbarBrand>
@@ -30,7 +30,7 @@ export function Navigation() {
                 The RPG
                 <svg className="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
               </button>
-              <div className="absolute z-30 border border-gray-200 rounded-lg shadow-lg hidden group-hover:block w-48 left-0 top-full opacity-100">
+              <div className="absolute top-10 left-0 right-0 bg-white shadow-lg rounded-b-lg z-50 hidden group-hover:block md:w-48 w-full opacity-100">
                 <Link href="/how-to-play" className="block px-4 py-2 hover:bg-gray-100 font-roboto">How to Play</Link>
                 <Link href="/races" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Races</Link>
                 <Link href="/planets" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Planets</Link>
@@ -90,7 +90,7 @@ export function Navigation() {
           )}
         </NavbarContent>
       </NavbarContent>
-      <NavbarMenu className={`md:hidden pt-4 pb-8 px-6 space-y-6 overflow-auto z-10 ${menuOpen ? 'block' : 'hidden'}`}> 
+      <NavbarMenu className={`bg-white z-50 opacity-100 pt-2 md:pt-0 overflow-y-auto max-h-[80vh] md:max-h-full ${menuOpen ? 'block' : 'hidden'}`}> 
         <NavbarMenuItem>
           <div className="relative group w-full">
             <button className="flex items-center justify-between w-full text-left font-roboto py-2 border-b border-gray-200">
