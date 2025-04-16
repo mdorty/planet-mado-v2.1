@@ -5,21 +5,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export function SignInForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    console.log('Attempting sign in with endpoint:', window.location.origin + '/api/auth/callback/credentials');
-    
-    // Get values directly from form inputs
-    const form = e.currentTarget;
-    const formEmail = form.elements.namedItem('email') as HTMLInputElement;
-    const formPassword = form.elements.namedItem('password') as HTMLInputElement;
-    const email = formEmail ? formEmail.value : '';
-    const password = formPassword ? formPassword.value : '';
-    console.log('Credentials directly from form inputs:', { email, password });
 
     const result = await signIn('credentials', {
       redirect: false,
@@ -44,6 +37,8 @@ export function SignInForm() {
         <input
           id="email"
           type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full p-2 border rounded"
           required
         />
@@ -55,6 +50,8 @@ export function SignInForm() {
         <input
           id="password"
           type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           className="w-full p-2 border rounded"
           required
         />
