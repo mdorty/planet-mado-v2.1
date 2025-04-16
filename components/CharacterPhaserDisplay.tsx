@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import Phaser from 'phaser';
-import MapScene from '../scenes/MapScene';
 
 export default function CharacterPhaserDisplay({ characterData }: { characterData: any }) {
-  const gameRef = useRef<Phaser.Game | null>(null);
+  const gameRef = useRef<any>(null);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -15,23 +13,29 @@ export default function CharacterPhaserDisplay({ characterData }: { characterDat
   useEffect(() => {
     if (!isClient) return; // Only proceed if on client-side
     
-    if (!gameRef.current) {
-      const config = {
-        type: Phaser.AUTO,
-        width: 800,
-        height: 600,
-        parent: 'phaser-game',
-        scene: [MapScene],
-        physics: {
-          default: 'arcade',
-          arcade: {
-            gravity: { x: 0, y: 0 },
-            debug: false
+    // Dynamically import Phaser and MapScene only when on client-side
+    Promise.all([
+      import('phaser'),
+      import('../scenes/MapScene')
+    ]).then(([Phaser, MapScene]) => {
+      if (!gameRef.current) {
+        const config = {
+          type: Phaser.AUTO,
+          width: 800,
+          height: 600,
+          parent: 'phaser-game',
+          scene: [MapScene.default],
+          physics: {
+            default: 'arcade',
+            arcade: {
+              gravity: { x: 0, y: 0 },
+              debug: false
+            }
           }
-        }
-      };
-      gameRef.current = new Phaser.Game(config);
-    }
+        };
+        gameRef.current = new Phaser.Game(config);
+      }
+    });
 
     return () => {
       if (gameRef.current) {
