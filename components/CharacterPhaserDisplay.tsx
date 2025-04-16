@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
 
 const CharacterPhaserDisplay = ({ characterData }: { characterData: { powerLevel: number; inventory: string[] } }) => {
-  const gameRef = useRef(null);
+  const gameRef = useRef<Phaser.Game | null>(null);
 
   useEffect(() => {
     if (!gameRef.current) {
