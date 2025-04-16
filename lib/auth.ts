@@ -135,6 +135,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const isValid = await bcrypt.compare(passwordInput, password);
         if (!isValid) {
           console.log('Invalid password for:', email);
+          console.log('Input password length:', passwordInput.length);
+          console.log('Stored password hash length:', password.length);
           return null;
         }
         console.log('Authentication successful for:', email);
