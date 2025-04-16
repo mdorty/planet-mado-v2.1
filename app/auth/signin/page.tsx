@@ -1,5 +1,6 @@
 import { SignInForm } from '../../../components/SignInForm';
 import { TestPasswordForm } from '../../../components/TestPasswordForm';
+import { ResetPasswordForm } from '../../../components/ResetPasswordForm';
 
 export default function SignInPage() {
   return (
@@ -13,6 +14,10 @@ export default function SignInPage() {
         <div>
           <h2 className="text-xl font-bold mb-4">Test Password Validation</h2>
           <TestPasswordForm />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold mb-4">Reset Password (Test)</h2>
+          <ResetPasswordForm />
         </div>
       </div>
     </div>
