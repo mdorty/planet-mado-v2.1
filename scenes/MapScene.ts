@@ -27,7 +27,7 @@ export default class MapScene extends Phaser.Scene {
     const tilesetImage = this.map.addTilesetImage('tiles');
     if (tilesetImage !== null) {
       this.tileset = tilesetImage;
-      const layerResult = this.map.createLayer(0, this.tileset, 0, 0);
+      const layerResult = this.map.createBlankLayer('layer1', this.tileset, 0, 0);
       if (layerResult !== null) {
         this.layer = layerResult as Phaser.Tilemaps.TilemapLayer;
       } else {
