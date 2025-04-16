@@ -1,4 +1,5 @@
 import { SignInForm } from '../../../components/SignInForm';
+import { ForgotPasswordForm } from '../../../components/ForgotPasswordForm';
 
 export default function SignInPage() {
   return (
@@ -8,6 +9,10 @@ export default function SignInPage() {
         <div>
           <h2 className="text-xl font-bold mb-4">Sign In Form</h2>
           <SignInForm />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold mb-4">Forgot Password?</h2>
+          <ForgotPasswordForm />
         </div>
       </div>
     </div>

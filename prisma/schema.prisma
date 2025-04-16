@@ -16,6 +16,7 @@ model User {
   characters Character[]
   accounts  Account[]  @relation("UserToAccount")
   sessions  Session[]  @relation("UserToSession")
+  resetTokens PasswordResetToken[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -123,4 +124,14 @@ model Map {
   name        String
   description String?
   createdAt   DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([userId])
 }
