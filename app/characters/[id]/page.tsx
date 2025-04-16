@@ -4,8 +4,9 @@ import { useSession } from 'next-auth/react';
 import { trpc } from '@/lib/trpc/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Card, CardHeader, CardBody } from '@heroui/react';
+import CharacterPhaserDisplay from '../../../components/CharacterPhaserDisplay';
 
 export default function CharacterDetailPage({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
@@ -14,6 +15,8 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
     { id: params.id },
     { enabled: !!session?.user?.id }
   );
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -255,6 +258,25 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
                   </div>
                 )}
               </div>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-roboto font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                View Power & Inventory
+              </button>
+              {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden">
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    <CharacterPhaserDisplay characterData={character} />
+                    <button
+                      onClick={() => setIsModalOpen(false)}
+                      className="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-white font-roboto font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
               {session?.user?.role === 'admin' && (
                 <div className="mt-6">
                   <Link href={`/admin/characters/edit/${character.id}`}>
