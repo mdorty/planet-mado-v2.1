@@ -3,8 +3,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 export default function CharacterPhaserDisplay({ characterData, mapData }: { characterData: any, mapData: any }) {
-  const gameRef = useRef<any>(null);
   const [isClient, setIsClient] = useState(false);
+  const gameRef = useRef<Phaser.Game | null>(null);
+
+  console.log('CharacterPhaserDisplay received mapData:', mapData);
 
   useEffect(() => {
     setIsClient(true);

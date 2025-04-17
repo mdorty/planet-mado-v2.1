@@ -22,26 +22,24 @@ async function main() {
     });
     console.log('Admin user seeded successfully');
 
-    // Seed a default map entry
-    await prisma.map.upsert({
-      where: { id: 1 },
-      update: {
-        name: 'Default Map',
-        description: 'A default map for the DBZ RPG',
-        xCoord: 0,
-        yCoord: 0,
-        tileImage: '/assets/tiles.jpg',
-      },
-      create: {
-        id: 1,
-        name: 'Default Map',
-        description: 'A default map for the DBZ RPG',
-        xCoord: 0,
-        yCoord: 0,
-        tileImage: '/assets/tiles.jpg',
-      },
+    // Seed map entries for a 10x10 grid
+    const mapEntries = [];
+    for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
+        mapEntries.push({
+          name: `Map Tile (${x}, ${y})`,
+          description: `Tile at position (${x}, ${y})`,
+          xCoord: x,
+          yCoord: y,
+          tileImage: 'https://game.planetmado.com/assets/tiles.jpg',
+        });
+      }
+    }
+    await prisma.map.createMany({
+      data: mapEntries,
+      skipDuplicates: true,
     });
-    console.log('Default map seeded successfully');
+    console.log('10x10 grid of map tiles seeded successfully');
   } catch (error) {
     console.error('Seeding failed:', error);
     process.exit(1);
