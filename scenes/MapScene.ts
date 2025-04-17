@@ -71,12 +71,8 @@ export default class MapScene extends Phaser.Scene {
 
     // Create player sprite
     const characterData = this.registry.get('characterData');
-    let playerX = 1 * 32 + 16; // Center of 3x3 grid
-    let playerY = 1 * 32 + 16; // Center of 3x3 grid
-    if (characterData) {
-      playerX = characterData.x || playerX;
-      playerY = characterData.y || playerY;
-    }
+    let playerX = (characterData.xCoord || 1) * 32 + 16; // Center of 3x3 grid
+    let playerY = (characterData.yCoord || 1) * 32 + 16; // Center of 3x3 grid
     this.player = this.add.sprite(playerX, playerY, 'player');
     this.player.setScale(0.5);
     this.player.setDepth(1); // Ensure player is above tiles
@@ -132,7 +128,18 @@ export default class MapScene extends Phaser.Scene {
         x: tileX * 32 + 16,
         y: tileY * 32 + 16,
         duration: 200,
-        ease: 'Power1'
+        ease: 'Power1',
+        onComplete: () => {
+          // Update character data with new coordinates - this would need to be saved to DB via API call
+          const characterData = this.registry.get('characterData');
+          if (characterData) {
+            characterData.xCoord = tileX;
+            characterData.yCoord = tileY;
+            this.registry.set('characterData', characterData);
+            // Note: An API call or event should be triggered here to save to database
+            console.log(`Updated player position to (${tileX}, ${tileY})`);
+          }
+        }
       });
       // Camera will follow player in update method
     }
