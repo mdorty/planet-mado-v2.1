@@ -281,8 +281,8 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
               )}
               {session?.user?.role === 'admin' && (
                 <div className="mt-6">
-                  <Link href={`/admin/characters/edit/${character.id}`}>
-                    <Button variant="solid" className="bg-blue-600 text-white hover:bg-blue-700 font-roboto font-medium">
+                  <Link href={`/admin/characters`}>
+                    <Button variant="bordered" className="bg-orange-500 hover:bg-orange-600 text-white font-roboto">
                       Edit Character
                     </Button>
                   </Link>
