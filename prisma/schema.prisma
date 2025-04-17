@@ -8,23 +8,22 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  username  String     @unique
-  email     String     @unique
-  password  String
-  role      String     @default("user") // Added: user or admin
-  characters Character[]
-  accounts  Account[]  @relation("UserToAccount")
-  sessions  Session[]  @relation("UserToSession")
+  id          String               @id @default(uuid())
+  username    String               @unique
+  email       String               @unique
+  password    String
+  role        String               @default("user")
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  accounts    Account[]            @relation("UserToAccount")
+  characters  Character[]
   resetTokens PasswordResetToken[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  sessions    Session[]            @relation("UserToSession")
 }
 
 model Account {
   id                String   @id @default(uuid())
   userId            String
-  user              User     @relation("UserToAccount", fields: [userId], references: [id], onDelete: Cascade)
   type              String
   provider          String
   providerAccountId String
@@ -37,6 +36,7 @@ model Account {
   session_state     String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  user              User     @relation("UserToAccount", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -45,84 +45,87 @@ model Session {
   id           String   @id @default(uuid())
   sessionToken String   @unique
   userId       String
-  user         User     @relation("UserToSession", fields: [userId], references: [id], onDelete: Cascade)
   expires      DateTime
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  user         User     @relation("UserToSession", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Character {
-  id                  String   @id @default(uuid())
+  id                  String    @id @default(uuid())
   userId              String
-  user                User     @relation(fields: [userId], references: [id])
   name                String
-  level               Int      @default(1)
-  health              Int      @default(100)
-  energy              Int      @default(50)
-  strength            Int      @default(10)
-  speed               Int      @default(10)
-  currentPowerlevel   Int      @default(1000)
-  hiddenPowerlevel    Int?     @default(0)
-  basePowerlevel      Int      @default(1000)
-  race                String   @default("Unknown")
+  level               Int       @default(1)
+  health              Int       @default(100)
+  energy              Int       @default(50)
+  strength            Int       @default(10)
+  speed               Int       @default(10)
+  currentPowerlevel   Int       @default(1000)
+  hiddenPowerlevel    Int?      @default(0)
+  basePowerlevel      Int       @default(1000)
+  race                String    @default("Unknown")
   planet              String?
-  alignment           Int      @default(0)
+  alignment           Int       @default(0)
   description         String?
-  equippedItems       String?  @default("None")
-  items               String?  @default("None")
-  peopleYouHaveBeenTo String?  @default("None")
+  equippedItems       String?   @default("None")
+  items               String?   @default("None")
+  peopleYouHaveBeenTo String?   @default("None")
   jobs                String?
   died                DateTime?
-  deathCount          Int?     @default(0)
+  deathCount          Int?      @default(0)
   lastDateTrained     DateTime?
   lastDateMeditated   DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  battles             Battle[]  @relation("CharacterToBattle")
+  user                User      @relation(fields: [userId], references: [id])
+  itemsOwned          Item[]    @relation("CharacterToItem")
   moves               Move[]
-  itemsOwned          Item[]   @relation("CharacterToItem")
-  battles             Battle[] @relation("CharacterToBattle")
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
 }
 
 model Move {
-  id                String    @id @default(uuid())
-  characterId       String
-  character         Character @relation(fields: [characterId], references: [id])
-  name              String
-  category          String
-  description       String
-  percentDamage     Int?
-  percentCost       Int?
-  chargeable        Boolean?  @default(false)
-  stunTurns         Int?
-  stunChancePercent Int?
+  id                   String    @id @default(uuid())
+  characterId          String
+  name                 String
+  category             String
+  description          String
+  percentDamage        Int?
+  percentCost          Int?
+  chargeable           Boolean?  @default(false)
+  stunTurns            Int?
+  stunChancePercent    Int?
   powerlevelMultiplier Float?
-  createdAt         DateTime  @default(now())
+  createdAt            DateTime  @default(now())
+  character            Character @relation(fields: [characterId], references: [id])
 }
 
 model Item {
   id          String    @id @default(uuid())
   characterId String
-  character   Character @relation("CharacterToItem", fields: [characterId], references: [id], onDelete: Cascade)
   name        String
   type        String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  character   Character @relation("CharacterToItem", fields: [characterId], references: [id], onDelete: Cascade)
 }
 
 model Battle {
   id          String    @id @default(uuid())
   characterId String
-  character   Character @relation("CharacterToBattle", fields: [characterId], references: [id], onDelete: Cascade)
   opponentId  String?
   outcome     String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  character   Character @relation("CharacterToBattle", fields: [characterId], references: [id], onDelete: Cascade)
 }
 
 model Map {
   id          Int      @id @default(autoincrement())
   name        String
   description String?
+  xCoord      Int?
+  yCoord      Int?
+  tileImage   String?
   createdAt   DateTime @default(now())
 }
 
@@ -130,8 +133,9 @@ model PasswordResetToken {
   id        String   @id @default(cuid())
   token     String   @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }
