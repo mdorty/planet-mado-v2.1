@@ -7,6 +7,7 @@ import Phaser from 'phaser';
 export default class MapScene extends Phaser.Scene {
   private player!: Phaser.GameObjects.Sprite;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private tileGrid: Phaser.GameObjects.TileSprite[][] = [];
   private map!: Phaser.Tilemaps.Tilemap;
   private tileset!: Phaser.Tilemaps.Tileset;
   private layer!: Phaser.Tilemaps.TilemapLayer;
@@ -38,7 +39,7 @@ export default class MapScene extends Phaser.Scene {
     }
 
     // Create a small map centered on the player
-    this.map = [];
+    this.tileGrid = [];
     for (let y = yCoord - 1; y <= yCoord + 1; y++) {
       const row = [];
       for (let x = xCoord - 1; x <= xCoord + 1; x++) {
@@ -52,7 +53,7 @@ export default class MapScene extends Phaser.Scene {
         row.push(tile);
         console.log(`Created tile at (${x}, ${y}) with index ${tileIndex}`);
       }
-      this.map.push(row);
+      this.tileGrid.push(row);
     }
 
     const characterData = this.registry.get('characterData');
