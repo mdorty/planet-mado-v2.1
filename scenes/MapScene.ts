@@ -7,7 +7,7 @@ import Phaser from 'phaser';
 export default class MapScene extends Phaser.Scene {
   private player!: Phaser.GameObjects.Sprite;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private tileGrid: Phaser.GameObjects.TileSprite[][] = [];
+  private tileGrid: Phaser.GameObjects.Image[][] = [];
   private map!: Phaser.Tilemaps.Tilemap;
   private tileset!: Phaser.Tilemaps.Tileset;
   private layer!: Phaser.Tilemaps.TilemapLayer;
