@@ -30,17 +30,33 @@ export default class MapScene extends Phaser.Scene {
       const layerResult = this.map.createBlankLayer('layer1', this.tileset, 0, 0);
       if (layerResult !== null) {
         this.layer = layerResult as Phaser.Tilemaps.TilemapLayer;
+        // Fill the layer with a default tile index to ensure tiles are displayed
+        for (let y = 0; y < 20; y++) {
+          for (let x = 0; x < 20; x++) {
+            this.layer.putTileAt(0, x, y);
+          }
+        }
       } else {
         console.error('Failed to create layer');
         // Use a type assertion to ensure TypeScript knows this will be non-null
         this.layer = this.map.createBlankLayer('fallback', this.tileset, 0, 0) as Phaser.Tilemaps.TilemapLayer;
+        // Fill the fallback layer with a default tile index
+        for (let y = 0; y < 20; y++) {
+          for (let x = 0; x < 20; x++) {
+            this.layer.putTileAt(0, x, y);
+          }
+        }
       }
     } else {
-      console.error('Failed to load tileset image');
-      // @ts-ignore: Suppress TypeScript error about potential null value
-      this.tileset = this.map.addTilesetImage('fallback') as Phaser.Tilemaps.Tileset;
-      // @ts-ignore: Suppress TypeScript error about potential null value
+      console.error('Failed to add tileset image');
+      // Fallback to a blank layer if tileset fails
       this.layer = this.map.createBlankLayer('fallback', this.tileset, 0, 0) as Phaser.Tilemaps.TilemapLayer;
+      // Fill the fallback layer with a default tile index
+      for (let y = 0; y < 20; y++) {
+        for (let x = 0; x < 20; x++) {
+          this.layer.putTileAt(0, x, y);
+        }
+      }
     }
 
     // Set up the player
