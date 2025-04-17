@@ -29,22 +29,34 @@ export default class MapScene extends Phaser.Scene {
   }
 
   create() {
-    let xCoord = 1;
-    let yCoord = 1;
+    let xCoord = 2;
+    let yCoord = 2;
     const mapData = this.registry.get('mapData');
     console.log('MapScene create, mapData:', mapData);
     if (mapData) {
-      xCoord = mapData.xCoord || 0;
-      yCoord = mapData.yCoord || 0;
+      xCoord = mapData.xCoord || 2;
+      yCoord = mapData.yCoord || 2;
     }
 
-    // Create a small map centered on the player
+    // Create a 5x5 map centered on the player
     this.tileGrid = [];
-    for (let y = yCoord - 1; y <= yCoord + 1; y++) {
+    const layout = [
+      [1, 0, 1, 0, 1],
+      [0, 0, 0, 0, 0],
+      [1, 0, 1, 0, 1],
+      [0, 0, 0, 0, 0],
+      [1, 0, 1, 0, 1]
+    ];
+    for (let y = yCoord - 2; y <= yCoord + 2; y++) {
       const row = [];
-      for (let x = xCoord - 1; x <= xCoord + 1; x++) {
-        // Use a default tile index or fetch from mapData if available
+      for (let x = xCoord - 2; x <= xCoord + 2; x++) {
+        // Use the layout array to determine tile presence
         let tileIndex = 0;
+        const layoutY = (y - (yCoord - 2));
+        const layoutX = (x - (xCoord - 2));
+        if (layoutY >= 0 && layoutY < 5 && layoutX >= 0 && layoutX < 5) {
+          tileIndex = layout[layoutY][layoutX];
+        }
         if (mapData && mapData.tiles && mapData.tiles[y] && mapData.tiles[y][x]) {
           tileIndex = mapData.tiles[y][x];
         }
@@ -57,8 +69,8 @@ export default class MapScene extends Phaser.Scene {
     }
 
     const characterData = this.registry.get('characterData');
-    let playerX = (characterData.xCoord || 1) * 32 + 16; // Center of 3x3 grid
-    let playerY = (characterData.yCoord || 1) * 32 + 16; // Center of 3x3 grid
+    let playerX = (characterData.xCoord || 2) * 32 + 16; // Center of 5x5 grid
+    let playerY = (characterData.yCoord || 2) * 32 + 16; // Center of 5x5 grid
     console.log('Player position:', { x: playerX, y: playerY, xCoord: characterData.xCoord, yCoord: characterData.yCoord });
 
     this.player = this.add.sprite(playerX, playerY, 'player', 0);
