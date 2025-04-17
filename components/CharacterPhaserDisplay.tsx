@@ -31,6 +31,10 @@ export default function CharacterPhaserDisplay({ characterData }: { characterDat
               gravity: { x: 0, y: 0 },
               debug: false
             }
+          },
+          render: {
+            preserveDrawingBuffer: true,
+            premultipliedAlpha: false
           }
         };
         gameRef.current = new Phaser.Game(config);
