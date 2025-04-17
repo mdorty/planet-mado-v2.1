@@ -125,9 +125,7 @@ export default class MapScene extends Phaser.Scene {
         duration: 200,
         ease: 'Power1'
       });
-      // Update the map view to shift with player movement
-      // This is a simple approach - in a real game you'd load new map data
-      this.map.shiftTiles(0, 0);
+      // Camera will follow player in update method
     }
   }
 }
