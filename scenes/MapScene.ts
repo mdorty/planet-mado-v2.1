@@ -82,7 +82,7 @@ export default class MapScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player);
 
     // Set up input for movement
-    if (this.input.keyboard) {
+    if (this.input.keyboard !== null && this.input.keyboard !== undefined) {
       this.cursors = this.input.keyboard.createCursorKeys();
     } else {
       console.warn('Keyboard input not available');
