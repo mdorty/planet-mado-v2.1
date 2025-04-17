@@ -52,35 +52,37 @@ model Session {
 }
 
 model Character {
-  id                  String    @id @default(uuid())
-  userId              String
-  name                String
-  level               Int       @default(1)
-  health              Int       @default(100)
-  energy              Int       @default(50)
-  strength            Int       @default(10)
-  speed               Int       @default(10)
-  currentPowerlevel   Int       @default(1000)
-  hiddenPowerlevel    Int?      @default(0)
-  basePowerlevel      Int       @default(1000)
-  race                String    @default("Unknown")
-  planet              String?
-  alignment           Int       @default(0)
-  description         String?
-  equippedItems       String?   @default("None")
-  items               String?   @default("None")
-  peopleYouHaveBeenTo String?   @default("None")
-  jobs                String?
-  died                DateTime?
-  deathCount          Int?      @default(0)
-  lastDateTrained     DateTime?
-  lastDateMeditated   DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  battles             Battle[]  @relation("CharacterToBattle")
-  user                User      @relation(fields: [userId], references: [id])
-  itemsOwned          Item[]    @relation("CharacterToItem")
-  moves               Move[]
+  id                 String   @id @default(cuid())
+  userId             String
+  name               String
+  level              Int      @default(1)
+  health             Int      @default(100)
+  energy             Int      @default(50)
+  strength           Int      @default(10)
+  speed              Int      @default(10)
+  currentPowerlevel  Int      @default(1000)
+  hiddenPowerlevel   Int?     @default(0)
+  basePowerlevel     Int      @default(1000)
+  race               String   @default("Unknown")
+  planet             String?
+  alignment          Int      @default(0)
+  description        String?
+  equippedItems      String?  @default("None")
+  items              String?  @default("None")
+  peopleYouHaveBeenTo String? @default("None")
+  jobs               String?
+  died               DateTime?
+  deathCount         Int?     @default(0)
+  lastDateTrained    DateTime?
+  lastDateMeditated  DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id])
+  xCoord             Int      @default(1) 
+  yCoord             Int      @default(1) 
+  battles            Battle[] @relation("CharacterToBattle")
+  itemsOwned         Item[]   @relation("CharacterToItem")
+  moves              Move[]
 }
 
 model Move {

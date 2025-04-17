@@ -48,12 +48,20 @@ export default class MapScene extends Phaser.Scene {
       const layerResult = this.map.createBlankLayer('layer1', this.tileset, xCoord, yCoord);
       if (layerResult !== null) {
         this.layer = layerResult as Phaser.Tilemaps.TilemapLayer;
-        // Fill the 3x3 grid with tiles
+        // Fill the 3x3 grid with tiles - using tile index 0 or 1 based on available data
         for (let y = 0; y < 3; y++) {
           for (let x = 0; x < 3; x++) {
-            this.layer.putTileAt(1, x, y);
+            // Use a default tile index or fetch from mapData if available
+            let tileIndex = 1;
+            if (mapData && mapData.tiles && mapData.tiles[y] && mapData.tiles[y][x]) {
+              tileIndex = mapData.tiles[y][x];
+            }
+            this.layer.putTileAt(tileIndex, x, y);
           }
         }
+        // Ensure the layer is visible
+        this.layer.setDepth(0);
+        this.layer.setVisible(true);
       } else {
         console.error('Failed to create tilemap layer');
       }
@@ -71,6 +79,7 @@ export default class MapScene extends Phaser.Scene {
     }
     this.player = this.add.sprite(playerX, playerY, 'player');
     this.player.setScale(0.5);
+    this.player.setDepth(1); // Ensure player is above tiles
     this.physics.add.existing(this.player);
 
     // Set up camera to focus tightly on the 3x3 grid
