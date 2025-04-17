@@ -68,9 +68,9 @@ export default function AdminPage() {
               </CardHeader>
               <CardBody>
                 <p className="font-roboto text-gray-600 mb-4">Edit site content, announcements, or rules.</p>
-                <Link href="/admin/content">
+                <Link href="/admin/maps">
                   <Button variant="solid" className="bg-blue-600 text-white hover:bg-blue-700 font-roboto font-medium">
-                    Go to Content
+                    Go to Maps
                   </Button>
                 </Link>
               </CardBody>

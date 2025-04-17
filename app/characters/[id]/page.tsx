@@ -11,21 +11,22 @@ import CharacterPhaserDisplay from '../../../components/CharacterPhaserDisplay';
 export default function CharacterDetailPage({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { data: character, error, isLoading } = trpc.character.getById.useQuery(
+  const { data: character, isLoading: characterLoading, error: characterError } = trpc.character.getById.useQuery(
     { id: params.id },
     { enabled: !!session?.user?.id }
   );
+  const { data: maps } = (trpc as any).map.getMaps.useQuery();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (error) {
-      console.error('Error fetching character:', error);
+    if (characterError) {
+      console.error('Error fetching character:', characterError);
       router.push('/characters');
     }
-  }, [error, router]);
+  }, [characterError, router]);
 
-  if (status === 'loading' || isLoading) {
+  if (status === 'loading' || characterLoading) {
     return <div className="text-center">Loading...</div>;
   }
 
@@ -59,12 +60,17 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
   const circleCircumference = 440;
   const strokeDashoffset = circleCircumference - (circleCircumference * percentage / 100);
 
-  // Categorize moves
-  const categorizedMoves = character.moves.reduce((acc, move) => {
-    acc[move.category] = acc[move.category] || [];
+  // Group moves by category
+  const movesByCategory = character.moves.reduce((acc, move) => {
+    if (!acc[move.category]) {
+      acc[move.category] = [];
+    }
     acc[move.category].push(move);
     return acc;
   }, {} as Record<string, typeof character.moves>);
+
+  // Find a map associated with this character or use a default map
+  const characterMap = maps?.find((map: any) => map.name.includes(character.name)) || maps?.[0];
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -154,9 +160,9 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
               </div>
               <div>
                 <h3 className="text-xl font-anton mb-2">Attacks & Abilities</h3>
-                {Object.keys(categorizedMoves).length > 0 && (
+                {Object.keys(movesByCategory).length > 0 && (
                   <div>
-                    {Object.entries(categorizedMoves).map(([category, moves]) => (
+                    {Object.entries(movesByCategory).map(([category, moves]) => (
                       <div key={category}>
                         <h4 className="text-lg mt-4">{category}</h4>
                         {moves.length > 3 ? (
@@ -268,8 +274,7 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
               {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden">
                   <div className="relative w-full h-full flex items-center justify-center">
-                    {/* Note: inventory is not part of character data model yet, providing empty array as fallback */}
-                    <CharacterPhaserDisplay characterData={{ powerLevel: character.currentPowerlevel, inventory: [] }} />
+                    <CharacterPhaserDisplay characterData={{ powerLevel: character.currentPowerlevel, inventory: [] }} mapData={characterMap} />
                     <button
                       onClick={() => setIsModalOpen(false)}
                       className="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-white font-roboto font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out"

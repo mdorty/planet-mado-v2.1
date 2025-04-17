@@ -30,9 +30,12 @@ export const mapRouter = router({
   createMap: procedure
     .input(z.object({
       name: z.string(),
-      description: z.string().optional()
+      description: z.string().optional(),
+      xCoord: z.number().optional(),
+      yCoord: z.number().optional(),
+      tileImage: z.string().optional()
     }))
-    .mutation(async ({ input }: { input: { name: string; description?: string } }) => {
+    .mutation(async ({ input }: { input: { name: string; description?: string; xCoord?: number; yCoord?: number; tileImage?: string } }) => {
       try {
         if (!prisma.map) {
           throw new Error('Unable to create map: Database client needs to be updated. Please contact the administrator or run "npx prisma generate" to update the client.');
@@ -40,7 +43,10 @@ export const mapRouter = router({
         return await prisma.map.create({
           data: {
             name: input.name,
-            description: input.description
+            description: input.description,
+            xCoord: input.xCoord,
+            yCoord: input.yCoord,
+            tileImage: input.tileImage
           }
         });
       } catch (error: unknown) {
@@ -53,9 +59,12 @@ export const mapRouter = router({
     .input(z.object({
       id: z.number(),
       name: z.string(),
-      description: z.string().optional()
+      description: z.string().optional(),
+      xCoord: z.number().optional(),
+      yCoord: z.number().optional(),
+      tileImage: z.string().optional()
     }))
-    .mutation(async ({ input }: { input: { id: number; name: string; description?: string } }) => {
+    .mutation(async ({ input }: { input: { id: number; name: string; description?: string; xCoord?: number; yCoord?: number; tileImage?: string } }) => {
       try {
         if (!prisma.map) {
           throw new Error('Unable to update map: Database client needs to be updated. Please contact the administrator or run "npx prisma generate" to update the client.');
@@ -64,7 +73,10 @@ export const mapRouter = router({
           where: { id: input.id },
           data: {
             name: input.name,
-            description: input.description
+            description: input.description,
+            xCoord: input.xCoord,
+            yCoord: input.yCoord,
+            tileImage: input.tileImage
           }
         });
       } catch (error: unknown) {

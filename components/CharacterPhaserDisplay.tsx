@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-export default function CharacterPhaserDisplay({ characterData }: { characterData: any }) {
+export default function CharacterPhaserDisplay({ characterData, mapData }: { characterData: any, mapData: any }) {
   const gameRef = useRef<any>(null);
   const [isClient, setIsClient] = useState(false);
 
@@ -38,6 +38,9 @@ export default function CharacterPhaserDisplay({ characterData }: { characterDat
           }
         };
         gameRef.current = new Phaser.Game(config);
+        // Set data in registry after game is created
+        gameRef.current.registry.set('characterData', characterData);
+        gameRef.current.registry.set('mapData', mapData);
       }
     });
 
@@ -47,7 +50,7 @@ export default function CharacterPhaserDisplay({ characterData }: { characterDat
         gameRef.current = null;
       }
     };
-  }, [characterData, isClient]);
+  }, [characterData, mapData, isClient]);
 
   return <div id="phaser-game" style={{ width: '800px', height: '600px' }} />;
 };

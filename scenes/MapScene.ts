@@ -17,17 +17,29 @@ export default class MapScene extends Phaser.Scene {
 
   preload() {
     // Load assets if necessary
-    this.load.image('tiles', '/assets/tiles.jpg');
+    const mapData = this.registry.get('mapData');
+    if (mapData && mapData.tileImage) {
+      this.load.image('tiles', mapData.tileImage);
+    } else {
+      this.load.image('tiles', '/assets/tiles.jpg');
+    }
     this.load.image('player', '/assets/player.jpg');
   }
 
   create() {
     // Create the map
+    const mapData = this.registry.get('mapData');
+    let xCoord = 0;
+    let yCoord = 0;
+    if (mapData) {
+      xCoord = mapData.xCoord || 0;
+      yCoord = mapData.yCoord || 0;
+    }
     this.map = this.make.tilemap({ width: 20, height: 20, tileWidth: 32, tileHeight: 32 });
     const tilesetImage = this.map.addTilesetImage('tiles');
     if (tilesetImage !== null) {
       this.tileset = tilesetImage;
-      const layerResult = this.map.createBlankLayer('layer1', this.tileset, 0, 0);
+      const layerResult = this.map.createBlankLayer('layer1', this.tileset, xCoord, yCoord);
       if (layerResult !== null) {
         this.layer = layerResult as Phaser.Tilemaps.TilemapLayer;
         // Fill the layer with a default tile index to ensure tiles are displayed
@@ -39,7 +51,7 @@ export default class MapScene extends Phaser.Scene {
       } else {
         console.error('Failed to create layer');
         // Use a type assertion to ensure TypeScript knows this will be non-null
-        this.layer = this.map.createBlankLayer('fallback', this.tileset, 0, 0) as Phaser.Tilemaps.TilemapLayer;
+        this.layer = this.map.createBlankLayer('fallback', this.tileset, xCoord, yCoord) as Phaser.Tilemaps.TilemapLayer;
         // Fill the fallback layer with a default tile index
         for (let y = 0; y < 20; y++) {
           for (let x = 0; x < 20; x++) {
@@ -49,8 +61,9 @@ export default class MapScene extends Phaser.Scene {
       }
     } else {
       console.error('Failed to add tileset image');
-      // Fallback to a blank layer if tileset fails
-      this.layer = this.map.createBlankLayer('fallback', this.tileset, 0, 0) as Phaser.Tilemaps.TilemapLayer;
+      // Fallback
+      this.tileset = this.map.addTilesetImage('tiles') as Phaser.Tilemaps.Tileset;
+      this.layer = this.map.createBlankLayer('fallback', this.tileset, xCoord, yCoord) as Phaser.Tilemaps.TilemapLayer;
       // Fill the fallback layer with a default tile index
       for (let y = 0; y < 20; y++) {
         for (let x = 0; x < 20; x++) {
@@ -59,38 +72,43 @@ export default class MapScene extends Phaser.Scene {
       }
     }
 
-    // Set up the player
-    this.player = this.add.sprite(100, 100, 'player');
+    // Create player sprite at the center of the map
+    this.player = this.add.sprite(400, 300, 'player');
     this.player.setScale(0.5);
-    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+    this.physics.add.existing(this.player);
+    (this.player.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
 
-    // Set up input for clicking
+    // Set up camera to follow the player
+    this.cameras.main.startFollow(this.player);
+
+    // Set up input for movement
+    this.cursors = this.input.keyboard.createCursorKeys();
     this.input.on('pointerdown', this.handleClick, this);
-
-    // Optionally set up keyboard input for debugging or alternative control
-    if (this.input.keyboard) {
-      this.cursors = this.input.keyboard.createCursorKeys();
-    } else {
-      console.warn('Keyboard input not available');
-    }
   }
 
   update() {
-    // Handle keyboard input if needed for debugging
-    if (this.cursors && this.cursors.left.isDown) {
-      this.player.x -= 5;
-    } else if (this.cursors && this.cursors.right.isDown) {
-      this.player.x += 5;
+    // Handle keyboard input for movement (for debugging or alternative control)
+    if (this.cursors.left.isDown) {
+      if (this.player.body) {
+        (this.player.body as Phaser.Physics.Arcade.Body).setVelocityX(-100);
+      }
+    } else if (this.cursors.right.isDown) {
+      if (this.player.body) {
+        (this.player.body as Phaser.Physics.Arcade.Body).setVelocityX(100);
+      }
+    } else if (this.cursors.up.isDown) {
+      if (this.player.body) {
+        (this.player.body as Phaser.Physics.Arcade.Body).setVelocityY(-100);
+      }
+    } else if (this.cursors.down.isDown) {
+      if (this.player.body) {
+        (this.player.body as Phaser.Physics.Arcade.Body).setVelocityY(100);
+      }
+    } else {
+      if (this.player.body) {
+        (this.player.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+      }
     }
-
-    if (this.cursors && this.cursors.up.isDown) {
-      this.player.y -= 5;
-    } else if (this.cursors && this.cursors.down.isDown) {
-      this.player.y += 5;
-    }
-
-    // No need to check for null since we've used definite assignment
-    // Add any layer-specific updates here if needed
   }
 
   private handleClick(pointer: Phaser.Input.Pointer) {
