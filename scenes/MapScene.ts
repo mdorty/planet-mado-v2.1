@@ -16,89 +16,61 @@ export default class MapScene extends Phaser.Scene {
   }
 
   preload() {
-    // Load assets if necessary
+    this.load.spritesheet('player', '/assets/vegeta.png', { frameWidth: 32, frameHeight: 32 });
     const mapData = this.registry.get('mapData');
     if (mapData && mapData.tileImage) {
+      console.log('Loading tile image from:', mapData.tileImage);
       this.load.image('tiles', mapData.tileImage);
     } else {
-      this.load.image('tiles', '/assets/tiles.jpg');
-    }
-    const characterData = this.registry.get('characterData');
-    if (characterData && characterData.playerImage) {
-      this.load.image('player', characterData.playerImage);
-    } else {
-      this.load.image('player', '/assets/player.jpg');
+      console.log('No tile image found in mapData, using default placeholder');
+      this.load.image('tiles', '/assets/placeholder.png');
     }
   }
 
   create() {
-    // Create the map
+    let xCoord = 1;
+    let yCoord = 1;
     const mapData = this.registry.get('mapData');
-    let xCoord = 0;
-    let yCoord = 0;
+    console.log('MapScene create, mapData:', mapData);
     if (mapData) {
       xCoord = mapData.xCoord || 0;
       yCoord = mapData.yCoord || 0;
     }
-    // Create a smaller map view focused on player - 3x3 grid (player + 8 adjacent tiles)
-    this.map = this.make.tilemap({ width: 3, height: 3, tileWidth: 32, tileHeight: 32 });
-    const tilesetImage = this.map.addTilesetImage('tiles');
-    if (tilesetImage !== null) {
-      this.tileset = tilesetImage;
-      const layerResult = this.map.createBlankLayer('layer1', this.tileset, xCoord, yCoord);
-      if (layerResult !== null) {
-        this.layer = layerResult as Phaser.Tilemaps.TilemapLayer;
-        // Fill the 3x3 grid with tiles - using tile index 0 or 1 based on available data
-        for (let y = 0; y < 3; y++) {
-          for (let x = 0; x < 3; x++) {
-            // Use a default tile index or fetch from mapData if available
-            let tileIndex = 1;
-            if (mapData && mapData.tiles && mapData.tiles[y] && mapData.tiles[y][x]) {
-              tileIndex = mapData.tiles[y][x];
-            }
-            this.layer.putTileAt(tileIndex, x, y);
-          }
+
+    // Create a small map centered on the player
+    this.map = [];
+    for (let y = yCoord - 1; y <= yCoord + 1; y++) {
+      const row = [];
+      for (let x = xCoord - 1; x <= xCoord + 1; x++) {
+        // Use a default tile index or fetch from mapData if available
+        let tileIndex = 0;
+        if (mapData && mapData.tiles && mapData.tiles[y] && mapData.tiles[y][x]) {
+          tileIndex = mapData.tiles[y][x];
         }
-        // Ensure the layer is visible
-        this.layer.setDepth(0);
-        this.layer.setVisible(true);
-      } else {
-        console.error('Failed to create tilemap layer');
+        const tile = this.add.tileSprite(x * 32 + 16, y * 32 + 16, 32, 32, 'tiles', tileIndex);
+        tile.setDepth(0);
+        row.push(tile);
+        console.log(`Created tile at (${x}, ${y}) with index ${tileIndex}`);
       }
-    } else {
-      console.error('Tileset image not found');
+      this.map.push(row);
     }
 
-    // Create player sprite
     const characterData = this.registry.get('characterData');
     let playerX = (characterData.xCoord || 1) * 32 + 16; // Center of 3x3 grid
     let playerY = (characterData.yCoord || 1) * 32 + 16; // Center of 3x3 grid
-    this.player = this.add.sprite(playerX, playerY, 'player');
-    this.player.setScale(0.5);
-    this.player.setDepth(1); // Ensure player is above tiles
-    this.physics.add.existing(this.player);
+    console.log('Player position:', { x: playerX, y: playerY, xCoord: characterData.xCoord, yCoord: characterData.yCoord });
 
-    // Set up camera to focus tightly on the 3x3 grid
-    this.cameras.main.setSize(96, 96); // 3 tiles x 32 pixels
-    this.cameras.main.centerOn(playerX, playerY);
-    this.cameras.main.setBounds(0, 0, 96, 96);
+    this.player = this.add.sprite(playerX, playerY, 'player', 0);
+    this.player.setDepth(1);
 
-    // Set up input for movement
-    if (this.input.keyboard !== null && this.input.keyboard !== undefined) {
-      this.cursors = this.input.keyboard.createCursorKeys();
-    } else {
-      console.warn('Keyboard input not available');
-      // Initialize cursors with a dummy object to prevent null checks elsewhere
-      this.cursors = {
-        up: { isDown: false },
-        down: { isDown: false },
-        left: { isDown: false },
-        right: { isDown: false },
-        space: { isDown: false },
-        shift: { isDown: false }
-      } as Phaser.Types.Input.Keyboard.CursorKeys;
-    }
-    this.input.on('pointerdown', this.handleClick, this);
+    this.anims.create({
+      key: 'walk',
+      frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => this.handleClick(pointer));
   }
 
   update() {
