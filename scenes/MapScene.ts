@@ -11,122 +11,168 @@ export default class MapScene extends Phaser.Scene {
   private map!: Phaser.Tilemaps.Tilemap;
   private tileset!: Phaser.Tilemaps.Tileset;
   private layer!: Phaser.Tilemaps.TilemapLayer;
+  private playerNameText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'MapScene' });
   }
 
   preload() {
-    this.load.spritesheet('player', '/assets/vegeta.png', { frameWidth: 32, frameHeight: 32 });
+    // Load player sprite
+    this.load.image('player', '/assets/player.jpg');
+    
+    // Load tile images
+    this.load.image('grass', '/assets/tiles.jpg');
+    this.load.image('tree', '/assets/tiles.jpg');
+    
     const mapData = this.registry.get('mapData');
     if (mapData && mapData.tileImage) {
       console.log('Loading tile image from:', mapData.tileImage);
       this.load.image('tiles', mapData.tileImage);
     } else {
-      console.log('No tile image found in mapData, using default placeholder');
-      this.load.image('tiles', '/assets/placeholder.png');
+      console.log('No tile image found in mapData, using default tiles');
+      this.load.image('tiles', '/assets/tiles.jpg');
     }
   }
 
   create() {
-    let xCoord = 2;
-    let yCoord = 2;
+    const centerX = this.cameras.main.width / 2;
+    const centerY = this.cameras.main.height / 2;
+    const tileSize = 100; // Larger tile size to match the image
+    
+    // Get character data
+    const characterData = this.registry.get('characterData') || { name: 'Mado', xCoord: 1, yCoord: 1 };
     const mapData = this.registry.get('mapData');
     console.log('MapScene create, mapData:', mapData);
-    if (mapData) {
-      xCoord = mapData.xCoord || 2;
-      yCoord = mapData.yCoord || 2;
-    }
-
-    // Create a 5x5 map centered on the player
-    this.tileGrid = [];
+    
+    // Define the 3x3 grid layout
+    // 0 = grass, 1 = tree/bush
     const layout = [
-      [1, 0, 1, 0, 1],
-      [0, 0, 0, 0, 0],
-      [1, 0, 1, 0, 1],
-      [0, 0, 0, 0, 0],
-      [1, 0, 1, 0, 1]
+      [1, 0, 1],
+      [0, 0, 0],
+      [1, 0, 1]
     ];
-    for (let y = yCoord - 2; y <= yCoord + 2; y++) {
+    
+    // Create the tile grid
+    this.tileGrid = [];
+    for (let y = 0; y < 3; y++) {
       const row = [];
-      for (let x = xCoord - 2; x <= xCoord + 2; x++) {
-        // Use the layout array to determine tile presence
-        let tileIndex = 0;
-        const layoutY = (y - (yCoord - 2));
-        const layoutX = (x - (xCoord - 2));
-        if (layoutY >= 0 && layoutY < 5 && layoutX >= 0 && layoutX < 5) {
-          tileIndex = layout[layoutY][layoutX];
-        }
-        if (mapData && mapData.tiles && mapData.tiles[y] && mapData.tiles[y][x]) {
-          tileIndex = mapData.tiles[y][x];
-        }
-        const tile = this.add.tileSprite(x * 32 + 16, y * 32 + 16, 32, 32, 'tiles', tileIndex);
+      for (let x = 0; x < 3; x++) {
+        // Calculate position
+        const posX = centerX + (x - 1) * tileSize;
+        const posY = centerY + (y - 1) * tileSize;
+        
+        // Determine tile type based on layout
+        const tileType = layout[y][x] === 1 ? 'tree' : 'grass';
+        
+        // Create tile
+        const tile = this.add.image(posX, posY, 'tiles');
+        tile.setDisplaySize(tileSize, tileSize);
         tile.setDepth(0);
+        
+        // Add to grid
         row.push(tile);
-        console.log(`Created tile at (${x}, ${y}) with index ${tileIndex}`);
       }
       this.tileGrid.push(row);
     }
-
-    const characterData = this.registry.get('characterData');
-    let playerX = (characterData.xCoord || 2) * 32 + 16; // Center of 5x5 grid
-    let playerY = (characterData.yCoord || 2) * 32 + 16; // Center of 5x5 grid
-    console.log('Player position:', { x: playerX, y: playerY, xCoord: characterData.xCoord, yCoord: characterData.yCoord });
-
-    this.player = this.add.sprite(playerX, playerY, 'player', 0);
+    
+    // Add player in the center
+    const playerX = centerX;
+    const playerY = centerY;
+    this.player = this.add.sprite(playerX, playerY, 'player');
+    this.player.setDisplaySize(tileSize * 0.8, tileSize * 0.8);
     this.player.setDepth(1);
-
-    this.anims.create({
-      key: 'walk',
-      frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    });
-
+    
+    // Add player name text
+    this.playerNameText = this.add.text(
+      playerX, 
+      playerY + tileSize/2 + 10, 
+      characterData.name || 'Mado', 
+      { 
+        fontFamily: 'Anton, cursive',
+        fontSize: '16px',
+        color: '#000000',
+        align: 'center'
+      }
+    );
+    this.playerNameText.setOrigin(0.5);
+    this.playerNameText.setDepth(2);
+    
+    // Set up input handling
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => this.handleClick(pointer));
   }
 
   update() {
-    // Camera follows player
-    const playerTileX = Math.floor(this.player.x / 32);
-    const playerTileY = Math.floor(this.player.y / 32);
-    // Update camera to center on player
-    this.cameras.main.centerOn(this.player.x, this.player.y);
-    // Optionally update map tiles if needed based on player position
+    // Keep camera centered on the grid
+    this.cameras.main.centerOn(this.cameras.main.width / 2, this.cameras.main.height / 2);
+    
+    // Keep the player name text below the player
+    if (this.playerNameText && this.player) {
+      this.playerNameText.setPosition(this.player.x, this.player.y + 60);
+    }
   }
 
   private handleClick(pointer: Phaser.Input.Pointer) {
     const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-    const tileX = Math.floor(worldPoint.x / 32);
-    const tileY = Math.floor(worldPoint.y / 32);
-    const playerTileX = Math.floor(this.player.x / 32);
-    const playerTileY = Math.floor(this.player.y / 32);
-
-    // Check if the clicked tile is adjacent
-    const isAdjacent = (Math.abs(tileX - playerTileX) === 1 && tileY === playerTileY) || 
-                       (Math.abs(tileY - playerTileY) === 1 && tileX === playerTileX);
-
-    if (isAdjacent) {
-      // Move player to the clicked tile
-      this.tweens.add({
-        targets: this.player,
-        x: tileX * 32 + 16,
-        y: tileY * 32 + 16,
-        duration: 200,
-        ease: 'Power1',
-        onComplete: () => {
-          // Update character data with new coordinates - this would need to be saved to DB via API call
-          const characterData = this.registry.get('characterData');
-          if (characterData) {
-            characterData.xCoord = tileX;
-            characterData.yCoord = tileY;
+    const tileSize = 100;
+    const centerX = this.cameras.main.width / 2;
+    const centerY = this.cameras.main.height / 2;
+    
+    // Calculate grid coordinates (0-2)
+    const gridX = Math.floor((worldPoint.x - (centerX - tileSize * 1.5)) / tileSize);
+    const gridY = Math.floor((worldPoint.y - (centerY - tileSize * 1.5)) / tileSize);
+    
+    // Calculate player's current grid position
+    const playerGridX = Math.round((this.player.x - (centerX - tileSize)) / tileSize);
+    const playerGridY = Math.round((this.player.y - (centerY - tileSize)) / tileSize);
+    
+    console.log(`Clicked grid: (${gridX}, ${gridY}), Player at: (${playerGridX}, ${playerGridY})`);
+    
+    // Check if the clicked position is within the 3x3 grid
+    if (gridX >= 0 && gridX < 3 && gridY >= 0 && gridY < 3) {
+      // Check if the clicked tile is adjacent to the player
+      const isAdjacent = (Math.abs(gridX - playerGridX) === 1 && gridY === playerGridY) || 
+                         (Math.abs(gridY - playerGridY) === 1 && gridX === playerGridX);
+      
+      // Check if the clicked tile is a grass tile (not a tree)
+      const layout = [
+        [1, 0, 1],
+        [0, 0, 0],
+        [1, 0, 1]
+      ];
+      const isGrass = layout[gridY][gridX] === 0;
+      
+      if (isAdjacent && isGrass) {
+        // Calculate the new position
+        const newX = centerX + (gridX - 1) * tileSize;
+        const newY = centerY + (gridY - 1) * tileSize;
+        
+        // Move player to the clicked tile
+        this.tweens.add({
+          targets: this.player,
+          x: newX,
+          y: newY,
+          duration: 300,
+          ease: 'Power1',
+          onComplete: () => {
+            // Update character data with new coordinates
+            const characterData = this.registry.get('characterData') || {};
+            characterData.xCoord = gridX;
+            characterData.yCoord = gridY;
             this.registry.set('characterData', characterData);
-            // Note: An API call or event should be triggered here to save to database
-            console.log(`Updated player position to (${tileX}, ${tileY})`);
+            console.log(`Updated player position to grid (${gridX}, ${gridY})`);
           }
-        }
-      });
-      // Camera will follow player in update method
+        });
+        
+        // Also move the player name text
+        this.tweens.add({
+          targets: this.playerNameText,
+          x: newX,
+          y: newY + 60,
+          duration: 300,
+          ease: 'Power1'
+        });
+      }
     }
   }
 }
