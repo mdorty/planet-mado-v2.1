@@ -23,7 +23,12 @@ export default class MapScene extends Phaser.Scene {
     } else {
       this.load.image('tiles', '/assets/tiles.jpg');
     }
-    this.load.image('player', '/assets/player.jpg');
+    const characterData = this.registry.get('characterData');
+    if (characterData && characterData.playerImage) {
+      this.load.image('player', characterData.playerImage);
+    } else {
+      this.load.image('player', '/assets/player.jpg');
+    }
   }
 
   create() {
@@ -35,51 +40,43 @@ export default class MapScene extends Phaser.Scene {
       xCoord = mapData.xCoord || 0;
       yCoord = mapData.yCoord || 0;
     }
-    this.map = this.make.tilemap({ width: 20, height: 20, tileWidth: 32, tileHeight: 32 });
+    // Create a smaller map view focused on player - 3x3 grid (player + 8 adjacent tiles)
+    this.map = this.make.tilemap({ width: 3, height: 3, tileWidth: 32, tileHeight: 32 });
     const tilesetImage = this.map.addTilesetImage('tiles');
     if (tilesetImage !== null) {
       this.tileset = tilesetImage;
       const layerResult = this.map.createBlankLayer('layer1', this.tileset, xCoord, yCoord);
       if (layerResult !== null) {
         this.layer = layerResult as Phaser.Tilemaps.TilemapLayer;
-        // Fill the layer with a default tile index to ensure tiles are displayed
-        for (let y = 0; y < 20; y++) {
-          for (let x = 0; x < 20; x++) {
-            this.layer.putTileAt(0, x, y);
+        // Fill the 3x3 grid with tiles
+        for (let y = 0; y < 3; y++) {
+          for (let x = 0; x < 3; x++) {
+            this.layer.putTileAt(1, x, y);
           }
         }
       } else {
-        console.error('Failed to create layer');
-        // Use a type assertion to ensure TypeScript knows this will be non-null
-        this.layer = this.map.createBlankLayer('fallback', this.tileset, xCoord, yCoord) as Phaser.Tilemaps.TilemapLayer;
-        // Fill the fallback layer with a default tile index
-        for (let y = 0; y < 20; y++) {
-          for (let x = 0; x < 20; x++) {
-            this.layer.putTileAt(0, x, y);
-          }
-        }
+        console.error('Failed to create tilemap layer');
       }
     } else {
-      console.error('Failed to add tileset image');
-      // Fallback
-      this.tileset = this.map.addTilesetImage('tiles') as Phaser.Tilemaps.Tileset;
-      this.layer = this.map.createBlankLayer('fallback', this.tileset, xCoord, yCoord) as Phaser.Tilemaps.TilemapLayer;
-      // Fill the fallback layer with a default tile index
-      for (let y = 0; y < 20; y++) {
-        for (let x = 0; x < 20; x++) {
-          this.layer.putTileAt(0, x, y);
-        }
-      }
+      console.error('Tileset image not found');
     }
 
-    // Create player sprite at the center of the map
-    this.player = this.add.sprite(400, 300, 'player');
+    // Create player sprite
+    const characterData = this.registry.get('characterData');
+    let playerX = 1 * 32 + 16; // Center of 3x3 grid
+    let playerY = 1 * 32 + 16; // Center of 3x3 grid
+    if (characterData) {
+      playerX = characterData.x || playerX;
+      playerY = characterData.y || playerY;
+    }
+    this.player = this.add.sprite(playerX, playerY, 'player');
     this.player.setScale(0.5);
     this.physics.add.existing(this.player);
-    (this.player.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
 
-    // Set up camera to follow the player
-    this.cameras.main.startFollow(this.player);
+    // Set up camera to focus tightly on the 3x3 grid
+    this.cameras.main.setSize(96, 96); // 3 tiles x 32 pixels
+    this.cameras.main.centerOn(playerX, playerY);
+    this.cameras.main.setBounds(0, 0, 96, 96);
 
     // Set up input for movement
     if (this.input.keyboard !== null && this.input.keyboard !== undefined) {
@@ -100,28 +97,12 @@ export default class MapScene extends Phaser.Scene {
   }
 
   update() {
-    // Handle keyboard input for movement (for debugging or alternative control)
-    if (this.cursors.left.isDown) {
-      if (this.player.body) {
-        (this.player.body as Phaser.Physics.Arcade.Body).setVelocityX(-100);
-      }
-    } else if (this.cursors.right.isDown) {
-      if (this.player.body) {
-        (this.player.body as Phaser.Physics.Arcade.Body).setVelocityX(100);
-      }
-    } else if (this.cursors.up.isDown) {
-      if (this.player.body) {
-        (this.player.body as Phaser.Physics.Arcade.Body).setVelocityY(-100);
-      }
-    } else if (this.cursors.down.isDown) {
-      if (this.player.body) {
-        (this.player.body as Phaser.Physics.Arcade.Body).setVelocityY(100);
-      }
-    } else {
-      if (this.player.body) {
-        (this.player.body as Phaser.Physics.Arcade.Body).setVelocity(0);
-      }
-    }
+    // Camera follows player
+    const playerTileX = Math.floor(this.player.x / 32);
+    const playerTileY = Math.floor(this.player.y / 32);
+    // Update camera to center on player
+    this.cameras.main.centerOn(this.player.x, this.player.y);
+    // Optionally update map tiles if needed based on player position
   }
 
   private handleClick(pointer: Phaser.Input.Pointer) {
@@ -144,6 +125,9 @@ export default class MapScene extends Phaser.Scene {
         duration: 200,
         ease: 'Power1'
       });
+      // Update the map view to shift with player movement
+      // This is a simple approach - in a real game you'd load new map data
+      this.map.shiftTiles(0, 0);
     }
   }
 }
