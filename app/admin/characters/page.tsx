@@ -35,6 +35,12 @@ export default function AdminCharactersPage() {
     { enabled: status === 'authenticated' && session?.user?.role === 'admin' }
   );
 
+  // Fetch users
+  const { data: users = [] } = trpc.admin.getUsers.useQuery(
+    undefined,
+    { enabled: status === 'authenticated' && session?.user?.role === 'admin' }
+  );
+
   // Mutations
   const createCharacter = trpc.admin.createCharacter.useMutation({
     onSuccess: () => {
@@ -156,14 +162,21 @@ export default function AdminCharactersPage() {
           >
             <form onSubmit={handleCharacterSubmit} className="space-y-4 font-roboto">
               <div>
-                <label className="block text-sm font-medium">User ID</label>
-                <input
-                  type="text"
+                <label htmlFor="userId" className="block font-roboto font-medium mb-1">User</label>
+                <select
+                  id="userId"
                   value={charForm.userId}
                   onChange={(e) => setCharForm({ ...charForm, userId: e.target.value })}
                   className="w-full p-2 border rounded"
                   required
-                />
+                >
+                  <option value="">Select a user</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.username || user.email || user.id}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium">Name</label>
