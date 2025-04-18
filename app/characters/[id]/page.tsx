@@ -29,10 +29,7 @@ const CharacterPhaserDisplay = ({ characterData, mapData, gameConfig }: Characte
           basePowerlevel: characterData.basePowerlevel || characterData.basePowerLevel || characterData.currentPowerlevel || characterData.powerLevel || 0,
           powerLevel: characterData.powerLevel || characterData.currentPowerlevel || 0,
           basePowerLevel: characterData.basePowerLevel || characterData.basePowerlevel || characterData.currentPowerlevel || characterData.powerLevel || 0,
-          name: characterData.name || 'Unknown',
-          inventory: characterData.inventory || [],
-          xCoord: characterData.xCoord || 0,
-          yCoord: characterData.yCoord || 0
+          name: characterData.name || 'Unknown'
         };
         gameRef.current.registry.set('characterData', mappedCharacterData);
         console.log('Set characterData in registry with mapped fields:', mappedCharacterData);
@@ -324,10 +321,7 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
                       characterData={{ 
                         currentPowerlevel: character.currentPowerlevel || 0, 
                         basePowerlevel: character.basePowerlevel || 0, 
-                        name: character.name || 'Unknown', 
-                        inventory: character.inventory || [], 
-                        xCoord: character.xCoord || 0, 
-                        yCoord: character.yCoord || 0 
+                        name: character.name || 'Unknown'
                       }} 
                       mapData={characterMap} 
                       gameConfig={{
