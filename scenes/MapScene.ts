@@ -13,6 +13,10 @@ export default class MapScene extends Phaser.Scene {
   private layer!: Phaser.Tilemaps.TilemapLayer;
   private playerNameText!: Phaser.GameObjects.Text;
   private playerMoving = false;
+  private powerLevelContainer!: Phaser.GameObjects.Container;
+  private powerLevelText!: Phaser.GameObjects.Text;
+  private currentPowerLevelText!: Phaser.GameObjects.Text;
+  private basePowerLevelText!: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'MapScene' });
@@ -94,6 +98,9 @@ export default class MapScene extends Phaser.Scene {
     this.player.setDisplaySize(tileSize * 0.8, tileSize * 0.8);
     this.player.setDepth(1);
     
+    // Add power level display to the left of the map
+    this.createPowerLevelDisplay();
+    
     // Add player name text
     this.playerNameText = this.add.text(
       playerX, 
@@ -120,6 +127,12 @@ export default class MapScene extends Phaser.Scene {
     // Keep the player name text below the player
     if (this.playerNameText && this.player) {
       this.playerNameText.setPosition(this.player.x, this.player.y + 60);
+    }
+    
+    // Keep the power level display positioned to the left of the map
+    if (this.powerLevelContainer) {
+      const leftEdge = this.cameras.main.centerX - (this.cameras.main.width / 2);
+      this.powerLevelContainer.setPosition(leftEdge + 60, this.cameras.main.centerY - 100);
     }
     
     // Update cursor based on what's under the mouse
@@ -246,6 +259,9 @@ export default class MapScene extends Phaser.Scene {
           
           // Update the grid tiles around the player's new position
           this.updateGridTiles(characterData.xCoord, characterData.yCoord);
+          
+          // Update power level display in case it changes with movement
+          this.updatePowerLevelDisplay();
         }
       });
       
@@ -297,6 +313,72 @@ export default class MapScene extends Phaser.Scene {
           }
         }
       }
+    }
+  }
+  
+  // Creates the power level display on the left side of the map
+  private createPowerLevelDisplay() {
+    const characterData = this.registry.get('characterData') || {};
+    const powerLevel = characterData.powerLevel || 0;
+    const basePowerLevel = characterData.basePowerLevel || 0;
+    const percentage = basePowerLevel > 0 ? Math.round((powerLevel / basePowerLevel) * 100) : 0;
+    
+    // Position the display to the left of the map
+    const leftEdge = this.cameras.main.centerX - (this.cameras.main.width / 2);
+    const containerX = leftEdge + 60;
+    const containerY = this.cameras.main.centerY - 100;
+    
+    // Create a container for the power level display
+    this.powerLevelContainer = this.add.container(containerX, containerY);
+    this.powerLevelContainer.setDepth(2);
+    
+    // Create the green circle background
+    const circle = this.add.circle(0, 0, 40, 0x00FF00);
+    this.powerLevelContainer.add(circle);
+    
+    // Add the percentage text in the center of the circle
+    this.powerLevelText = this.add.text(0, 0, `${percentage}%`, {
+      fontFamily: 'Anton, cursive',
+      fontSize: '20px',
+      color: '#000000',
+      align: 'center'
+    }).setOrigin(0.5);
+    this.powerLevelContainer.add(this.powerLevelText);
+    
+    // Add current power level text below the circle
+    this.currentPowerLevelText = this.add.text(0, 50, `Current: ${powerLevel}`, {
+      fontFamily: 'Roboto, sans-serif',
+      fontSize: '14px',
+      color: '#000000',
+      align: 'center'
+    }).setOrigin(0.5);
+    this.powerLevelContainer.add(this.currentPowerLevelText);
+    
+    // Add base power level text below the current power level
+    this.basePowerLevelText = this.add.text(0, 70, `Base: ${basePowerLevel}`, {
+      fontFamily: 'Roboto, sans-serif',
+      fontSize: '14px',
+      color: '#000000',
+      align: 'center'
+    }).setOrigin(0.5);
+    this.powerLevelContainer.add(this.basePowerLevelText);
+  }
+  
+  // Updates the power level display with current character data
+  private updatePowerLevelDisplay() {
+    const characterData = this.registry.get('characterData') || {};
+    const powerLevel = characterData.powerLevel || 0;
+    const basePowerLevel = characterData.basePowerLevel || 0;
+    const percentage = basePowerLevel > 0 ? Math.round((powerLevel / basePowerLevel) * 100) : 0;
+    
+    if (this.powerLevelText) {
+      this.powerLevelText.setText(`${percentage}%`);
+    }
+    if (this.currentPowerLevelText) {
+      this.currentPowerLevelText.setText(`Current: ${powerLevel}`);
+    }
+    if (this.basePowerLevelText) {
+      this.basePowerLevelText.setText(`Base: ${basePowerLevel}`);
     }
   }
 }
