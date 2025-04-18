@@ -23,8 +23,19 @@ const CharacterPhaserDisplay = ({ characterData, mapData, gameConfig }: Characte
       gameRef.current = new Phaser.Game(gameConfig);
       // Set character data in the game's registry after initialization
       if (gameRef.current && characterData) {
-        gameRef.current.registry.set('characterData', characterData);
-        console.log('Set characterData in registry:', characterData);
+        // Map the character data to ensure correct field names for Phaser scenes
+        const mappedCharacterData = {
+          currentPowerlevel: characterData.currentPowerlevel || characterData.powerLevel || 0,
+          basePowerlevel: characterData.basePowerlevel || characterData.basePowerLevel || characterData.currentPowerlevel || characterData.powerLevel || 0,
+          powerLevel: characterData.powerLevel || characterData.currentPowerlevel || 0,
+          basePowerLevel: characterData.basePowerLevel || characterData.basePowerlevel || characterData.currentPowerlevel || characterData.powerLevel || 0,
+          name: characterData.name || 'Unknown',
+          inventory: characterData.inventory || [],
+          xCoord: characterData.xCoord || 0,
+          yCoord: characterData.yCoord || 0
+        };
+        gameRef.current.registry.set('characterData', mappedCharacterData);
+        console.log('Set characterData in registry with mapped fields:', mappedCharacterData);
       }
     }
 
@@ -310,7 +321,14 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
                 <div className="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                   <div className="relative w-full h-full flex items-center justify-center">
                     <CharacterPhaserDisplay 
-                      characterData={{ powerLevel: character.currentPowerlevel, inventory: [] }} 
+                      characterData={{ 
+                        currentPowerlevel: character.currentPowerlevel || 0, 
+                        basePowerlevel: character.basePowerlevel || 0, 
+                        name: character.name || 'Unknown', 
+                        inventory: character.inventory || [], 
+                        xCoord: character.xCoord || 0, 
+                        yCoord: character.yCoord || 0 
+                      }} 
                       mapData={characterMap} 
                       gameConfig={{
                         width: window.innerWidth,
