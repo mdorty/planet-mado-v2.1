@@ -217,32 +217,14 @@ export default class MapScene extends Phaser.Scene {
     this.animateTiles(direction);
   }
 
-  private updateGridTiles(playerX: number, playerY: number) {
-    // Define the 3x3 grid layout around the player's absolute coordinates
-    // This could be based on a larger map data structure, for now we'll simulate it
-    // 0 = grass, 1 = tree/bush
-    const layout = [
-      [1, 0, 1],
-      [0, 0, 0],
-      [1, 0, 1]
-    ];
-
-    // Update each tile based on the player's new position
+  private updateGridTiles() {
+    const gridSpacing = 160;
+    // Update each tile's position relative to the player
     for (let y = 0; y < this.tileGrid.length; y++) {
       for (let x = 0; x < this.tileGrid[y].length; x++) {
-        const tile = this.tileGrid[y][x];
-        const tileType = layout[y][x] === 1 ? 'tree' : 'grass';
-        // For now, we're just reusing the same image, but in a real game, you'd update based on map data
-        tile.setTexture('tiles');
-        tile.setDisplaySize(80, 80);
-        tile.setDepth(0);
-
-        // Make grass tiles interactive with pointer cursor
-        if (layout[y][x] === 0) {
-          tile.setInteractive({ cursor: 'pointer' });
-        } else {
-          tile.disableInteractive();
-        }
+        const posX = this.player.x + (x - 1) * gridSpacing;
+        const posY = this.player.y + (y - 1) * gridSpacing;
+        this.tileGrid[y][x].setPosition(posX, posY);
       }
     }
   }
@@ -322,8 +304,8 @@ export default class MapScene extends Phaser.Scene {
         });
         console.log(`Player moved to (${newX}, ${newY})`);
         
-        // Update the grid tiles around the player's new position
-        this.updateGridTiles((characterData.xCoord || 0) + gridX, (characterData.yCoord || 0) + gridY);
+        // Update the grid tiles' positions relative to the player
+        this.updateGridTiles();
         
         this.playerMoving = false;
       }
