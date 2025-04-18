@@ -329,8 +329,8 @@ export default class MapScene extends Phaser.Scene {
     const basePowerLevel = characterData.basePowerlevel || characterData.basePowerLevel || 0;
     const percentage = basePowerLevel > 0 ? Math.round((powerLevel / basePowerLevel) * 100) : 0;
     
-    // Position the display to the left of the map, fixed to camera
-    const containerX = -350; // Relative to camera center
+    // Position the display to the left of the map, fixed to camera, adjusted further right
+    const containerX = -300; // Adjusted from -350 to -300 to move right
     const containerY = -100; // Relative to camera center
     
     // Create a container for the power level display
