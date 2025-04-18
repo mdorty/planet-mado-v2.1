@@ -313,22 +313,26 @@ const AdminItemsPage = () => {
                 className="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
               />
             </div>
-            <div>
-              <label className="font-roboto font-medium">Usable in Battle</label>
-              <input type="checkbox" checked={newItem.usableInBattle} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, usableInBattle: e.target.checked }))} className="ml-2" />
+            <div className="flex items-center gap-2">
+              <input type="checkbox" checked={newItem.usableInBattle} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, usableInBattle: e.target.checked }))} className="accent-blue-600 w-5 h-5" id="usableInBattle" />
+              <label htmlFor="usableInBattle" className="font-roboto font-medium">Usable in Battle</label>
             </div>
-            <div>
-              <label className="font-roboto font-medium">Equipment Slot</label>
-              <Input value={newItem.equipmentSlot} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, equipmentSlot: e.target.value }))} />
-            </div>
-            <div>
+            <div className="flex flex-col gap-2">
+              <label className="font-roboto font-medium mb-1">Equipment Slot</label>
               <Input
-                label="Loot Chance (%)"
+                value={newItem.equipmentSlot}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, equipmentSlot: e.target.value }))}
+                className="border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="font-roboto font-medium mb-1">Loot Chance (%)</label>
+              <Input
                 type="number"
                 step="0.1"
                 value={newItem.lootChance}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, lootChance: isNaN(parseFloat(e.target.value)) ? "0.0" : e.target.value }))}
-                className="w-full"
+                className="border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
               />
             </div>
           </div>
