@@ -231,66 +231,86 @@ const AdminItemsPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="font-anton text-3xl mb-6">Admin - Manage Items</h1>
+    <>
+      <div className="container mx-auto p-4">
+        <h1 className="font-anton text-3xl mb-6">Admin - Manage Items</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h2 className="font-anton text-xl mb-4">{editingItem ? "Edit Item" : "Add New Item"}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="font-roboto font-medium">Name</label>
-            <Input value={newItem.name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, name: e.target.value }))} required />
-          </div>
-          <div>
-            <label className="font-roboto font-medium">Type</label>
-            <Input value={newItem.type} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, type: e.target.value }))} required />
-          </div>
-          <div className="md:col-span-2">
-            <Textarea
-              label="Description"
-              value={newItem.description}
-              onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <label className="font-roboto font-medium">Image URL</label>
-            <Input value={newItem.image} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, image: e.target.value }))} />
-          </div>
-          <div>
-            <label className="font-roboto font-medium">Effect</label>
-            <Input value={newItem.effect} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, effect: e.target.value }))} />
-          </div>
-          <div>
-            <Input
-              label="Value"
-              type="number"
-              value={newItem.value}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, value: isNaN(parseInt(e.target.value)) ? "0" : e.target.value }))}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <Input
-              label="Durability"
-              type="number"
-              value={newItem.durability}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, durability: isNaN(parseInt(e.target.value)) ? "100" : e.target.value }))}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <label className="font-roboto font-medium">Stackable</label>
-            <input type="checkbox" checked={newItem.stackable} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, stackable: e.target.checked }))} className="ml-2" />
-          </div>
-          <div>
-            <Input
-              label="Max Stack Size"
-              type="number"
-              value={newItem.maxStackSize}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, maxStackSize: isNaN(parseInt(e.target.value)) ? "1" : e.target.value }))}
-              className="w-full"
-            />
+        <form onSubmit={handleSubmit} className="p-6 rounded-lg shadow-md mb-6 bg-neutral-50">
+          <h2 className="font-anton text-xl mb-4">{editingItem ? "Edit Item" : "Add New Item"}</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="font-roboto font-medium mb-1">Name</label>
+              <Input
+                value={newItem.name}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
+                required
+                className="border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="font-roboto font-medium mb-1">Type</label>
+              <Input
+                value={newItem.type}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, type: e.target.value }))}
+                required
+                className="border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+              />
+            </div>
+            <div className="md:col-span-2 flex flex-col gap-2">
+              <label className="font-roboto font-medium mb-1">Description</label>
+              <Textarea
+                value={newItem.description}
+                onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
+                className="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+              />
+            </div>
+    <div className="flex flex-col gap-2">
+      <label className="font-roboto font-medium mb-1">Image URL</label>
+      <Input
+        value={newItem.image}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, image: e.target.value }))}
+        className="border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+      />
+    </div>
+    <div className="flex flex-col gap-2">
+      <label className="font-roboto font-medium mb-1">Effect</label>
+      <Input
+        value={newItem.effect}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, effect: e.target.value }))}
+        className="border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+      />
+    </div>
+    <div className="flex flex-col gap-2">
+      <label className="font-roboto font-medium mb-1">Value</label>
+      <Input
+        type="number"
+        value={newItem.value}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, value: isNaN(parseInt(e.target.value)) ? '0' : e.target.value }))}
+        className="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+      />
+    </div>
+    <div className="flex flex-col gap-2">
+      <label className="font-roboto font-medium mb-1">Durability</label>
+      <Input
+        type="number"
+        value={newItem.durability}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, durability: isNaN(parseInt(e.target.value)) ? '100' : e.target.value }))}
+        className="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+      />
+    </div>
+    <div className="flex items-center gap-2">
+      <input type="checkbox" checked={newItem.stackable} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, stackable: e.target.checked }))} className="accent-blue-600 w-5 h-5" id="stackable" />
+      <label htmlFor="stackable" className="font-roboto font-medium">Stackable</label>
+    </div>
+    <div className="flex flex-col gap-2">
+      <label className="font-roboto font-medium mb-1">Max Stack Size</label>
+      <Input
+        type="number"
+        value={newItem.maxStackSize}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, maxStackSize: isNaN(parseInt(e.target.value)) ? '1' : e.target.value }))}
+        className="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+      />
+    </div>
           </div>
           <div>
             <label className="font-roboto font-medium">Usable in Battle</label>
@@ -342,7 +362,7 @@ const AdminItemsPage = () => {
         )}
       </div>
     </div>
+  </>
   );
-};
 
 export default AdminItemsPage;
