@@ -4,9 +4,39 @@ import { useSession } from 'next-auth/react';
 import { trpc } from '@/lib/trpc/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button, Card, CardHeader, CardBody } from '@heroui/react';
-import CharacterPhaserDisplay from '../../../components/CharacterPhaserDisplay';
+import MapScene from '../../../scenes/MapScene';
+import Phaser from 'phaser';
+
+interface CharacterPhaserDisplayProps {
+  characterData: any;
+  mapData: any;
+  gameConfig: Phaser.Types.Core.GameConfig;
+}
+
+const CharacterPhaserDisplay = ({ characterData, mapData, gameConfig }: CharacterPhaserDisplayProps) => {
+  const gameRef = useRef<Phaser.Game | null>(null);
+
+  useEffect(() => {
+    if (!gameRef.current) {
+      gameRef.current = new Phaser.Game(gameConfig);
+    }
+
+    return () => {
+      if (gameRef.current) {
+        gameRef.current.destroy(true);
+        gameRef.current = null;
+      }
+    };
+  }, [gameConfig]);
+
+  return (
+    <div id="game-container" className="w-full h-full">
+      {/* Phaser game renders here */}
+    </div>
+  );
+};
 
 export default function CharacterDetailPage({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
@@ -272,9 +302,26 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
                 View Power & Inventory
               </button>
               {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden">
+                <div className="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                   <div className="relative w-full h-full flex items-center justify-center">
-                    <CharacterPhaserDisplay characterData={{ powerLevel: character.currentPowerlevel, inventory: [] }} mapData={characterMap} />
+                    <CharacterPhaserDisplay 
+                      characterData={{ powerLevel: character.currentPowerlevel, inventory: [] }} 
+                      mapData={characterMap} 
+                      gameConfig={{
+                        width: window.innerWidth,
+                        height: window.innerHeight,
+                        type: Phaser.AUTO,
+                        scene: [MapScene],
+                        parent: 'game-container',
+                        physics: {
+                          default: 'arcade',
+                          arcade: {
+                            gravity: { x: 0, y: 0 },
+                            debug: false,
+                          },
+                        },
+                      }}
+                    />
                     <button
                       onClick={() => setIsModalOpen(false)}
                       className="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-white font-roboto font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out"
