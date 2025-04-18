@@ -12,6 +12,7 @@ export default class MapScene extends Phaser.Scene {
   private tileset!: Phaser.Tilemaps.Tileset;
   private layer!: Phaser.Tilemaps.TilemapLayer;
   private playerNameText!: Phaser.GameObjects.Text;
+  private playerMoving = false;
 
   constructor() {
     super({ key: 'MapScene' });
@@ -170,6 +171,52 @@ export default class MapScene extends Phaser.Scene {
     }
   }
 
+  private animateTiles(direction: string) {
+    const duration = 500; // Animation duration in milliseconds
+    const gridSpacing = 160; // Space between tiles
+    let offsetX = 0;
+    let offsetY = 0;
+
+    // Determine the offset based on direction
+    switch (direction) {
+      case 'up':
+        offsetY = gridSpacing;
+        break;
+      case 'down':
+        offsetY = -gridSpacing;
+        break;
+      case 'left':
+        offsetX = gridSpacing;
+        break;
+      case 'right':
+        offsetX = -gridSpacing;
+        break;
+    }
+
+    // Animate each tile
+    for (let y = 0; y < this.tileGrid.length; y++) {
+      for (let x = 0; x < this.tileGrid[y].length; x++) {
+        const tile = this.tileGrid[y][x];
+        // Set initial position (offset from final position)
+        tile.setPosition(tile.x + offsetX, tile.y + offsetY);
+        // Animate to final position
+        this.tweens.add({
+          targets: tile,
+          x: tile.x - offsetX,
+          y: tile.y - offsetY,
+          duration: duration,
+          ease: 'Power2'
+        });
+      }
+    }
+  }
+
+  private updateMap(direction: string) {
+    console.log('Updating map for direction:', direction);
+    // Animate the tiles sliding in from the direction of movement
+    this.animateTiles(direction);
+  }
+
   private handleClick(pointer: Phaser.Input.Pointer) {
     // Get the world point where the player clicked
     const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
@@ -220,17 +267,31 @@ export default class MapScene extends Phaser.Scene {
         const newX = this.player.x + gridX * gridSpacing;
         const newY = this.player.y + gridY * gridSpacing;
         
-        // Move player to the clicked tile
+        // Determine the direction of movement
+        let direction = '';
+        if (gridX === -1) direction = 'left';
+        else if (gridX === 1) direction = 'right';
+        else if (gridY === -1) direction = 'up';
+        else if (gridY === 1) direction = 'down';
+
+        // Move player and update map
+        console.log(`Moving player ${direction}`);
+        this.playerMoving = true;
+        
+        // Update the map tiles with animation
+        this.updateMap(direction);
+        
+        // Move player sprite
         this.tweens.add({
           targets: this.player,
           x: newX,
           y: newY,
-          duration: 300,
+          duration: 500,
           ease: 'Power1',
           onComplete: () => {
-            // Update character data with new coordinates
+            this.playerMoving = false;
+            // Update player coordinates in registry
             const characterData = this.registry.get('characterData') || {};
-            // We need to update the absolute coordinates, not the relative ones
             characterData.xCoord = (characterData.xCoord || 0) + gridX;
             characterData.yCoord = (characterData.yCoord || 0) + gridY;
             this.registry.set('characterData', characterData);
@@ -246,7 +307,7 @@ export default class MapScene extends Phaser.Scene {
           targets: this.playerNameText,
           x: newX,
           y: newY + 60,
-          duration: 300,
+          duration: 500,
           ease: 'Power1'
         });
       }
