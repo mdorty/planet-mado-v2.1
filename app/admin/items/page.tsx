@@ -162,7 +162,10 @@ const AdminItemsPage = () => {
           equipmentSlot: formData.equipmentSlot,
           lootChance: formData.lootChance,
         };
-        await updateItem.mutateAsync({ id: editingItem.id, ...updateData });
+        await updateItem.mutateAsync({ 
+          id: editingItem.id.toString(), 
+          ...updateData 
+        });
         toast({
           variant: 'solid',
           color: 'success'
@@ -219,7 +222,7 @@ const AdminItemsPage = () => {
   const handleDelete = async (id: number | string) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
-        await deleteItem.mutateAsync(id);
+        await deleteItem.mutateAsync(id.toString());
         toast({
           variant: 'solid',
           color: 'success'

@@ -46,7 +46,7 @@ export const itemRouter = router({
   update: procedure
     .input(
       z.object({
-        id: z.number().or(z.string().transform(val => parseInt(val, 10))),
+        id: z.string(),
         name: z.string(),
         type: z.string(),
         description: z.string().optional(),
@@ -64,16 +64,16 @@ export const itemRouter = router({
     .mutation(async ({ input }: { input: any }) => {
       const { id, ...data } = input;
       return await prisma.itemTemplate.update({
-        where: { id },
+        where: { id: parseInt(id, 10) },
         data,
       });
     }),
 
   delete: procedure
-    .input(z.number().or(z.string().transform(val => parseInt(val, 10))))
-    .mutation(async ({ input }: { input: number }) => {
+    .input(z.string())
+    .mutation(async ({ input }: { input: string }) => {
       return await prisma.itemTemplate.delete({
-        where: { id: input },
+        where: { id: parseInt(input, 10) },
       });
     }),
 });
