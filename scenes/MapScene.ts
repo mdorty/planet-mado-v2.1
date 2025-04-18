@@ -319,9 +319,11 @@ export default class MapScene extends Phaser.Scene {
   // Creates the power level display on the left side of the map
   private createPowerLevelDisplay() {
     const characterData = this.registry.get('characterData') || {};
-    const powerLevel = characterData.powerLevel || 0;
-    const basePowerLevel = characterData.basePowerLevel || 0;
+    const powerLevel = characterData.currentPowerlevel || characterData.powerLevel || 0;
+    const basePowerLevel = characterData.basePowerlevel || characterData.basePowerLevel || 0;
     const percentage = basePowerLevel > 0 ? Math.round((powerLevel / basePowerLevel) * 100) : 0;
+    const circleCircumference = 440;
+    const strokeDashoffset = circleCircumference - (circleCircumference * percentage / 100);
     
     // Position the display to the left of the map
     const leftEdge = this.cameras.main.centerX - (this.cameras.main.width / 2);
@@ -332,21 +334,31 @@ export default class MapScene extends Phaser.Scene {
     this.powerLevelContainer = this.add.container(containerX, containerY);
     this.powerLevelContainer.setDepth(2);
     
-    // Create the green circle background
-    const circle = this.add.circle(0, 0, 40, 0x00FF00);
-    this.powerLevelContainer.add(circle);
+    // Create the background circle (gray)
+    const backgroundCircle = this.add.circle(0, 0, 70, 0xCCCCCC); // Gray background
+    this.powerLevelContainer.add(backgroundCircle);
+    
+    // Create a graphics object for the progress arc
+    const progressArc = this.add.graphics();
+    progressArc.lineStyle(8, 0x00FF00, 1); // Green stroke
+    // Draw an arc for the progress based on percentage
+    const angle = (percentage / 100) * 360;
+    progressArc.beginPath();
+    progressArc.arc(0, 0, 70, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false);
+    progressArc.stroke();
+    this.powerLevelContainer.add(progressArc);
     
     // Add the percentage text in the center of the circle
     this.powerLevelText = this.add.text(0, 0, `${percentage}%`, {
       fontFamily: 'Anton, cursive',
-      fontSize: '20px',
+      fontSize: '24px',
       color: '#000000',
       align: 'center'
     }).setOrigin(0.5);
     this.powerLevelContainer.add(this.powerLevelText);
     
     // Add current power level text below the circle
-    this.currentPowerLevelText = this.add.text(0, 50, `Current: ${powerLevel}`, {
+    this.currentPowerLevelText = this.add.text(0, 50, `Current: ${powerLevel.toLocaleString()}`, {
       fontFamily: 'Roboto, sans-serif',
       fontSize: '14px',
       color: '#000000',
@@ -355,7 +367,7 @@ export default class MapScene extends Phaser.Scene {
     this.powerLevelContainer.add(this.currentPowerLevelText);
     
     // Add base power level text below the current power level
-    this.basePowerLevelText = this.add.text(0, 70, `Base: ${basePowerLevel}`, {
+    this.basePowerLevelText = this.add.text(0, 70, `Base: ${basePowerLevel.toLocaleString()}`, {
       fontFamily: 'Roboto, sans-serif',
       fontSize: '14px',
       color: '#000000',
@@ -367,18 +379,33 @@ export default class MapScene extends Phaser.Scene {
   // Updates the power level display with current character data
   private updatePowerLevelDisplay() {
     const characterData = this.registry.get('characterData') || {};
-    const powerLevel = characterData.powerLevel || 0;
-    const basePowerLevel = characterData.basePowerLevel || 0;
+    const powerLevel = characterData.currentPowerlevel || characterData.powerLevel || 0;
+    const basePowerLevel = characterData.basePowerlevel || characterData.basePowerLevel || 0;
     const percentage = basePowerLevel > 0 ? Math.round((powerLevel / basePowerLevel) * 100) : 0;
+    const circleCircumference = 440;
+    const strokeDashoffset = circleCircumference - (circleCircumference * percentage / 100);
     
     if (this.powerLevelText) {
       this.powerLevelText.setText(`${percentage}%`);
     }
     if (this.currentPowerLevelText) {
-      this.currentPowerLevelText.setText(`Current: ${powerLevel}`);
+      this.currentPowerLevelText.setText(`Current: ${powerLevel.toLocaleString()}`);
     }
     if (this.basePowerLevelText) {
-      this.basePowerLevelText.setText(`Base: ${basePowerLevel}`);
+      this.basePowerLevelText.setText(`Base: ${basePowerLevel.toLocaleString()}`);
+    }
+    
+    // Update the progress arc
+    if (this.powerLevelContainer) {
+      const progressArc = this.powerLevelContainer.list.find(item => item.type === 'Graphics') as Phaser.GameObjects.Graphics;
+      if (progressArc) {
+        progressArc.clear();
+        progressArc.lineStyle(8, 0x00FF00, 1);
+        const angle = (percentage / 100) * 360;
+        progressArc.beginPath();
+        progressArc.arc(0, 0, 70, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false);
+        progressArc.stroke();
+      }
     }
   }
 }
