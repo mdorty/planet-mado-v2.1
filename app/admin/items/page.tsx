@@ -23,7 +23,7 @@ interface ItemFormState {
 }
 
 interface Item {
-  id: number;
+  id: string;
   name: string;
   type: string;
   description: string;
@@ -148,13 +148,41 @@ const AdminItemsPage = () => {
 
     try {
       if (editingItem) {
-        await updateItem.mutateAsync({ id: editingItem.id, ...formData });
+        const updateData = {
+          name: formData.name,
+          type: formData.type,
+          description: formData.description,
+          image: formData.image,
+          effect: formData.effect,
+          value: formData.value,
+          durability: formData.durability,
+          stackable: formData.stackable,
+          maxStackSize: formData.maxStackSize,
+          usableInBattle: formData.usableInBattle,
+          equipmentSlot: formData.equipmentSlot,
+          lootChance: formData.lootChance,
+        };
+        await updateItem.mutateAsync({ id: editingItem.id, ...updateData });
         toast({
           variant: 'solid',
           color: 'success'
         });
       } else {
-        await createItem.mutateAsync(formData);
+        const createData = {
+          name: formData.name,
+          type: formData.type,
+          description: formData.description,
+          image: formData.image,
+          effect: formData.effect,
+          value: formData.value,
+          durability: formData.durability,
+          stackable: formData.stackable,
+          maxStackSize: formData.maxStackSize,
+          usableInBattle: formData.usableInBattle,
+          equipmentSlot: formData.equipmentSlot,
+          lootChance: formData.lootChance,
+        };
+        await createItem.mutateAsync(createData);
         toast({
           variant: 'solid',
           color: 'success'
@@ -188,7 +216,7 @@ const AdminItemsPage = () => {
     setEditingItem(item);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
         await deleteItem.mutateAsync(id);
