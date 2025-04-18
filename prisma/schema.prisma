@@ -83,6 +83,7 @@ model Character {
   battles            Battle[] @relation("CharacterToBattle")
   itemsOwned         Item[]   @relation("CharacterToItem")
   moves              Move[]
+  inventory          InventoryItem[] @relation("CharacterToInventory")
 }
 
 model Move {
@@ -109,6 +110,34 @@ model Item {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   character   Character @relation("CharacterToItem", fields: [characterId], references: [id], onDelete: Cascade)
+}
+
+model ItemTemplate {
+  id          Int     @id @default(autoincrement())
+  name        String
+  type        String
+  description String?
+  image       String?
+  effect      String?
+  value       Int     @default(0)
+  durability  Int     @default(100)
+  stackable   Boolean @default(false)
+  maxStackSize Int    @default(1)
+  usableInBattle Boolean @default(false)
+  equipmentSlot String? 
+  lootChance   Float   @default(0.0)
+  // Relations
+  inventories InventoryItem[]
+}
+
+model InventoryItem {
+  id          Int         @id @default(autoincrement())
+  character   Character?  @relation("CharacterToInventory", fields: [characterId], references: [id])
+  characterId String?
+  item        ItemTemplate @relation(fields: [itemId], references: [id])
+  itemId      Int
+  quantity    Int         @default(1)
+  equipped    Boolean     @default(false)
 }
 
 model Battle {

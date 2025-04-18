@@ -75,6 +75,13 @@ export default function AdminPage() {
                 </Link>
               </CardBody>
             </Card>
+
+            <Link href="/admin/items" className="group">
+              <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 h-48 flex flex-col justify-center items-center">
+                <h2 className="font-anton text-xl text-center">Manage Items</h2>
+                <p className="text-center font-roboto text-pm-text-dark">Add, edit, or delete items in the game.</p>
+              </div>
+            </Link>
           </div>
         </div>
       </div>
