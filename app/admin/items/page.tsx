@@ -13,13 +13,13 @@ interface ItemFormState {
   description: string;
   image: string;
   effect: string;
-  value: number;
-  durability: number;
+  value: string;
+  durability: string;
   stackable: boolean;
-  maxStackSize: number;
+  maxStackSize: string;
   usableInBattle: boolean;
   equipmentSlot: string;
-  lootChance: number;
+  lootChance: string;
 }
 
 interface Item {
@@ -46,13 +46,13 @@ const AdminItemsPage = () => {
     description: "",
     image: "",
     effect: "",
-    value: 0,
-    durability: 100,
+    value: "0",
+    durability: "100",
     stackable: false,
-    maxStackSize: 1,
+    maxStackSize: "1",
     usableInBattle: false,
     equipmentSlot: "",
-    lootChance: 0.0,
+    lootChance: "0.0",
   });
   const [editingItem, setEditingItem] = useState<Item | null>(null);
 
@@ -89,46 +89,33 @@ const AdminItemsPage = () => {
 
   const handleCreateError = (error: any) => {
     toast({
-      title: 'Error',
-      description: `Failed to create item: ${error.message || 'Unknown error'}`,
       variant: 'solid',
+      color: 'danger'
     });
   };
 
   const handleUpdateError = (error: any) => {
     toast({
-      title: 'Error',
-      description: `Failed to update item: ${error.message || 'Unknown error'}`,
       variant: 'solid',
+      color: 'danger'
     });
   };
 
   const handleDeleteError = (error: any) => {
     toast({
-      title: 'Error',
-      description: `Failed to delete item: ${error.message || 'Unknown error'}`,
       variant: 'solid',
+      color: 'danger'
     });
   };
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setNewItem((prev: ItemFormState) => ({ ...prev, value: value ? parseInt(value) : 0 }));
+    setNewItem((prev: ItemFormState) => ({ ...prev, value: isNaN(parseInt(value)) ? "0" : value }));
   };
 
   const handleMaxStackSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setNewItem((prev: ItemFormState) => ({ ...prev, maxStackSize: value ? parseInt(value) : 0 }));
-  };
-
-  const handleEditNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEditingItem((prev: Item | null) => prev ? { ...prev, value: value ? parseInt(value) : 0 } : null);
-  };
-
-  const handleEditMaxStackSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEditingItem((prev: Item | null) => prev ? { ...prev, maxStackSize: value ? parseInt(value) : 0 } : null);
+    setNewItem((prev: ItemFormState) => ({ ...prev, maxStackSize: isNaN(parseInt(value)) ? "0" : value }));
   };
 
   const resetForm = () => {
@@ -138,37 +125,39 @@ const AdminItemsPage = () => {
       description: "",
       image: "",
       effect: "",
-      value: 0,
-      durability: 100,
+      value: "0",
+      durability: "100",
       stackable: false,
-      maxStackSize: 1,
+      maxStackSize: "1",
       usableInBattle: false,
       equipmentSlot: "",
-      lootChance: 0.0,
+      lootChance: "0.0",
     });
     setEditingItem(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = {
       ...newItem,
+      value: parseInt(newItem.value) || 0,
+      durability: parseInt(newItem.durability) || 100,
+      maxStackSize: parseInt(newItem.maxStackSize) || 1,
+      lootChance: parseFloat(newItem.lootChance) || 0.0,
     };
 
     try {
       if (editingItem) {
         await updateItem.mutateAsync({ id: editingItem.id, ...formData });
         toast({
-          title: 'Success',
-          description: 'Item updated successfully',
           variant: 'solid',
+          color: 'success'
         });
       } else {
         await createItem.mutateAsync(formData);
         toast({
-          title: 'Success',
-          description: 'Item created successfully',
           variant: 'solid',
+          color: 'success'
         });
       }
       resetForm();
@@ -188,13 +177,13 @@ const AdminItemsPage = () => {
       description: item.description || "",
       image: item.image || "",
       effect: item.effect || "",
-      value: item.value,
-      durability: item.durability,
+      value: item.value.toString(),
+      durability: item.durability.toString(),
       stackable: item.stackable,
-      maxStackSize: item.maxStackSize,
+      maxStackSize: item.maxStackSize.toString(),
       usableInBattle: item.usableInBattle,
       equipmentSlot: item.equipmentSlot || "",
-      lootChance: item.lootChance,
+      lootChance: item.lootChance.toString(),
     });
     setEditingItem(item);
   };
@@ -204,9 +193,8 @@ const AdminItemsPage = () => {
       try {
         await deleteItem.mutateAsync(id);
         toast({
-          title: 'Success',
-          description: 'Item deleted successfully',
           variant: 'solid',
+          color: 'success'
         });
       } catch (error) {
         handleDeleteError(error);
@@ -230,8 +218,12 @@ const AdminItemsPage = () => {
             <Input value={newItem.type} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, type: e.target.value }))} required />
           </div>
           <div className="md:col-span-2">
-            <label className="font-roboto font-medium">Description</label>
-            <Textarea value={newItem.description || ''} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewItem(prev => ({ ...prev, description: e.target.value }))} />
+            <Textarea
+              label="Description"
+              value={newItem.description}
+              onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
+              className="w-full"
+            />
           </div>
           <div>
             <label className="font-roboto font-medium">Image URL</label>
@@ -242,20 +234,35 @@ const AdminItemsPage = () => {
             <Input value={newItem.effect} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, effect: e.target.value }))} />
           </div>
           <div>
-            <label className="font-roboto font-medium">Value</label>
-            <Input type="number" value={newItem.value ? newItem.value.toString() : '0'} onChange={handleNumberChange} />
+            <Input
+              label="Value"
+              type="number"
+              value={newItem.value}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, value: isNaN(parseInt(e.target.value)) ? "0" : e.target.value }))}
+              className="w-full"
+            />
           </div>
           <div>
-            <label className="font-roboto font-medium">Durability</label>
-            <Input type="number" value={newItem.durability} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, durability: Number(e.target.value) }))} />
+            <Input
+              label="Durability"
+              type="number"
+              value={newItem.durability}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, durability: isNaN(parseInt(e.target.value)) ? "100" : e.target.value }))}
+              className="w-full"
+            />
           </div>
           <div>
             <label className="font-roboto font-medium">Stackable</label>
             <input type="checkbox" checked={newItem.stackable} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, stackable: e.target.checked }))} className="ml-2" />
           </div>
           <div>
-            <label className="font-roboto font-medium">Max Stack Size</label>
-            <Input type="number" value={newItem.maxStackSize ? newItem.maxStackSize.toString() : '0'} onChange={handleMaxStackSizeChange} />
+            <Input
+              label="Max Stack Size"
+              type="number"
+              value={newItem.maxStackSize}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, maxStackSize: isNaN(parseInt(e.target.value)) ? "1" : e.target.value }))}
+              className="w-full"
+            />
           </div>
           <div>
             <label className="font-roboto font-medium">Usable in Battle</label>
@@ -266,8 +273,14 @@ const AdminItemsPage = () => {
             <Input value={newItem.equipmentSlot} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, equipmentSlot: e.target.value }))} />
           </div>
           <div>
-            <label className="font-roboto font-medium">Loot Chance (%)</label>
-            <Input type="number" step="0.1" value={newItem.lootChance} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, lootChance: Number(e.target.value) }))} />
+            <Input
+              label="Loot Chance (%)"
+              type="number"
+              step="0.1"
+              value={newItem.lootChance}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, lootChance: isNaN(parseFloat(e.target.value)) ? "0.0" : e.target.value }))}
+              className="w-full"
+            />
           </div>
         </div>
         <Button type="submit" variant="solid" color="primary" className="w-full font-roboto font-medium bg-blue-600 text-white hover:bg-blue-700">
@@ -284,7 +297,7 @@ const AdminItemsPage = () => {
         <h2 className="font-anton text-xl mb-4">Existing Items</h2>
         {items && items.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {items.map((item: Item) => (
+            {items.map((item: any) => (
               <div key={item.id} className="border rounded-md p-4 relative group hover:shadow-md transition-shadow">
                 <h3 className="font-bold text-lg mb-1">{item.name}</h3>
                 <p className="text-sm text-gray-600">Type: {item.type}</p>
