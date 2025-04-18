@@ -38,7 +38,8 @@ export default class MapScene extends Phaser.Scene {
   create() {
     const centerX = this.cameras.main.width / 2;
     const centerY = this.cameras.main.height / 2;
-    const tileSize = 100; // Larger tile size to match the image
+    const tileSize = 80; // Size of each tile
+    const gridSpacing = 160; // Space between tiles (creates gaps)
     
     // Get character data
     const characterData = this.registry.get('characterData') || { name: 'Mado', xCoord: 1, yCoord: 1 };
@@ -53,14 +54,15 @@ export default class MapScene extends Phaser.Scene {
       [1, 0, 1]
     ];
     
-    // Create the tile grid
+    // Create the tile grid (spread out in a 5x5 pattern)
     this.tileGrid = [];
     for (let y = 0; y < 3; y++) {
       const row = [];
       for (let x = 0; x < 3; x++) {
-        // Calculate position
-        const posX = centerX + (x - 1) * tileSize;
-        const posY = centerY + (y - 1) * tileSize;
+        // Calculate position with spacing (creates a more spread out grid)
+        // Multiply by 2 to create the gap effect (like a 5x5 grid with empty spaces)
+        const posX = centerX + (x - 1) * gridSpacing;
+        const posY = centerY + (y - 1) * gridSpacing;
         
         // Determine tile type based on layout
         const tileType = layout[y][x] === 1 ? 'tree' : 'grass';
@@ -114,17 +116,18 @@ export default class MapScene extends Phaser.Scene {
 
   private handleClick(pointer: Phaser.Input.Pointer) {
     const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-    const tileSize = 100;
+    const tileSize = 80;
+    const gridSpacing = 160;
     const centerX = this.cameras.main.width / 2;
     const centerY = this.cameras.main.height / 2;
     
-    // Calculate grid coordinates (0-2)
-    const gridX = Math.floor((worldPoint.x - (centerX - tileSize * 1.5)) / tileSize);
-    const gridY = Math.floor((worldPoint.y - (centerY - tileSize * 1.5)) / tileSize);
+    // Calculate grid coordinates (0-2) with the wider spacing
+    const gridX = Math.round((worldPoint.x - centerX) / gridSpacing + 1);
+    const gridY = Math.round((worldPoint.y - centerY) / gridSpacing + 1);
     
     // Calculate player's current grid position
-    const playerGridX = Math.round((this.player.x - (centerX - tileSize)) / tileSize);
-    const playerGridY = Math.round((this.player.y - (centerY - tileSize)) / tileSize);
+    const playerGridX = Math.round((this.player.x - centerX) / gridSpacing + 1);
+    const playerGridY = Math.round((this.player.y - centerY) / gridSpacing + 1);
     
     console.log(`Clicked grid: (${gridX}, ${gridY}), Player at: (${playerGridX}, ${playerGridY})`);
     
@@ -143,9 +146,9 @@ export default class MapScene extends Phaser.Scene {
       const isGrass = layout[gridY][gridX] === 0;
       
       if (isAdjacent && isGrass) {
-        // Calculate the new position
-        const newX = centerX + (gridX - 1) * tileSize;
-        const newY = centerY + (gridY - 1) * tileSize;
+        // Calculate the new position with the wider spacing
+        const newX = centerX + (gridX - 1) * gridSpacing;
+        const newY = centerY + (gridY - 1) * gridSpacing;
         
         // Move player to the clicked tile
         this.tweens.add({
