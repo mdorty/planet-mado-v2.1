@@ -21,6 +21,11 @@ const CharacterPhaserDisplay = ({ characterData, mapData, gameConfig }: Characte
   useEffect(() => {
     if (!gameRef.current) {
       gameRef.current = new Phaser.Game(gameConfig);
+      // Set character data in the game's registry after initialization
+      if (gameRef.current && characterData) {
+        gameRef.current.registry.set('characterData', characterData);
+        console.log('Set characterData in registry:', characterData);
+      }
     }
 
     return () => {
@@ -29,7 +34,7 @@ const CharacterPhaserDisplay = ({ characterData, mapData, gameConfig }: Characte
         gameRef.current = null;
       }
     };
-  }, [gameConfig]);
+  }, [gameConfig, characterData]);
 
   return (
     <div id="game-container" className="w-full h-full">

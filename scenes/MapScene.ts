@@ -120,7 +120,7 @@ export default class MapScene extends Phaser.Scene {
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => this.handleClick(pointer));
   }
 
-  update() {
+  update(time: number, delta: number): void {
     // Keep camera centered on the player
     this.cameras.main.centerOn(this.player.x, this.player.y);
     
@@ -137,6 +137,11 @@ export default class MapScene extends Phaser.Scene {
     
     // Update cursor based on what's under the mouse
     this.updateCursorStyle();
+    
+    // Update power level display periodically in case data was set after initialization
+    if (this.time.now % 1000 < delta) { // Roughly every second
+      this.updatePowerLevelDisplay();
+    }
   }
   
   // Updates the cursor style based on what's under the mouse
