@@ -23,7 +23,7 @@ interface ItemFormState {
 }
 
 interface Item {
-  id: string;
+  id: number | string;
   name: string;
   type: string;
   description: string;
@@ -216,7 +216,7 @@ const AdminItemsPage = () => {
     setEditingItem(item);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number | string) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       try {
         await deleteItem.mutateAsync(id);
