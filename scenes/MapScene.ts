@@ -322,23 +322,17 @@ export default class MapScene extends Phaser.Scene {
     const powerLevel = characterData.currentPowerlevel || characterData.powerLevel || 0;
     const basePowerLevel = characterData.basePowerlevel || characterData.basePowerLevel || 0;
     const percentage = basePowerLevel > 0 ? Math.round((powerLevel / basePowerLevel) * 100) : 0;
-    const circleCircumference = 440;
-    const strokeDashoffset = circleCircumference - (circleCircumference * percentage / 100);
     
-    // Position the display to the left of the map
-    const leftEdge = this.cameras.main.centerX - (this.cameras.main.width / 2);
-    const containerX = leftEdge + 60;
-    const containerY = this.cameras.main.centerY - 100;
+    // Position the display to the left of the map, fixed to camera
+    const containerX = -350; // Relative to camera center
+    const containerY = -100; // Relative to camera center
     
     // Create a container for the power level display
     this.powerLevelContainer = this.add.container(containerX, containerY);
     this.powerLevelContainer.setDepth(2);
+    this.powerLevelContainer.setScrollFactor(0); // Fix to camera, does not scroll with map
     
-    // Create the background circle (gray)
-    const backgroundCircle = this.add.circle(0, 0, 70, 0xCCCCCC); // Gray background
-    this.powerLevelContainer.add(backgroundCircle);
-    
-    // Create a graphics object for the progress arc
+    // Create a graphics object for the progress arc (green outline only, no background)
     const progressArc = this.add.graphics();
     progressArc.lineStyle(8, 0x00FF00, 1); // Green stroke
     // Draw an arc for the progress based on percentage
@@ -382,8 +376,6 @@ export default class MapScene extends Phaser.Scene {
     const powerLevel = characterData.currentPowerlevel || characterData.powerLevel || 0;
     const basePowerLevel = characterData.basePowerlevel || characterData.basePowerLevel || 0;
     const percentage = basePowerLevel > 0 ? Math.round((powerLevel / basePowerLevel) * 100) : 0;
-    const circleCircumference = 440;
-    const strokeDashoffset = circleCircumference - (circleCircumference * percentage / 100);
     
     if (this.powerLevelText) {
       this.powerLevelText.setText(`${percentage}%`);
