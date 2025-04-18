@@ -177,19 +177,19 @@ export default class MapScene extends Phaser.Scene {
     let offsetX = 0;
     let offsetY = 0;
 
-    // Determine the offset based on direction
+    // Determine the offset based on direction to simulate scrolling
     switch (direction) {
       case 'up':
-        offsetY = gridSpacing;
+        offsetY = -gridSpacing; // Tiles slide down from above (camera moving up)
         break;
       case 'down':
-        offsetY = -gridSpacing;
+        offsetY = gridSpacing; // Tiles slide up from below (camera moving down)
         break;
       case 'left':
-        offsetX = gridSpacing;
+        offsetX = -gridSpacing; // Tiles slide right from left (camera moving left)
         break;
       case 'right':
-        offsetX = -gridSpacing;
+        offsetX = gridSpacing; // Tiles slide left from right (camera moving right)
         break;
     }
 
@@ -213,7 +213,7 @@ export default class MapScene extends Phaser.Scene {
 
   private updateMap(direction: string) {
     console.log('Updating map for direction:', direction);
-    // Animate the tiles sliding in from the direction of movement
+    // Animate the tiles sliding in from the direction opposite to movement to simulate scrolling
     this.animateTiles(direction);
   }
 
@@ -281,35 +281,17 @@ export default class MapScene extends Phaser.Scene {
         // Update the map tiles with animation
         this.updateMap(direction);
         
-        // Move player sprite
-        this.tweens.add({
-          targets: this.player,
-          x: newX,
-          y: newY,
-          duration: 500,
-          ease: 'Power1',
-          onComplete: () => {
-            this.playerMoving = false;
-            // Update player coordinates in registry
-            const characterData = this.registry.get('characterData') || {};
-            characterData.xCoord = (characterData.xCoord || 0) + gridX;
-            characterData.yCoord = (characterData.yCoord || 0) + gridY;
-            this.registry.set('characterData', characterData);
-            console.log(`Updated player position to grid (${characterData.xCoord}, ${characterData.yCoord})`);
-            
-            // Update the grid tiles around the player's new position
-            this.updateGridTiles(characterData.xCoord, characterData.yCoord);
-          }
+        // Move player sprite without additional animation
+        this.player.setPosition(newX, newY);
+        // Update player coordinates in registry
+        const characterData = this.registry.get('characterData') || {};
+        this.registry.set('characterData', {
+          ...characterData,
+          xCoord: (characterData.xCoord || 0) + gridX,
+          yCoord: (characterData.yCoord || 0) + gridY
         });
-        
-        // Also move the player name text
-        this.tweens.add({
-          targets: this.playerNameText,
-          x: newX,
-          y: newY + 60,
-          duration: 500,
-          ease: 'Power1'
-        });
+        console.log(`Player moved to (${newX}, ${newY})`);
+        this.playerMoving = false;
       }
     }
   }
