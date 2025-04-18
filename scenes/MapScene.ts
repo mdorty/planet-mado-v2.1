@@ -36,6 +36,9 @@ export default class MapScene extends Phaser.Scene {
   }
 
   create() {
+    // Set background color to white
+    this.cameras.main.setBackgroundColor('#ffffff');
+    
     const centerX = this.cameras.main.width / 2;
     const centerY = this.cameras.main.height / 2;
     const tileSize = 80; // Size of each tile
@@ -105,8 +108,8 @@ export default class MapScene extends Phaser.Scene {
   }
 
   update() {
-    // Keep camera centered on the grid
-    this.cameras.main.centerOn(this.cameras.main.width / 2, this.cameras.main.height / 2);
+    // Keep camera centered on the player
+    this.cameras.main.centerOn(this.player.x, this.player.y);
     
     // Keep the player name text below the player
     if (this.playerNameText && this.player) {
@@ -164,6 +167,9 @@ export default class MapScene extends Phaser.Scene {
             characterData.yCoord = gridY;
             this.registry.set('characterData', characterData);
             console.log(`Updated player position to grid (${gridX}, ${gridY})`);
+            
+            // Update the grid tiles around the player's new position
+            this.updateGridTiles(gridX, gridY);
           }
         });
         
@@ -175,6 +181,35 @@ export default class MapScene extends Phaser.Scene {
           duration: 300,
           ease: 'Power1'
         });
+      }
+    }
+  }
+
+  // Updates the grid tiles based on player's new position
+  private updateGridTiles(playerGridX: number, playerGridY: number) {
+    const tileSize = 80;
+    const gridSpacing = 160;
+    
+    // Define the 3x3 grid layout
+    // This would typically come from a map data source based on player position
+    // For now, we're using a simple pattern
+    const layout = [
+      [1, 0, 1],
+      [0, 0, 0],
+      [1, 0, 1]
+    ];
+    
+    // Update existing tiles
+    for (let y = 0; y < 3; y++) {
+      for (let x = 0; x < 3; x++) {
+        // Calculate position with spacing
+        const posX = this.player.x + (x - 1) * gridSpacing;
+        const posY = this.player.y + (y - 1) * gridSpacing;
+        
+        // Update tile position
+        if (this.tileGrid[y] && this.tileGrid[y][x]) {
+          this.tileGrid[y][x].setPosition(posX, posY);
+        }
       }
     }
   }
