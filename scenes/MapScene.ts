@@ -319,6 +319,7 @@ export default class MapScene extends Phaser.Scene {
   // Creates the power level display on the left side of the map
   private createPowerLevelDisplay() {
     const characterData = this.registry.get('characterData') || {};
+    console.log('Character Data in Registry (createPowerLevelDisplay):', characterData);
     const powerLevel = characterData.currentPowerlevel || characterData.powerLevel || 0;
     const basePowerLevel = characterData.basePowerlevel || characterData.basePowerLevel || 0;
     const percentage = basePowerLevel > 0 ? Math.round((powerLevel / basePowerLevel) * 100) : 0;
@@ -373,6 +374,7 @@ export default class MapScene extends Phaser.Scene {
   // Updates the power level display with current character data
   private updatePowerLevelDisplay() {
     const characterData = this.registry.get('characterData') || {};
+    console.log('Character Data in Registry (updatePowerLevelDisplay):', characterData);
     const powerLevel = characterData.currentPowerlevel || characterData.powerLevel || 0;
     const basePowerLevel = characterData.basePowerlevel || characterData.basePowerLevel || 0;
     const percentage = basePowerLevel > 0 ? Math.round((powerLevel / basePowerLevel) * 100) : 0;
