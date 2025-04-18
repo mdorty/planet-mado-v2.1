@@ -17,31 +17,10 @@ interface CharacterPhaserDisplayProps {
 
 const CharacterPhaserDisplay = ({ characterData, mapData, gameConfig }: CharacterPhaserDisplayProps) => {
   const gameRef = useRef<Phaser.Game | null>(null);
-  const [currentConfig, setCurrentConfig] = useState(gameConfig);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setCurrentConfig({
-        ...currentConfig,
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-      if (gameRef.current) {
-        gameRef.current.scale.resize(window.innerWidth, window.innerHeight);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    handleResize();
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [currentConfig]);
 
   useEffect(() => {
     if (!gameRef.current) {
-      gameRef.current = new Phaser.Game(currentConfig);
+      gameRef.current = new Phaser.Game(gameConfig);
     }
 
     return () => {
@@ -50,7 +29,7 @@ const CharacterPhaserDisplay = ({ characterData, mapData, gameConfig }: Characte
         gameRef.current = null;
       }
     };
-  }, [currentConfig]);
+  }, [gameConfig]);
 
   return (
     <div id="game-container" className="w-full h-full">
