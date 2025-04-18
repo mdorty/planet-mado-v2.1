@@ -75,6 +75,11 @@ export default class MapScene extends Phaser.Scene {
         tile.setDisplaySize(tileSize, tileSize);
         tile.setDepth(0);
         
+        // Make grass tiles interactive with pointer cursor
+        if (layout[y][x] === 0) { // If it's a grass tile
+          tile.setInteractive({ cursor: 'pointer' });
+        }
+        
         // Add to grid
         row.push(tile);
       }
@@ -115,43 +120,105 @@ export default class MapScene extends Phaser.Scene {
     if (this.playerNameText && this.player) {
       this.playerNameText.setPosition(this.player.x, this.player.y + 60);
     }
+    
+    // Update cursor based on what's under the mouse
+    this.updateCursorStyle();
+  }
+  
+  // Updates the cursor style based on what's under the mouse
+  private updateCursorStyle() {
+    const pointer = this.input.activePointer;
+    const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+    const gridSpacing = 160;
+    
+    // Calculate relative grid coordinates
+    const relativeX = worldPoint.x - this.player.x;
+    const relativeY = worldPoint.y - this.player.y;
+    
+    // Convert to grid coordinates (-1, 0, 1)
+    const gridX = Math.round(relativeX / gridSpacing);
+    const gridY = Math.round(relativeY / gridSpacing);
+    
+    // Convert to layout array indices
+    const layoutX = gridX + 1; // -1,0,1 -> 0,1,2
+    const layoutY = gridY + 1; // -1,0,1 -> 0,1,2
+    
+    // Check if it's a valid position and an adjacent grass tile
+    const layout = [
+      [1, 0, 1],
+      [0, 0, 0],
+      [1, 0, 1]
+    ];
+    
+    // Only change cursor if it's within the grid
+    if (layoutX >= 0 && layoutX < 3 && layoutY >= 0 && layoutY < 3) {
+      // Check if it's adjacent to the player
+      const isAdjacent = (Math.abs(gridX) === 1 && gridY === 0) || 
+                         (Math.abs(gridY) === 1 && gridX === 0);
+      
+      // Check if it's a grass tile
+      const isGrass = layout[layoutY][layoutX] === 0;
+      
+      // Set cursor style based on whether the tile is clickable
+      if (isAdjacent && isGrass) {
+        this.input.setDefaultCursor('pointer');
+      } else {
+        this.input.setDefaultCursor('default');
+      }
+    } else {
+      this.input.setDefaultCursor('default');
+    }
   }
 
   private handleClick(pointer: Phaser.Input.Pointer) {
+    // Get the world point where the player clicked
     const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
     const tileSize = 80;
     const gridSpacing = 160;
-    const centerX = this.cameras.main.width / 2;
-    const centerY = this.cameras.main.height / 2;
     
-    // Calculate grid coordinates (0-2) with the wider spacing
-    const gridX = Math.round((worldPoint.x - centerX) / gridSpacing + 1);
-    const gridY = Math.round((worldPoint.y - centerY) / gridSpacing + 1);
+    // Calculate grid coordinates relative to the player's current position
+    // This is important because the camera follows the player
+    const relativeX = worldPoint.x - this.player.x;
+    const relativeY = worldPoint.y - this.player.y;
     
-    // Calculate player's current grid position
-    const playerGridX = Math.round((this.player.x - centerX) / gridSpacing + 1);
-    const playerGridY = Math.round((this.player.y - centerY) / gridSpacing + 1);
+    // Convert to grid coordinates (-1, 0, 1) for the 3x3 grid around player
+    const gridX = Math.round(relativeX / gridSpacing);
+    const gridY = Math.round(relativeY / gridSpacing);
     
+    // Get the player's current grid coordinates (always 0,0 in relative terms)
+    const playerGridX = 0;
+    const playerGridY = 0;
+    
+    // For debugging
     console.log(`Clicked grid: (${gridX}, ${gridY}), Player at: (${playerGridX}, ${playerGridY})`);
     
+    // Define the 3x3 grid layout (0 = grass/walkable, 1 = tree/obstacle)
+    const layout = [
+      [1, 0, 1],
+      [0, 0, 0],
+      [1, 0, 1]
+    ];
+    
+    // Convert relative grid coordinates to layout array indices
+    const layoutX = gridX + 1; // -1,0,1 -> 0,1,2
+    const layoutY = gridY + 1; // -1,0,1 -> 0,1,2
+    
     // Check if the clicked position is within the 3x3 grid
-    if (gridX >= 0 && gridX < 3 && gridY >= 0 && gridY < 3) {
-      // Check if the clicked tile is adjacent to the player
-      const isAdjacent = (Math.abs(gridX - playerGridX) === 1 && gridY === playerGridY) || 
-                         (Math.abs(gridY - playerGridY) === 1 && gridX === playerGridX);
+    if (layoutX >= 0 && layoutX < 3 && layoutY >= 0 && layoutY < 3) {
+      // Check if the clicked tile is adjacent to the player (which is at 0,0 in relative terms)
+      const isAdjacent = (Math.abs(gridX) === 1 && gridY === 0) || 
+                         (Math.abs(gridY) === 1 && gridX === 0);
       
       // Check if the clicked tile is a grass tile (not a tree)
-      const layout = [
-        [1, 0, 1],
-        [0, 0, 0],
-        [1, 0, 1]
-      ];
-      const isGrass = layout[gridY][gridX] === 0;
+      const isGrass = layout[layoutY][layoutX] === 0;
+      
+      // For debugging
+      console.log(`Layout position: (${layoutX}, ${layoutY}), isAdjacent: ${isAdjacent}, isGrass: ${isGrass}`);
       
       if (isAdjacent && isGrass) {
         // Calculate the new position with the wider spacing
-        const newX = centerX + (gridX - 1) * gridSpacing;
-        const newY = centerY + (gridY - 1) * gridSpacing;
+        const newX = this.player.x + gridX * gridSpacing;
+        const newY = this.player.y + gridY * gridSpacing;
         
         // Move player to the clicked tile
         this.tweens.add({
@@ -163,13 +230,14 @@ export default class MapScene extends Phaser.Scene {
           onComplete: () => {
             // Update character data with new coordinates
             const characterData = this.registry.get('characterData') || {};
-            characterData.xCoord = gridX;
-            characterData.yCoord = gridY;
+            // We need to update the absolute coordinates, not the relative ones
+            characterData.xCoord = (characterData.xCoord || 0) + gridX;
+            characterData.yCoord = (characterData.yCoord || 0) + gridY;
             this.registry.set('characterData', characterData);
-            console.log(`Updated player position to grid (${gridX}, ${gridY})`);
+            console.log(`Updated player position to grid (${characterData.xCoord}, ${characterData.yCoord})`);
             
             // Update the grid tiles around the player's new position
-            this.updateGridTiles(gridX, gridY);
+            this.updateGridTiles(characterData.xCoord, characterData.yCoord);
           }
         });
         
@@ -199,16 +267,27 @@ export default class MapScene extends Phaser.Scene {
       [1, 0, 1]
     ];
     
-    // Update existing tiles
+    // Update existing tiles to be positioned relative to the player
     for (let y = 0; y < 3; y++) {
       for (let x = 0; x < 3; x++) {
-        // Calculate position with spacing
+        // Calculate position with spacing relative to player
         const posX = this.player.x + (x - 1) * gridSpacing;
         const posY = this.player.y + (y - 1) * gridSpacing;
         
         // Update tile position
         if (this.tileGrid[y] && this.tileGrid[y][x]) {
+          // Determine tile type based on layout
+          const tileType = layout[y][x] === 1 ? 'tree' : 'grass';
+          
+          // Update tile position
           this.tileGrid[y][x].setPosition(posX, posY);
+          
+          // Make sure grass tiles are interactive with pointer cursor
+          if (layout[y][x] === 0) { // If it's a grass tile
+            this.tileGrid[y][x].setInteractive({ cursor: 'pointer' });
+          } else {
+            this.tileGrid[y][x].disableInteractive();
+          }
         }
       }
     }
