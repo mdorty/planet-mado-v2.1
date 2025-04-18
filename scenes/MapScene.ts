@@ -340,25 +340,25 @@ export default class MapScene extends Phaser.Scene {
     
     // Create a graphics object for the progress arc (green outline only, no background)
     const progressArc = this.add.graphics();
-    progressArc.lineStyle(6, 0x00FF00, 1); // Green stroke, slightly thinner for smaller size
+    progressArc.lineStyle(4, 0x00FF00, 1); // Green stroke, thinner for smaller size
     // Draw an arc for the progress based on percentage
     const angle = (percentage / 100) * 360;
     progressArc.beginPath();
-    progressArc.arc(0, 0, 52.5, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false); // Radius reduced by 25% from 70 to 52.5
+    progressArc.arc(0, 0, 39.375, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false); // Radius reduced by another 25% from 52.5 to 39.375
     progressArc.stroke();
     this.powerLevelContainer.add(progressArc);
     
     // Add the percentage text in the center of the circle
     this.powerLevelText = this.add.text(0, 0, `${percentage}%`, {
       fontFamily: 'Anton, cursive',
-      fontSize: '18px', // Reduced font size slightly for smaller circle
+      fontSize: '14px', // Reduced font size further for smaller circle
       color: '#000000',
       align: 'center'
     }).setOrigin(0.5);
     this.powerLevelContainer.add(this.powerLevelText);
     
     // Add combined power level text below the circle in the format 'current / base'
-    this.currentPowerLevelText = this.add.text(0, 50, `${powerLevel.toLocaleString()} / ${basePowerLevel.toLocaleString()}`, {
+    this.currentPowerLevelText = this.add.text(0, 60, `${powerLevel.toLocaleString()} / ${basePowerLevel.toLocaleString()}`, {
       fontFamily: 'Roboto, sans-serif',
       fontSize: '14px',
       color: '#000000',
@@ -400,10 +400,10 @@ export default class MapScene extends Phaser.Scene {
       const progressArc = this.powerLevelContainer.list[0] as Phaser.GameObjects.Graphics;
       if (progressArc) {
         progressArc.clear();
-        progressArc.lineStyle(6, 0x00FF00, 1); // Green stroke, slightly thinner for smaller size
+        progressArc.lineStyle(4, 0x00FF00, 1); // Green stroke, thinner for smaller size
         const angle = (percentage / 100) * 360;
         progressArc.beginPath();
-        progressArc.arc(0, 0, 52.5, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false); // Radius reduced by 25% from 70 to 52.5
+        progressArc.arc(0, 0, 39.375, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false); // Radius reduced by another 25% from 52.5 to 39.375
         progressArc.stroke();
       }
     }
