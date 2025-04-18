@@ -340,25 +340,25 @@ export default class MapScene extends Phaser.Scene {
     
     // Create a graphics object for the progress arc (green outline only, no background)
     const progressArc = this.add.graphics();
-    progressArc.lineStyle(8, 0x00FF00, 1); // Green stroke
+    progressArc.lineStyle(6, 0x00FF00, 1); // Green stroke, slightly thinner for smaller size
     // Draw an arc for the progress based on percentage
     const angle = (percentage / 100) * 360;
     progressArc.beginPath();
-    progressArc.arc(0, 0, 70, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false);
+    progressArc.arc(0, 0, 52.5, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false); // Radius reduced by 25% from 70 to 52.5
     progressArc.stroke();
     this.powerLevelContainer.add(progressArc);
     
     // Add the percentage text in the center of the circle
     this.powerLevelText = this.add.text(0, 0, `${percentage}%`, {
       fontFamily: 'Anton, cursive',
-      fontSize: '24px',
+      fontSize: '18px', // Reduced font size slightly for smaller circle
       color: '#000000',
       align: 'center'
     }).setOrigin(0.5);
     this.powerLevelContainer.add(this.powerLevelText);
     
-    // Add current power level text below the circle
-    this.currentPowerLevelText = this.add.text(0, 50, `Current: ${powerLevel.toLocaleString()}`, {
+    // Add combined power level text below the circle in the format 'current / base'
+    this.currentPowerLevelText = this.add.text(0, 50, `${powerLevel.toLocaleString()} / ${basePowerLevel.toLocaleString()}`, {
       fontFamily: 'Roboto, sans-serif',
       fontSize: '14px',
       color: '#000000',
@@ -366,17 +366,14 @@ export default class MapScene extends Phaser.Scene {
     }).setOrigin(0.5);
     this.powerLevelContainer.add(this.currentPowerLevelText);
     
-    // Add base power level text below the current power level
-    this.basePowerLevelText = this.add.text(0, 70, `Base: ${basePowerLevel.toLocaleString()}`, {
-      fontFamily: 'Roboto, sans-serif',
-      fontSize: '14px',
-      color: '#000000',
-      align: 'center'
-    }).setOrigin(0.5);
-    this.powerLevelContainer.add(this.basePowerLevelText);
+    // Remove the separate base power level text since it's now combined above
+    if (this.basePowerLevelText) {
+      this.basePowerLevelText.destroy();
+      (this.basePowerLevelText as Phaser.GameObjects.Text | undefined) = undefined;
+    }
   }
-  
-  // Updates the power level display with current character data
+
+  // Updates the power level display if data was set after initialization
   private updatePowerLevelDisplay() {
     const characterData = this.registry.get('characterData') || {};
     console.log('Character Data in Registry (updatePowerLevelDisplay):', characterData);
@@ -387,22 +384,26 @@ export default class MapScene extends Phaser.Scene {
     if (this.powerLevelText) {
       this.powerLevelText.setText(`${percentage}%`);
     }
+    
     if (this.currentPowerLevelText) {
-      this.currentPowerLevelText.setText(`Current: ${powerLevel.toLocaleString()}`);
-    }
-    if (this.basePowerLevelText) {
-      this.basePowerLevelText.setText(`Base: ${basePowerLevel.toLocaleString()}`);
+      this.currentPowerLevelText.setText(`${powerLevel.toLocaleString()} / ${basePowerLevel.toLocaleString()}`);
     }
     
-    // Update the progress arc
+    // Remove the separate base power level text if it exists
+    if (this.basePowerLevelText) {
+      this.basePowerLevelText.destroy();
+      (this.basePowerLevelText as Phaser.GameObjects.Text | undefined) = undefined;
+    }
+    
+    // Redraw the progress arc
     if (this.powerLevelContainer) {
-      const progressArc = this.powerLevelContainer.list.find(item => item.type === 'Graphics') as Phaser.GameObjects.Graphics;
+      const progressArc = this.powerLevelContainer.list[0] as Phaser.GameObjects.Graphics;
       if (progressArc) {
         progressArc.clear();
-        progressArc.lineStyle(8, 0x00FF00, 1);
+        progressArc.lineStyle(6, 0x00FF00, 1); // Green stroke, slightly thinner for smaller size
         const angle = (percentage / 100) * 360;
         progressArc.beginPath();
-        progressArc.arc(0, 0, 70, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false);
+        progressArc.arc(0, 0, 52.5, Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(-90 + angle), false); // Radius reduced by 25% from 70 to 52.5
         progressArc.stroke();
       }
     }
