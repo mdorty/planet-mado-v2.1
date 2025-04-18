@@ -171,64 +171,6 @@ export default class MapScene extends Phaser.Scene {
     }
   }
 
-  private animateTiles(direction: string) {
-    const duration = 500; // Animation duration in milliseconds
-    const gridSpacing = 160; // Space between tiles
-    let offsetX = 0;
-    let offsetY = 0;
-
-    // Determine the offset based on direction to simulate scrolling
-    switch (direction) {
-      case 'up':
-        offsetY = -gridSpacing; // Tiles slide down from above (camera moving up)
-        break;
-      case 'down':
-        offsetY = gridSpacing; // Tiles slide up from below (camera moving down)
-        break;
-      case 'left':
-        offsetX = -gridSpacing; // Tiles slide right from left (camera moving left)
-        break;
-      case 'right':
-        offsetX = gridSpacing; // Tiles slide left from right (camera moving right)
-        break;
-    }
-
-    // Animate each tile
-    for (let y = 0; y < this.tileGrid.length; y++) {
-      for (let x = 0; x < this.tileGrid[y].length; x++) {
-        const tile = this.tileGrid[y][x];
-        // Set initial position (offset from final position)
-        tile.setPosition(tile.x + offsetX, tile.y + offsetY);
-        // Animate to final position
-        this.tweens.add({
-          targets: tile,
-          x: tile.x - offsetX,
-          y: tile.y - offsetY,
-          duration: duration,
-          ease: 'Power2'
-        });
-      }
-    }
-  }
-
-  private updateMap(direction: string) {
-    console.log('Updating map for direction:', direction);
-    // Animate the tiles sliding in from the direction opposite to movement to simulate scrolling
-    this.animateTiles(direction);
-  }
-
-  private updateGridTiles() {
-    const gridSpacing = 160;
-    // Update each tile's position relative to the player
-    for (let y = 0; y < this.tileGrid.length; y++) {
-      for (let x = 0; x < this.tileGrid[y].length; x++) {
-        const posX = this.player.x + (x - 1) * gridSpacing;
-        const posY = this.player.y + (y - 1) * gridSpacing;
-        this.tileGrid[y][x].setPosition(posX, posY);
-      }
-    }
-  }
-
   private handleClick(pointer: Phaser.Input.Pointer) {
     // Get the world point where the player clicked
     const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
@@ -258,56 +200,102 @@ export default class MapScene extends Phaser.Scene {
       [1, 0, 1]
     ];
     
-    // Convert relative grid coordinates to layout array indices
-    const layoutX = gridX + 1; // -1,0,1 -> 0,1,2
-    const layoutY = gridY + 1; // -1,0,1 -> 0,1,2
+    // Check if the clicked position is adjacent to the player (can only move 1 tile at a time)
+    const isAdjacent = (Math.abs(gridX) === 1 && gridY === 0) || 
+                       (Math.abs(gridY) === 1 && gridX === 0);
     
-    // Check if the clicked position is within the 3x3 grid
-    if (layoutX >= 0 && layoutX < 3 && layoutY >= 0 && layoutY < 3) {
-      // Check if the clicked tile is adjacent to the player (which is at 0,0 in relative terms)
-      const isAdjacent = (Math.abs(gridX) === 1 && gridY === 0) || 
-                         (Math.abs(gridY) === 1 && gridX === 0);
+    // Convert to layout array index
+    const layoutX = gridX + 1; // Convert -1,0,1 to 0,1,2 for array index
+    const layoutY = gridY + 1; // Convert -1,0,1 to 0,1,2 for array index
+    
+    // Check if the clicked tile is a grass tile (walkable)
+    const isGrassTile = layoutX >= 0 && layoutX < 3 && layoutY >= 0 && layoutY < 3 && layout[layoutY][layoutX] === 0;
+    
+    // Move the player if it's an adjacent grass tile
+    if (isAdjacent && isGrassTile && !this.playerMoving) {
+      // Calculate the absolute position to move to
+      const newX = this.player.x + gridX * gridSpacing;
+      const newY = this.player.y + gridY * gridSpacing;
       
-      // Check if the clicked tile is a grass tile (not a tree)
-      const isGrass = layout[layoutY][layoutX] === 0;
+      // Determine the direction of movement
+      let direction = '';
+      if (gridX === -1) direction = 'left';
+      else if (gridX === 1) direction = 'right';
+      else if (gridY === -1) direction = 'up';
+      else if (gridY === 1) direction = 'down';
       
-      // For debugging
-      console.log(`Layout position: (${layoutX}, ${layoutY}), isAdjacent: ${isAdjacent}, isGrass: ${isGrass}`);
+      // Move player and update map
+      console.log(`Moving player ${direction}`);
+      this.playerMoving = true;
       
-      if (isAdjacent && isGrass) {
-        // Calculate the new position with the wider spacing
-        const newX = this.player.x + gridX * gridSpacing;
-        const newY = this.player.y + gridY * gridSpacing;
-        
-        // Determine the direction of movement
-        let direction = '';
-        if (gridX === -1) direction = 'left';
-        else if (gridX === 1) direction = 'right';
-        else if (gridY === -1) direction = 'up';
-        else if (gridY === 1) direction = 'down';
+      // Move player to the clicked tile
+      this.tweens.add({
+        targets: this.player,
+        x: newX,
+        y: newY,
+        duration: 300,
+        ease: 'Power1',
+        onComplete: () => {
+          this.playerMoving = false;
+          // Update player coordinates in registry
+          const characterData = this.registry.get('characterData') || {};
+          characterData.xCoord = (characterData.xCoord || 0) + gridX;
+          characterData.yCoord = (characterData.yCoord || 0) + gridY;
+          this.registry.set('characterData', characterData);
+          console.log(`Updated player position to grid (${characterData.xCoord}, ${characterData.yCoord})`);
+          
+          // Update the grid tiles around the player's new position
+          this.updateGridTiles(characterData.xCoord, characterData.yCoord);
+        }
+      });
+      
+      // Also move the player name text
+      this.tweens.add({
+        targets: this.playerNameText,
+        x: newX,
+        y: newY + 60,
+        duration: 300,
+        ease: 'Power1'
+      });
+    }
+  }
 
-        // Move player and update map
-        console.log(`Moving player ${direction}`);
-        this.playerMoving = true;
+  // Updates the grid tiles based on player's new position
+  private updateGridTiles(playerGridX: number, playerGridY: number) {
+    const tileSize = 80;
+    const gridSpacing = 160;
+    
+    // Define the 3x3 grid layout
+    // This would typically come from a map data source based on player position
+    // For now, we're using a simple pattern
+    const layout = [
+      [1, 0, 1],
+      [0, 0, 0],
+      [1, 0, 1]
+    ];
+    
+    // Update existing tiles to be positioned relative to the player
+    for (let y = 0; y < 3; y++) {
+      for (let x = 0; x < 3; x++) {
+        // Calculate position with spacing relative to player
+        const posX = this.player.x + (x - 1) * gridSpacing;
+        const posY = this.player.y + (y - 1) * gridSpacing;
         
-        // Update the map tiles with animation
-        this.updateMap(direction);
-        
-        // Move player sprite without additional animation
-        this.player.setPosition(newX, newY);
-        // Update player coordinates in registry
-        const characterData = this.registry.get('characterData') || {};
-        this.registry.set('characterData', {
-          ...characterData,
-          xCoord: (characterData.xCoord || 0) + gridX,
-          yCoord: (characterData.yCoord || 0) + gridY
-        });
-        console.log(`Player moved to (${newX}, ${newY})`);
-        
-        // Update the grid tiles' positions relative to the player
-        this.updateGridTiles();
-        
-        this.playerMoving = false;
+        // Update tile position
+        if (this.tileGrid[y] && this.tileGrid[y][x]) {
+          // Determine tile type based on layout
+          const tileType = layout[y][x] === 1 ? 'tree' : 'grass';
+          
+          // Update tile position
+          this.tileGrid[y][x].setPosition(posX, posY);
+          
+          // Make sure grass tiles are interactive with pointer cursor
+          if (layout[y][x] === 0) { // If it's a grass tile
+            this.tileGrid[y][x].setInteractive({ cursor: 'pointer' });
+          } else {
+            this.tileGrid[y][x].disableInteractive();
+          }
+        }
       }
     }
   }
