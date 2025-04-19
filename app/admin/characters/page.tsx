@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { trpc } from '@/lib/trpc/client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Accordion, Form, Input, Textarea, Select, Button } from '@heroui/react';
+import { Accordion, AccordionItem, Form, Input, Textarea, Select, Button } from '@heroui/react';
 
 export default function AdminCharactersPage() {
   const { data: session, status } = useSession();
@@ -155,8 +155,13 @@ export default function AdminCharactersPage() {
           <h2 className="text-xl font-anton mb-4 text-pm-white">Manage Characters</h2>
           {charError && <p className="text-red-500 mb-4 font-roboto">{charError}</p>}
           
-          <Accordion className="mb-6">
-  <Form onSubmit={handleCharacterSubmit} className="space-y-4 font-roboto">
+          <Accordion className="mb-6" variant="splitted">
+  <AccordionItem
+    key="character-form"
+    aria-label={charForm.id ? "Edit Character" : "Create New Character"}
+    title={charForm.id ? "Edit Character" : "Create New Character"}
+  >
+    <Form onSubmit={handleCharacterSubmit} className="space-y-4 font-roboto">
               <div>
                 <label htmlFor="userId" className="block font-roboto font-medium mb-1 text-pm-white">User</label>
                 <select
@@ -336,6 +341,7 @@ export default function AdminCharactersPage() {
                 )}
               </div>
             </Form>
+  </AccordionItem>
 </Accordion>
 
           <h3 className="text-lg font-anton mt-6 mb-2 text-pm-white">Current Characters</h3>
