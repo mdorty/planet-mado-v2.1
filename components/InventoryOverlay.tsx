@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { trpc } from "../utils/trpc";
-import { Spinner, Tooltip } from "@hero-ui/react";
+import { Spinner, Tooltip } from "@heroui/react";
 
 // Dynamically import Phaser to avoid SSR issues
 const PhaserGame = dynamic(() => import("./CharacterPhaserDisplay"), { ssr: false });
