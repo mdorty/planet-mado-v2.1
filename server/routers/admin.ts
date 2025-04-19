@@ -123,4 +123,93 @@ export const adminRouter = router({
         throw new Error(`Failed to create user: ${(error as Error).message}`);
       }
     }),
+
+  // Admin-only: create character
+  createCharacter: procedure
+    .input(z.object({
+      name: z.string(),
+      race: z.string().optional(),
+      planet: z.string().optional(),
+      alignment: z.number().optional(),
+      description: z.string().optional(),
+      userId: z.string().optional(),
+      level: z.number().optional(),
+      currentPowerlevel: z.number().optional(),
+      basePowerlevel: z.number().optional(),
+      hiddenPowerlevel: z.number().optional(),
+      equippedItems: z.string().optional(),
+      items: z.string().optional(),
+      peopleYouHaveBeenTo: z.string().optional(),
+      jobs: z.string().optional(),
+      // Add other fields as needed
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        let userId = input.userId;
+        if (!userId) {
+          let defaultUser = await db.user.findFirst({
+            where: { email: 'default@test.com' },
+            select: { id: true }
+          });
+          if (!defaultUser) {
+            defaultUser = await db.user.create({
+              data: {
+                username: 'default-test-user',
+                email: 'default@test.com',
+                password: 'testpassword',
+                role: 'user'
+              },
+              select: { id: true }
+            });
+          }
+          userId = defaultUser.id;
+        }
+        const userExists = await db.user.findUnique({
+          where: { id: userId },
+          select: { id: true }
+        });
+        if (!userExists) {
+          throw new Error(`User with ID ${userId} not found`);
+        }
+        const newCharacter = await db.character.create({
+          data: {
+            name: input.name,
+            race: input.race,
+            planet: input.planet,
+            alignment: input.alignment,
+            description: input.description,
+            userId,
+            level: input.level,
+            currentPowerlevel: input.currentPowerlevel,
+            basePowerlevel: input.basePowerlevel,
+            hiddenPowerlevel: input.hiddenPowerlevel,
+            equippedItems: input.equippedItems,
+            items: input.items,
+            peopleYouHaveBeenTo: input.peopleYouHaveBeenTo,
+            jobs: input.jobs,
+            // Add other fields as needed
+          },
+          select: {
+            id: true,
+            name: true,
+            race: true,
+            planet: true,
+            alignment: true,
+            description: true,
+            userId: true,
+            level: true,
+            currentPowerlevel: true,
+            basePowerlevel: true,
+            hiddenPowerlevel: true,
+            equippedItems: true,
+            items: true,
+            peopleYouHaveBeenTo: true,
+            jobs: true,
+          }
+        });
+        return newCharacter;
+      } catch (error: unknown) {
+        throw new Error(`Failed to create character: ${(error as Error).message}`);
+      }
+    }),
 });
