@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { trpc } from '@/lib/trpc/client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Accordion } from '@/components/ui/Accordion';
+import { Accordion } from '@heroui/react';
 
 export default function AdminCharactersPage() {
   const { data: session, status } = useSession();
@@ -155,9 +155,8 @@ export default function AdminCharactersPage() {
           <h2 className="text-xl font-anton mb-4 text-pm-white">Manage Characters</h2>
           {charError && <p className="text-red-500 mb-4 font-roboto">{charError}</p>}
           
-          <Accordion 
-            title={charForm.id ? "Edit Character" : "Create New Character"} 
-            defaultOpen={false}
+          <Accordion
+            title={charForm.id ? "Edit Character" : "Create New Character"}
             className="mb-6"
           >
             <form onSubmit={handleCharacterSubmit} className="space-y-4 font-roboto">

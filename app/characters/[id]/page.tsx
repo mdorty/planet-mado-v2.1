@@ -327,27 +327,14 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
               {isModalOpen && (
                 <div className="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                   <div className="relative w-full h-full flex items-center justify-center">
-                    <CharacterPhaserDisplay 
+                    <CharacterPhaserDisplayWithInventory 
                       characterData={{ 
                         currentPowerlevel: character.currentPowerlevel || 0, 
                         basePowerlevel: character.basePowerlevel || 0, 
-                        name: character.name || 'Unknown'
+                        name: character.name || 'Unknown',
+                        id: character.id
                       }} 
                       mapData={characterMap} 
-                      gameConfig={{
-                        width: window.innerWidth,
-                        height: window.innerHeight,
-                        type: Phaser.AUTO,
-                        scene: [MapScene],
-                        parent: 'game-container',
-                        physics: {
-                          default: 'arcade',
-                          arcade: {
-                            gravity: { x: 0, y: 0 },
-                            debug: false,
-                          },
-                        },
-                      }}
                     />
                     <button
                       onClick={() => setIsModalOpen(false)}
