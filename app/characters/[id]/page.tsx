@@ -123,15 +123,14 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
   const characterMap = maps?.find((map: any) => map.name.includes(character.name)) || maps?.[0];
 
   return (
-    <>
-      <div className="min-h-screen p-4">
-        <div className="container mx-auto max-w-4xl">
-          <h1 className="text-3xl font-anton text-pm-white mb-6">Character Details</h1>
-          <Link href="/characters" className="inline-block mb-4 hover:underline font-roboto text-pm-white">
-            Back to Characters
-          </Link>
-
-          {character ? (
+    <div className="min-h-screen p-4">
+      <div className="container mx-auto max-w-4xl">
+        <h1 className="text-3xl font-anton text-pm-white mb-6">Character Details</h1>
+        <Link href="/characters" className="inline-block mb-4 hover:underline font-roboto text-pm-white">
+          Back to Characters
+        </Link>
+        {character ? (
+          <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {/* Basic Info Card */}
               <Card className="bg-pm-blue rounded shadow-md text-pm-white">
@@ -372,9 +371,9 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
                 </Link>
               </div>
             )}
-          ) : null}
-        </div>
+          </>
+        ) : null}
       </div>
-    </>
+    </div>
   );
 }
