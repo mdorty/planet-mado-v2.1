@@ -155,11 +155,11 @@ const AdminItemsPage = () => {
   });
   const [editingItem, setEditingItem] = useState<Item | null>(null);
 
-  const { data: items, refetch, isLoading } = trpc.item.getAll.useQuery(undefined, {
-    staleTime: 30 * 1000, // Data remains fresh for 30 seconds
-    refetchOnWindowFocus: false,
-    retry: 1
-  });
+  const { data: items, refetch, isLoading } = trpc.item.getAll.useQuery<Item[]>(undefined, {
+  staleTime: 30 * 1000, // Data remains fresh for 30 seconds
+  refetchOnWindowFocus: false,
+  retry: 1
+});
 
   const createItem = trpc.item.create.useMutation({
     onSuccess: () => {

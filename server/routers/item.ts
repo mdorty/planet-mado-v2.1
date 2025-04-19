@@ -9,20 +9,20 @@ export const itemRouter = router({
         orderBy: { name: 'asc' },
         // Select only needed fields to reduce payload size
         select: {
-          id: true,
-          name: true,
-          type: true,
-          description: true,
-          image: true,
-          effect: true,
-          value: true,
-          durability: true,
-          stackable: true,
-          maxStackSize: true,
-          usableInBattle: true,
-          equipmentSlot: true,
-          lootChance: true
-        }
+  id: true,
+  name: true,
+  type: true,
+  description: true,
+  image: true,
+  effect: true,
+  value: true,
+  durability: true,
+  stackable: true,
+  maxStackSize: true,
+  usableInBattle: true,
+  equipmentSlot: true,
+  lootChance: true
+}
       });
     }),
 

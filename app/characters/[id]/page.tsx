@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import { Button, Card, CardHeader, CardBody } from '@heroui/react';
 import MapScene from '../../../scenes/MapScene';
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 
 interface CharacterPhaserDisplayProps {
   characterData: any;
