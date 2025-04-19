@@ -60,12 +60,12 @@ export default function CharactersPage() {
   return (
     <HeroUIProvider>
       <div className="container mx-auto p-8 max-w-6xl">
-        <h1 className="text-3xl font-anton mb-6">My Characters</h1>
+        <h1 className="text-3xl font-anton text-pm-white mb-6">My Characters</h1>
 
         {/* Form to create a new character */}
-        <Card className="bg-pm-white shadow-md rounded-lg p-6 mb-8">
+        <Card className="bg-pm-blue shadow-md rounded-lg p-6 mb-8 text-pm-white">
           <CardHeader className="border-b pb-3 mb-6">
-            <h2 className="text-xl font-anton">Create New Character</h2>
+            <h2 className="text-xl font-anton text-pm-white">Create New Character</h2>
           </CardHeader>
           <CardBody>
             <form onSubmit={handleCreateCharacter} className="flex flex-col gap-4">
@@ -96,15 +96,15 @@ export default function CharactersPage() {
         {/* List of user's characters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {characters.length === 0 ? (
-            <p className="font-roboto text-center col-span-full">You have no characters yet. Create one to get started!</p>
+            <p className="font-roboto text-center col-span-full text-pm-white">You have no characters yet. Create one to get started!</p>
           ) : (
             characters.map((char: any) => (
-              <Card key={char.id} className="bg-pm-white shadow-md rounded-lg overflow-hidden transition-all hover:shadow-lg">
-                <CardHeader className="border-b pb-2 bg-gray-50">
-                  <h3 className="font-anton text-lg truncate">{char.name}</h3>
+              <Card key={char.id} className="bg-pm-blue shadow-md rounded-lg overflow-hidden transition-all hover:shadow-lg text-pm-white">
+                <CardHeader className="border-b pb-2 bg-pm-dark-blue">
+                  <h3 className="font-anton text-lg truncate text-pm-white">{char.name}</h3>
                 </CardHeader>
                 <CardBody className="p-4 flex flex-col gap-2">
-                  <p className="font-roboto text-sm text-gray-600">Power Level: {char.powerLevel || 'N/A'}</p>
+                  <p className="font-roboto text-sm text-pm-cream">Power Level: {char.powerLevel || 'N/A'}</p>
                 </CardBody>
                 <CardFooter className="p-4 pt-0">
                   <Link href={`/characters/${char.id}`}>

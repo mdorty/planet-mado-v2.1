@@ -63,10 +63,10 @@ export default function ProfilePage() {
   return (
     <HeroUIProvider>
       <div className="container mx-auto p-8 max-w-6xl">
-        <h1 className="text-3xl font-anton text-pm-text-dark mb-6">Profile</h1>
-        <Card className="bg-pm-white shadow-md rounded-lg p-6 max-w-lg mx-auto">
+        <h1 className="text-3xl font-anton text-pm-white mb-6">Profile</h1>
+        <Card className="bg-pm-blue shadow-md rounded-lg p-6 max-w-lg mx-auto text-pm-white">
           <CardHeader className="border-b pb-3 mb-6">
-            <h2 className="text-xl font-anton text-pm-text-dark">Change Password</h2>
+            <h2 className="text-xl font-anton text-pm-white">Change Password</h2>
           </CardHeader>
           <CardBody>
             <form onSubmit={handleSubmit} className="space-y-4">

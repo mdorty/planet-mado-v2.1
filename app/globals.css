@@ -84,7 +84,7 @@
 }
 
 body {
-  @apply font-roboto;
+  @apply font-roboto bg-pm-navy text-pm-white;
 }
 
 .container {

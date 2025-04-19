@@ -236,12 +236,12 @@ const AdminItemsPage = () => {
   return (
     <>
       <div className="container mx-auto p-4">
-        <h1 className="font-anton text-3xl mb-6">Admin - Manage Items</h1>
-        <form onSubmit={handleSubmit} className="p-6 rounded-lg shadow-md mb-6 bg-neutral-50">
-          <h2 className="font-anton text-xl mb-4">{editingItem ? "Edit Item" : "Add New Item"}</h2>
+        <h1 className="font-anton text-3xl mb-6 text-pm-white">Admin - Manage Items</h1>
+        <form onSubmit={handleSubmit} className="p-6 rounded-lg shadow-md mb-6 bg-pm-blue text-pm-white">
+          <h2 className="font-anton text-xl mb-4 text-pm-white">{editingItem ? "Edit Item" : "Add New Item"}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Name</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Name</label>
               <Input
                 value={newItem.name}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
@@ -250,7 +250,7 @@ const AdminItemsPage = () => {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Type</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Type</label>
               <Input
                 value={newItem.type}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, type: e.target.value }))}
@@ -259,7 +259,7 @@ const AdminItemsPage = () => {
               />
             </div>
             <div className="md:col-span-2 flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Description</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Description</label>
               <Textarea
                 value={newItem.description}
                 onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
@@ -267,7 +267,7 @@ const AdminItemsPage = () => {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Image URL</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Image URL</label>
               <Input
                 value={newItem.image}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, image: e.target.value }))}
@@ -275,7 +275,7 @@ const AdminItemsPage = () => {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Effect</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Effect</label>
               <Input
                 value={newItem.effect}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, effect: e.target.value }))}
@@ -283,7 +283,7 @@ const AdminItemsPage = () => {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Value</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Value</label>
               <Input
                 type="number"
                 value={newItem.value}
@@ -292,7 +292,7 @@ const AdminItemsPage = () => {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Durability</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Durability</label>
               <Input
                 type="number"
                 value={newItem.durability}
@@ -305,7 +305,7 @@ const AdminItemsPage = () => {
               <label htmlFor="stackable" className="font-roboto font-medium">Stackable</label>
             </div>
             <div className="flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Max Stack Size</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Max Stack Size</label>
               <Input
                 type="number"
                 value={newItem.maxStackSize}
@@ -318,7 +318,7 @@ const AdminItemsPage = () => {
               <label htmlFor="usableInBattle" className="font-roboto font-medium">Usable in Battle</label>
             </div>
             <div className="flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Equipment Slot</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Equipment Slot</label>
               <Input
                 value={newItem.equipmentSlot}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewItem(prev => ({ ...prev, equipmentSlot: e.target.value }))}
@@ -326,7 +326,7 @@ const AdminItemsPage = () => {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="font-roboto font-medium mb-1">Loot Chance (%)</label>
+              <label className="font-roboto font-medium mb-1 text-pm-white">Loot Chance (%)</label>
               <Input
                 type="number"
                 step="0.1"
@@ -345,15 +345,15 @@ const AdminItemsPage = () => {
             </Button>
           )}
         </form>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="font-anton text-xl mb-4">Existing Items</h2>
+        <div className="bg-pm-blue p-6 rounded-lg shadow-md text-pm-white">
+          <h2 className="font-anton text-xl mb-4 text-pm-white">Existing Items</h2>
           {items && items.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {items.map((item: any) => (
-                <div key={item.id} className="border rounded-md p-4 relative group hover:shadow-md transition-shadow">
+                <div key={item.id} className="border border-pm-dark-blue rounded-md p-4 relative group hover:shadow-md transition-shadow bg-pm-navy">
                   <h3 className="font-bold text-lg mb-1">{item.name}</h3>
-                  <p className="text-sm text-gray-600">Type: {item.type}</p>
-                  <p className="text-sm">Value: {item.value}</p>
+                  <p className="text-sm text-pm-cream">Type: {item.type}</p>
+                  <p className="text-sm text-pm-white">Value: {item.value}</p>
                   <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
                     <Button variant="solid" color="primary" onClick={() => handleEdit(item)} className="font-roboto font-medium bg-blue-500 text-white hover:bg-blue-600">Edit</Button>
                     <Button variant="bordered" color="default" onClick={() => handleDelete(item.id)} className="font-roboto font-medium bg-red-600 text-white hover:bg-red-700">Delete</Button>
@@ -362,7 +362,7 @@ const AdminItemsPage = () => {
               ))}
             </div>
           ) : (
-            <p>No items found.</p>
+            <p className="text-pm-white">No items found.</p>
           )}
         </div>
       </div>

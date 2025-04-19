@@ -116,17 +116,17 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
   const characterMap = maps?.find((map: any) => map.name.includes(character.name)) || maps?.[0];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen p-4">
       <div className="container mx-auto max-w-4xl">
-        <h1 className="text-3xl font-anton mb-6">Character Details</h1>
-        <Link href="/characters" className="inline-block mb-4 hover:underline font-roboto">
+        <h1 className="text-3xl font-anton text-pm-white mb-6">Character Details</h1>
+        <Link href="/characters" className="inline-block mb-4 hover:underline font-roboto text-pm-white">
           Back to Characters
         </Link>
 
         {character ? (
-          <Card className="p-6 rounded shadow-md mb-8">
+          <Card className="bg-pm-blue p-6 rounded shadow-md mb-8 text-pm-white">
             <CardHeader className="border-b pb-2 mb-4">
-              <h2 className="text-2xl font-anton">{character.name}</h2>
+              <h2 className="text-2xl font-anton text-pm-white">{character.name}</h2>
             </CardHeader>
             <CardBody className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
