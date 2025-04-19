@@ -4,6 +4,7 @@ import { adminRouter } from './admin';
 import { characterRouter } from './character';
 import { authRouter } from './auth';
 import { itemRouter } from './item';
+import { inventoryRouter } from './inventory';
 // Import other routers here as needed
 
 export const appRouter = router({
@@ -12,6 +13,7 @@ export const appRouter = router({
   character: characterRouter,
   auth: authRouter,
   item: itemRouter,
+  inventory: inventoryRouter,
   // Add other routers here
 });
 

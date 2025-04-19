@@ -46,7 +46,7 @@
         "eslint-config-next": "^14.2.15",
         "prisma": "^5.20.0",
         "ts-node": "^10.9.2",
-        "typescript": "^5.6.3"
+        "typescript": "^5.8.3"
     },
     "description": "A browser-based Dragon Ball Z RPG built with Next.js, React, PostgreSQL, Prisma, tRPC, and NextAuth.js.",
     "main": "index.js",
