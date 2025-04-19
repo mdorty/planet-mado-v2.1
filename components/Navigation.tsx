@@ -30,7 +30,13 @@ const navLinks = [
   { href: '/rule-book', label: 'Rule Book' },
 ];
 
-const ChevronDown = ({fill, size, height, width, ...props}) => {
+const ChevronDown = ({fill, size, height, width, ...props}: {
+  fill?: string;
+  size?: number;
+  height?: number;
+  width?: number;
+  [key: string]: any;
+}) => {
   return (
     <svg
       fill="none"
