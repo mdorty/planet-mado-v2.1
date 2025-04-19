@@ -97,7 +97,43 @@ export default class MapScene extends Phaser.Scene {
     this.player = this.add.sprite(playerX, playerY, 'player');
     this.player.setDisplaySize(tileSize * 0.8, tileSize * 0.8);
     this.player.setDepth(1);
-    
+
+    // --- Render other players at location (excluding self) ---
+    const playersAtLocation = this.registry.get('playersAtLocation') || [];
+    const selfId = characterData.id;
+    // Arrange other players in a circle around the main player
+    const radius = tileSize;
+    const otherPlayers = playersAtLocation.filter((p: any) => p.id !== selfId);
+    otherPlayers.forEach((p: any, i: number) => {
+      const angle = (2 * Math.PI * i) / otherPlayers.length;
+      const px = playerX + Math.cos(angle) * radius;
+      const py = playerY + Math.sin(angle) * radius;
+      const sprite = this.add.sprite(px, py, 'player');
+      sprite.setDisplaySize(tileSize * 0.7, tileSize * 0.7);
+      sprite.setDepth(1);
+      // Tint if sleeping
+      if (p.status === 'Sleeping') {
+        sprite.setTint(0x888888); // Gray tint for sleeping
+      }
+      // Show name below
+      this.add.text(px, py + tileSize/2 + 10, p.name, {
+        fontFamily: 'Anton, cursive',
+        fontSize: '16px',
+        color: '#404040',
+        align: 'center',
+      }).setOrigin(0.5).setDepth(2);
+      // Show status label if sleeping
+      if (p.status === 'Sleeping') {
+        this.add.text(px, py + tileSize/2 + 28, 'Sleeping', {
+          fontFamily: 'Roboto, sans-serif',
+          fontSize: '14px',
+          color: '#888',
+          fontStyle: 'italic',
+          align: 'center',
+        }).setOrigin(0.5).setDepth(2);
+      }
+    });
+
     // Add power level display to the left of the map
     this.createPowerLevelDisplay();
     

@@ -2,7 +2,13 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-export default function CharacterPhaserDisplay({ characterData, mapData }: { characterData: any, mapData: any }) {
+interface CharacterPhaserDisplayProps {
+  characterData: any;
+  mapData: any;
+  playersAtLocation?: any[];
+}
+
+export default function CharacterPhaserDisplay({ characterData, mapData, playersAtLocation = [] }: CharacterPhaserDisplayProps) {
   const [isClient, setIsClient] = useState(false);
   const gameRef = useRef<Phaser.Game | null>(null);
 
@@ -43,6 +49,10 @@ export default function CharacterPhaserDisplay({ characterData, mapData }: { cha
         // Set data in registry after game is created
         gameRef.current.registry.set('characterData', characterData);
         gameRef.current.registry.set('mapData', mapData);
+        gameRef.current.registry.set('playersAtLocation', playersAtLocation);
+      } else {
+        // Update playersAtLocation in registry if already running
+        gameRef.current.registry.set('playersAtLocation', playersAtLocation);
       }
     });
 
@@ -52,7 +62,7 @@ export default function CharacterPhaserDisplay({ characterData, mapData }: { cha
         gameRef.current = null;
       }
     };
-  }, [characterData, mapData, isClient]);
+  }, [characterData, mapData, playersAtLocation, isClient]);
 
   return <div id="phaser-game" style={{ width: '800px', height: '600px' }} />;
 };
