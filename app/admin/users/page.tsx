@@ -104,7 +104,7 @@ export default function AdminUsersPage() {
                   type="text"
                   value={userForm.username}
                   onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
-                  className="w-full"
+                  className="w-full bg-pm-cream text-pm-dark-blue"
                   required
                 />
               </div>
@@ -115,7 +115,7 @@ export default function AdminUsersPage() {
                   type="email"
                   value={userForm.email}
                   onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
-                  className="w-full"
+                  className="w-full bg-pm-cream text-pm-dark-blue"
                   required
                 />
               </div>
@@ -126,7 +126,7 @@ export default function AdminUsersPage() {
                   type="password"
                   value={userForm.password}
                   onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                  className="w-full"
+                  className="w-full bg-pm-cream text-pm-dark-blue"
                   required={!userForm.id}
                 />
               </div>
@@ -136,7 +136,7 @@ export default function AdminUsersPage() {
                   id="role"
                   value={userForm.role}
                   onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>

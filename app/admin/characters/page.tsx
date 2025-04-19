@@ -167,7 +167,7 @@ export default function AdminCharactersPage() {
                   id="userId"
                   value={charForm.userId}
                   onChange={(e) => setCharForm({ ...charForm, userId: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                   required
                 >
                   <option value="">Select a user</option>
@@ -184,7 +184,7 @@ export default function AdminCharactersPage() {
                   type="text"
                   value={charForm.name}
                   onChange={(e) => setCharForm({ ...charForm, name: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                   required
                 />
               </div>
@@ -194,7 +194,7 @@ export default function AdminCharactersPage() {
                   type="number"
                   value={charForm.level}
                   onChange={(e) => setCharForm({ ...charForm, level: Number(e.target.value) })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                   min="1"
                   required
                 />
@@ -205,7 +205,7 @@ export default function AdminCharactersPage() {
                   type="number"
                   value={charForm.currentPowerlevel}
                   onChange={(e) => setCharForm({ ...charForm, currentPowerlevel: Number(e.target.value) })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                   min="0"
                   required
                 />
@@ -216,7 +216,7 @@ export default function AdminCharactersPage() {
                   type="number"
                   value={charForm.basePowerlevel}
                   onChange={(e) => setCharForm({ ...charForm, basePowerlevel: Number(e.target.value) })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                   min="0"
                   required
                 />
@@ -227,7 +227,7 @@ export default function AdminCharactersPage() {
                   type="number"
                   value={charForm.hiddenPowerlevel}
                   onChange={(e) => setCharForm({ ...charForm, hiddenPowerlevel: Number(e.target.value) })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                   min="0"
                 />
               </div>
@@ -237,7 +237,7 @@ export default function AdminCharactersPage() {
                   type="text"
                   value={charForm.race}
                   onChange={(e) => setCharForm({ ...charForm, race: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                   required
                 />
               </div>
@@ -247,7 +247,7 @@ export default function AdminCharactersPage() {
                   type="text"
                   value={charForm.planet}
                   onChange={(e) => setCharForm({ ...charForm, planet: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                 />
               </div>
               <div>
@@ -256,7 +256,7 @@ export default function AdminCharactersPage() {
                   type="number"
                   value={charForm.alignment}
                   onChange={(e) => setCharForm({ ...charForm, alignment: Number(e.target.value) })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                   min="-100"
                   max="100"
                   required
@@ -267,7 +267,7 @@ export default function AdminCharactersPage() {
                 <textarea
                   value={charForm.description}
                   onChange={(e) => setCharForm({ ...charForm, description: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                   rows={3}
                 />
               </div>
@@ -277,7 +277,7 @@ export default function AdminCharactersPage() {
                   type="text"
                   value={charForm.equippedItems}
                   onChange={(e) => setCharForm({ ...charForm, equippedItems: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                 />
               </div>
               <div>
@@ -286,7 +286,7 @@ export default function AdminCharactersPage() {
                   type="text"
                   value={charForm.items}
                   onChange={(e) => setCharForm({ ...charForm, items: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                 />
               </div>
               <div>
@@ -295,7 +295,7 @@ export default function AdminCharactersPage() {
                   type="text"
                   value={charForm.peopleYouHaveBeenTo}
                   onChange={(e) => setCharForm({ ...charForm, peopleYouHaveBeenTo: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                 />
               </div>
               <div>
@@ -304,7 +304,7 @@ export default function AdminCharactersPage() {
                   type="text"
                   value={charForm.jobs}
                   onChange={(e) => setCharForm({ ...charForm, jobs: e.target.value })}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                 />
               </div>
               <div className="flex gap-2 mt-4">
