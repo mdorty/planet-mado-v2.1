@@ -1,7 +1,3 @@
-// This route is intentionally left blank. Socket.io is served from pages/api/socket.ts. } from 'socket.io';
-import { NextApiRequest } from 'next';
-import { NextApiResponseServerIO } from './types';
-import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
