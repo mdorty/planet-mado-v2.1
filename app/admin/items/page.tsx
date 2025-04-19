@@ -23,18 +23,18 @@ interface ItemFormState {
 }
 
 interface Item {
-  id: number | string;
+  id: number;
   name: string;
   type: string;
-  description: string;
-  image: string;
-  effect: string;
+  description?: string;
+  image?: string;
+  effect?: string;
   value: number;
   durability: number;
   stackable: boolean;
   maxStackSize: number;
   usableInBattle: boolean;
-  equipmentSlot: string;
+  equipmentSlot?: string;
   lootChance: number;
 }
 
