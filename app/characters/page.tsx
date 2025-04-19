@@ -11,10 +11,15 @@ export default function CharactersPage() {
   const [characterName, setCharacterName] = useState('');
   const [error, setError] = useState('');
 
-  // Fetch characters for the logged-in user
-  const { data: characters = [], refetch } = trpc.character.getUserCharacters.useQuery(
+  // Fetch characters for the logged-in user with optimized caching
+  const { data: characters = [], refetch, isLoading } = trpc.character.getUserCharacters.useQuery(
     undefined,
-    { enabled: !!session?.user?.id }
+    { 
+      enabled: !!session?.user?.id,
+      staleTime: 30 * 1000, // Data remains fresh for 30 seconds
+      refetchOnWindowFocus: false,
+      retry: 1
+    }
   );
 
   // Mutation for creating a new character
@@ -43,7 +48,26 @@ export default function CharactersPage() {
   };
 
   if (status === 'loading') {
-    return <div className="text-center">Loading...</div>;
+    return (
+      <div className="container mx-auto p-8 max-w-6xl">
+        <h1 className="text-3xl font-anton text-pm-white mb-6">My Characters</h1>
+        <div className="bg-pm-blue shadow-md rounded-lg p-6 mb-8 animate-pulse">
+          <div className="h-8 w-48 bg-gray-600 rounded mb-4"></div>
+          <div className="h-10 w-full bg-gray-600 rounded"></div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-pm-blue shadow-md rounded-lg overflow-hidden h-40 animate-pulse">
+              <div className="h-10 bg-gray-600 w-full"></div>
+              <div className="p-4">
+                <div className="h-6 bg-gray-600 rounded w-3/4 mb-4"></div>
+                <div className="h-10 bg-gray-600 rounded w-full"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (status !== 'authenticated') {
@@ -95,7 +119,22 @@ export default function CharactersPage() {
 
         {/* List of user's characters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {characters.length === 0 ? (
+          {isLoading ? (
+            // Skeleton loading state for characters
+            [...Array(6)].map((_, i) => (
+              <Card key={i} className="bg-pm-blue shadow-md rounded-lg overflow-hidden animate-pulse text-pm-white">
+                <CardHeader className="border-b pb-2 bg-pm-dark-blue">
+                  <div className="h-6 bg-gray-600 rounded w-3/4"></div>
+                </CardHeader>
+                <CardBody className="p-4 flex flex-col gap-2">
+                  <div className="h-4 bg-gray-600 rounded w-1/2"></div>
+                </CardBody>
+                <CardFooter className="p-4 pt-0">
+                  <div className="h-10 bg-gray-600 rounded w-full"></div>
+                </CardFooter>
+              </Card>
+            ))
+          ) : characters.length === 0 ? (
             <p className="font-roboto text-center col-span-full text-pm-white">You have no characters yet. Create one to get started!</p>
           ) : (
             characters.map((char: any) => (
@@ -104,7 +143,9 @@ export default function CharactersPage() {
                   <h3 className="font-anton text-lg truncate text-pm-white">{char.name}</h3>
                 </CardHeader>
                 <CardBody className="p-4 flex flex-col gap-2">
-                  <p className="font-roboto text-sm text-pm-cream">Power Level: {char.powerLevel || 'N/A'}</p>
+                  <p className="font-roboto text-sm text-pm-cream">Power Level: {char.currentPowerlevel || 'N/A'}</p>
+                  <p className="font-roboto text-sm text-pm-cream">Race: {char.race || 'Unknown'}</p>
+                  <p className="font-roboto text-sm text-pm-cream">Level: {char.level || '1'}</p>
                 </CardBody>
                 <CardFooter className="p-4 pt-0">
                   <Link href={`/characters/${char.id}`}>

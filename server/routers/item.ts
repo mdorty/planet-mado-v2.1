@@ -1,21 +1,30 @@
 import { z } from 'zod';
 import { router, procedure } from '../trpc';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { db } from '../../lib/prisma';
 
 export const itemRouter = router({
   getAll: procedure
     .query(async () => {
-      return await prisma.itemTemplate.findMany({
+      return await db.itemTemplate.findMany({
         orderBy: { name: 'asc' },
+        // Select only needed fields to reduce payload size
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          description: true,
+          image: true,
+          value: true,
+          equipmentSlot: true,
+          usableInBattle: true
+        }
       });
     }),
 
   getById: procedure
     .input(z.object({ id: z.number().or(z.string().transform(val => parseInt(val, 10))) }))
     .query(async ({ input }: { input: { id: number } }) => {
-      return await prisma.itemTemplate.findUnique({
+      return await db.itemTemplate.findUnique({
         where: { id: input.id },
       });
     }),
@@ -38,8 +47,13 @@ export const itemRouter = router({
       })
     )
     .mutation(async ({ input }: { input: any }) => {
-      return await prisma.itemTemplate.create({
+      return await db.itemTemplate.create({
         data: input,
+        select: {
+          id: true,
+          name: true,
+          type: true
+        }
       });
     }),
 
@@ -63,17 +77,24 @@ export const itemRouter = router({
     )
     .mutation(async ({ input }: { input: any }) => {
       const { id, ...data } = input;
-      return await prisma.itemTemplate.update({
+      return await db.itemTemplate.update({
         where: { id: parseInt(id, 10) },
         data,
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          value: true
+        }
       });
     }),
 
   delete: procedure
     .input(z.string())
     .mutation(async ({ input }: { input: string }) => {
-      return await prisma.itemTemplate.delete({
+      return await db.itemTemplate.delete({
         where: { id: parseInt(input, 10) },
+        select: { id: true }
       });
     }),
 });

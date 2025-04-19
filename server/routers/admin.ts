@@ -1,18 +1,23 @@
 import { router, procedure } from '../trpc';
-import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
-
-const prisma = new PrismaClient();
+import { db } from '../../lib/prisma';
 
 export const adminRouter = router({
   getCharacters: procedure.query(async () => {
     try {
-      const characters = await prisma.character.findMany();
+      const characters = await db.character.findMany({
+        select: {
+          id: true,
+          name: true,
+          currentPowerlevel: true,
+          race: true,
+          level: true,
+          userId: true
+        }
+      });
       return characters;
     } catch (error: unknown) {
       throw new Error(`Failed to fetch characters: ${(error as Error).message}`);
-    } finally {
-      await prisma.$disconnect();
     }
   }),
   updateCharacter: procedure
@@ -24,29 +29,38 @@ export const adminRouter = router({
     }))
     .mutation(async ({ input }) => {
       try {
-        const updatedCharacter = await prisma.character.update({
+        const updatedCharacter = await db.character.update({
           where: { id: input.id },
           data: {
             name: input.name,
             currentPowerlevel: input.currentPowerlevel,
             // Add other fields as needed
           },
+          select: {
+            id: true,
+            name: true,
+            currentPowerlevel: true
+          }
         });
         return updatedCharacter;
       } catch (error: unknown) {
         throw new Error(`Failed to update character: ${(error as Error).message}`);
-      } finally {
-        await prisma.$disconnect();
       }
     }),
   getUsers: procedure.query(async () => {
     try {
-      const users = await prisma.user.findMany();
+      const users = await db.user.findMany({
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          role: true,
+          createdAt: true
+        }
+      });
       return users;
     } catch (error: unknown) {
       throw new Error(`Failed to fetch users: ${(error as Error).message}`);
-    } finally {
-      await prisma.$disconnect();
     }
   }),
   updateUser: procedure
@@ -59,7 +73,7 @@ export const adminRouter = router({
     }))
     .mutation(async ({ input }) => {
       try {
-        const updatedUser = await prisma.user.update({
+        const updatedUser = await db.user.update({
           where: { id: input.id },
           data: {
             username: input.username,
@@ -67,12 +81,16 @@ export const adminRouter = router({
             role: input.role,
             // Add other fields as needed
           },
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            role: true
+          }
         });
         return updatedUser;
       } catch (error: unknown) {
         throw new Error(`Failed to update user: ${(error as Error).message}`);
-      } finally {
-        await prisma.$disconnect();
       }
     }),
   createUser: procedure
@@ -85,7 +103,7 @@ export const adminRouter = router({
     }))
     .mutation(async ({ input }) => {
       try {
-        const newUser = await prisma.user.create({
+        const newUser = await db.user.create({
           data: {
             username: input.username,
             email: input.email,
@@ -93,12 +111,16 @@ export const adminRouter = router({
             role: input.role || 'user',
             // Add other fields as needed
           },
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            role: true
+          }
         });
         return newUser;
       } catch (error: unknown) {
         throw new Error(`Failed to create user: ${(error as Error).message}`);
-      } finally {
-        await prisma.$disconnect();
       }
     }),
 });

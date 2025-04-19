@@ -84,6 +84,10 @@ model Character {
   itemsOwned         Item[]   @relation("CharacterToItem")
   moves              Move[]
   inventory          InventoryItem[] @relation("CharacterToInventory")
+
+  @@index([userId], name: "character_userId_idx")
+  @@index([currentPowerlevel], name: "character_powerlevel_idx")
+  @@index([race], name: "character_race_idx")
 }
 
 model Move {
@@ -100,6 +104,9 @@ model Move {
   powerlevelMultiplier Float?
   createdAt            DateTime  @default(now())
   character            Character @relation(fields: [characterId], references: [id])
+  
+  @@index([characterId], name: "move_characterId_idx")
+  @@index([category], name: "move_category_idx")
 }
 
 model Item {
@@ -128,6 +135,9 @@ model ItemTemplate {
   lootChance   Float   @default(0.0)
   // Relations
   inventories InventoryItem[]
+  
+  @@index([type], name: "item_type_idx")
+  @@index([name], name: "item_name_idx")
 }
 
 model InventoryItem {
@@ -138,6 +148,10 @@ model InventoryItem {
   itemId      Int
   quantity    Int         @default(1)
   equipped    Boolean     @default(false)
+  
+  @@index([characterId], name: "inventory_characterId_idx")
+  @@index([itemId], name: "inventory_itemId_idx")
+  @@index([equipped], name: "inventory_equipped_idx")
 }
 
 model Battle {

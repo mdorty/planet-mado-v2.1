@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Input, Button } from '@heroui/react';
 
 // Temporary component to reset password via API
 export function ResetPasswordForm() {
@@ -39,44 +40,42 @@ export function ResetPasswordForm() {
   };
 
   return (
-    <div className="p-4 border rounded shadow-md max-w-md mx-auto mt-8">
-      <h2 className="text-xl font-bold mb-4">Reset Password (Test)</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="reset-email" className="block text-sm font-medium">
-            Email
-          </label>
-          <input
-            id="reset-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="reset-password" className="block text-sm font-medium">
-            New Password
-          </label>
-          <input
-            id="reset-password"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-red-500 text-white p-2 rounded hover:bg-red-500/80 disabled:bg-gray-400"
-        >
-          {loading ? 'Resetting...' : 'Reset Password'}
-        </button>
-      </form>
-      {result && <p className={`mt-4 text-center ${result.includes('successful') ? 'text-green-500' : 'text-red-500'}`}>{result}</p>}
-    </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label htmlFor="reset-email" className="block font-roboto font-medium mb-1 text-pm-white">
+          Email
+        </label>
+        <Input
+          id="reset-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="reset-password" className="block font-roboto font-medium mb-1 text-pm-white">
+          New Password
+        </label>
+        <Input
+          id="reset-password"
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          className="w-full border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
+          required
+        />
+      </div>
+      <Button
+        type="submit"
+        disabled={loading}
+        variant="solid"
+        className="w-full font-roboto font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"
+      >
+        {loading ? 'Resetting...' : 'Reset Password'}
+      </Button>
+      {result && <p className={`mt-4 text-center font-roboto ${result.includes('successful') ? 'text-green-500' : 'text-red-500'}`}>{result}</p>}
+    </form>
   );
 }

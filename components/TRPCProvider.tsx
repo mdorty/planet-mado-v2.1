@@ -10,12 +10,25 @@ interface TRPCProviderProps {
 }
 
 export function TRPCProvider({ children }: TRPCProviderProps) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Optimize caching behavior
+        staleTime: 10 * 1000, // Data is fresh for 10 seconds
+        gcTime: 5 * 60 * 1000, // Cache for 5 minutes (formerly cacheTime)
+        refetchOnWindowFocus: false, // Don't refetch when window regains focus
+        retry: 1, // Only retry failed queries once
+      },
+    },
+  }));
+  
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
         httpBatchLink({
           url: '/api/trpc',
+          // Add batching for improved performance
+          maxURLLength: 2083, // Maximum URL length for most browsers
         }),
       ],
     })

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc/client";
-import { Button, Input, Textarea } from "@heroui/react";
+import { Button, Input, Textarea, Card, CardHeader, CardBody, CardFooter } from "@heroui/react";
 import { toast } from "@heroui/react";
 
 interface ItemFormState {
@@ -38,6 +38,105 @@ interface Item {
   lootChance: number;
 }
 
+// Memoized item card component to prevent unnecessary re-renders
+const ItemCard = memo(({ item, onEdit, onDelete }: { 
+  item: Item, 
+  onEdit: (item: Item) => void, 
+  onDelete: (id: string | number) => void 
+}) => {
+  const handleEdit = useCallback(() => {
+    onEdit(item);
+  }, [item, onEdit]);
+
+  const handleDelete = useCallback(() => {
+    onDelete(item.id);
+  }, [item.id, onDelete]);
+
+  return (
+    <Card className="bg-white shadow-md rounded-lg overflow-hidden mb-4">
+      <CardHeader className="bg-blue-600 text-white p-3">
+        <h3 className="font-anton text-lg">{item.name}</h3>
+      </CardHeader>
+      <CardBody className="p-4">
+        <p className="font-roboto mb-2"><strong>Type:</strong> {item.type}</p>
+        <p className="font-roboto mb-2"><strong>Value:</strong> {item.value}</p>
+        {item.description && (
+          <p className="font-roboto mb-2"><strong>Description:</strong> {item.description}</p>
+        )}
+      </CardBody>
+      <CardFooter className="p-3 flex justify-end gap-2 bg-gray-50">
+        <Button 
+          variant="solid" 
+          className="bg-blue-600 text-white hover:bg-blue-700 font-roboto"
+          onClick={handleEdit}
+        >
+          Edit
+        </Button>
+        <Button 
+          variant="solid" 
+          className="bg-red-600 text-white hover:bg-red-700 font-roboto"
+          onClick={handleDelete}
+        >
+          Delete
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+});
+
+// Memoized item list component
+const ItemList = memo(({ 
+  items, 
+  isLoading, 
+  onEditItem, 
+  onDeleteItem 
+}: { 
+  items: Item[] | undefined, 
+  isLoading: boolean,
+  onEditItem: (item: Item) => void,
+  onDeleteItem: (id: string | number) => void
+}) => {
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="bg-white shadow-md rounded-lg overflow-hidden mb-4 animate-pulse">
+            <CardHeader className="bg-gray-300 p-3">
+              <div className="h-6 bg-gray-400 rounded w-3/4"></div>
+            </CardHeader>
+            <CardBody className="p-4 space-y-2">
+              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+              <div className="h-4 bg-gray-300 rounded w-1/3"></div>
+              <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+            </CardBody>
+            <CardFooter className="p-3 flex justify-end gap-2 bg-gray-50">
+              <div className="h-8 bg-gray-300 rounded w-16"></div>
+              <div className="h-8 bg-gray-300 rounded w-16"></div>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (!items || items.length === 0) {
+    return <p className="font-roboto text-center py-4">No items found. Create one to get started!</p>;
+  }
+
+  return (
+    <div className="space-y-4">
+      {items.map((item) => (
+        <ItemCard 
+          key={item.id} 
+          item={item} 
+          onEdit={onEditItem} 
+          onDelete={onDeleteItem} 
+        />
+      ))}
+    </div>
+  );
+});
+
 const AdminItemsPage = () => {
   const router = useRouter();
   const [newItem, setNewItem] = useState<ItemFormState>({
@@ -56,12 +155,20 @@ const AdminItemsPage = () => {
   });
   const [editingItem, setEditingItem] = useState<Item | null>(null);
 
-  const { data: items, refetch } = trpc.item.getAll.useQuery();
+  const { data: items, refetch, isLoading } = trpc.item.getAll.useQuery(undefined, {
+    staleTime: 30 * 1000, // Data remains fresh for 30 seconds
+    refetchOnWindowFocus: false,
+    retry: 1
+  });
 
   const createItem = trpc.item.create.useMutation({
     onSuccess: () => {
       refetch();
       resetForm();
+      toast({
+        variant: 'solid',
+        color: 'success'
+      });
     },
     onError: (error: any) => {
       handleCreateError(error);
@@ -136,6 +243,31 @@ const AdminItemsPage = () => {
     setEditingItem(null);
   };
 
+  // Memoized callbacks to prevent unnecessary re-renders
+  const handleEditItem = useCallback((item: Item) => {
+    setEditingItem(item);
+    setNewItem({
+      name: item.name,
+      type: item.type,
+      description: item.description || '',
+      image: item.image || '',
+      effect: item.effect || '',
+      value: item.value.toString(),
+      durability: item.durability.toString(),
+      stackable: item.stackable,
+      maxStackSize: item.maxStackSize.toString(),
+      usableInBattle: item.usableInBattle,
+      equipmentSlot: item.equipmentSlot || '',
+      lootChance: item.lootChance.toString(),
+    });
+  }, []);
+
+  const handleDeleteItem = useCallback((id: string | number) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      deleteItem.mutate(id.toString());
+    }
+  }, [deleteItem]);
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = {
@@ -234,12 +366,14 @@ const AdminItemsPage = () => {
   };
 
   return (
-    <>
-      <div className="container mx-auto p-4">
-        <h1 className="font-anton text-3xl mb-6 text-pm-white">Admin - Manage Items</h1>
-        <form onSubmit={handleSubmit} className="p-6 rounded-lg shadow-md mb-6 bg-pm-blue text-pm-white">
-          <h2 className="font-anton text-xl mb-4 text-pm-white">{editingItem ? "Edit Item" : "Add New Item"}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="container mx-auto p-4">
+      <h1 className="font-anton text-3xl mb-6 text-pm-white">Admin - Manage Items</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Form */}
+        <div className="bg-pm-blue p-6 rounded-lg shadow-md text-pm-white">
+          <h2 className="text-xl font-anton mb-4">{editingItem ? 'Edit Item' : 'Create New Item'}</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Form fields */}
             <div className="flex flex-col gap-2">
               <label className="font-roboto font-medium mb-1 text-pm-white">Name</label>
               <Input
@@ -335,38 +469,31 @@ const AdminItemsPage = () => {
                 className="border border-gray-300 rounded-md focus:border-blue-500 focus:ring-2 focus:ring-blue-200 bg-white/90 text-gray-900 placeholder-gray-400 font-roboto"
               />
             </div>
-          </div>
-          <Button type="submit" variant="solid" color="primary" className="w-full font-roboto font-medium bg-blue-600 text-white hover:bg-blue-700">
-            {editingItem ? 'Update Item' : 'Create Item'}
-          </Button>
-          {editingItem && (
-            <Button type="button" variant="bordered" color="default" onClick={resetForm} className="w-full font-roboto font-medium bg-gray-500 text-white hover:bg-gray-600">
-              Cancel
-            </Button>
-          )}
-        </form>
-        <div className="bg-pm-blue p-6 rounded-lg shadow-md text-pm-white">
-          <h2 className="font-anton text-xl mb-4 text-pm-white">Existing Items</h2>
-          {items && items.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {items.map((item: any) => (
-                <div key={item.id} className="border border-pm-dark-blue rounded-md p-4 relative group hover:shadow-md transition-shadow bg-pm-navy">
-                  <h3 className="font-bold text-lg mb-1">{item.name}</h3>
-                  <p className="text-sm text-pm-cream">Type: {item.type}</p>
-                  <p className="text-sm text-pm-white">Value: {item.value}</p>
-                  <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                    <Button variant="solid" color="primary" onClick={() => handleEdit(item)} className="font-roboto font-medium bg-blue-500 text-white hover:bg-blue-600">Edit</Button>
-                    <Button variant="bordered" color="default" onClick={() => handleDelete(item.id)} className="font-roboto font-medium bg-red-600 text-white hover:bg-red-700">Delete</Button>
-                  </div>
-                </div>
-              ))}
+            <div className="flex flex-col gap-2 mt-4">
+              <Button type="submit" variant="solid" color="primary" className="w-full font-roboto font-medium bg-blue-600 text-white hover:bg-blue-700">
+                {editingItem ? 'Update Item' : 'Create Item'}
+              </Button>
+              {editingItem && (
+                <Button type="button" variant="bordered" color="default" onClick={resetForm} className="w-full font-roboto font-medium bg-gray-500 text-white hover:bg-gray-600">
+                  Cancel
+                </Button>
+              )}
             </div>
-          ) : (
-            <p className="text-pm-white">No items found.</p>
-          )}
+          </form>
+        </div>
+        
+        {/* Item List - Using memoized component */}
+        <div className="bg-pm-blue p-6 rounded-lg shadow-md text-pm-white">
+          <h2 className="font-anton text-xl mb-4 text-pm-white">Item List</h2>
+          <ItemList 
+            items={items} 
+            isLoading={isLoading} 
+            onEditItem={handleEditItem} 
+            onDeleteItem={handleDeleteItem} 
+          />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
