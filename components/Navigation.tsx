@@ -4,7 +4,20 @@ import React, { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Button } from '@heroui/react';
+import { 
+  Navbar, 
+  NavbarBrand, 
+  NavbarContent, 
+  NavbarItem, 
+  NavbarMenuToggle, 
+  NavbarMenu, 
+  NavbarMenuItem, 
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem
+} from '@heroui/react';
 
 const navLinks = [
   { href: '/how-to-play', label: 'How to Play' },
@@ -17,180 +30,279 @@ const navLinks = [
   { href: '/rule-book', label: 'Rule Book' },
 ];
 
+const ChevronDown = ({fill, size, height, width, ...props}) => {
+  return (
+    <svg
+      fill="none"
+      height={size || height || 24}
+      viewBox="0 0 24 24"
+      width={size || width || 24}
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="m19.92 8.95-6.52 6.52c-.77.77-2.03.77-2.8 0L4.08 8.95"
+        stroke={fill}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeMiterlimit={10}
+        strokeWidth={1.5}
+      />
+    </svg>
+  );
+};
+
 export function Navigation() {
   const { data: session } = useSession();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [rpgDropdownOpen, setRpgDropdownOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
-  const toggleRpgDropdown = () => {
-    setRpgDropdownOpen(!rpgDropdownOpen);
-  };
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <Navbar className="p-4 shadow-md z-50" maxWidth="xl">
-      <NavbarContent>
-        <NavbarMenuToggle onClick={toggleMenu} className="md:hidden" />
+    <Navbar 
+      isBordered 
+      isMenuOpen={isMenuOpen} 
+      onMenuOpenChange={setIsMenuOpen}
+      className="bg-[#CB5C0D] text-white shadow-md z-50"
+      maxWidth="xl"
+    >
+      {/* Mobile menu toggle and brand for small screens */}
+      <NavbarContent className="sm:hidden" justify="start">
+        <NavbarMenuToggle aria-label={isMenuOpen ? "Close menu" : "Open menu"} />
+      </NavbarContent>
+
+      <NavbarContent className="sm:hidden pr-3" justify="center">
         <NavbarBrand>
           <Link href="/" className="flex items-center">
             <Image src="/images/planet_mado_logo-smaller.png" alt="Planet Mado" width={150} height={50} style={{ maxWidth: '6rem' }} priority />
           </Link>
         </NavbarBrand>
-        <NavbarContent className="hidden md:flex justify-center" justify="center">
+      </NavbarContent>
+
+      {/* Desktop navigation */}
+      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+        <NavbarBrand>
+          <Link href="/" className="flex items-center">
+            <Image src="/images/planet_mado_logo-smaller.png" alt="Planet Mado" width={150} height={50} style={{ maxWidth: '6rem' }} priority />
+          </Link>
+        </NavbarBrand>
+        
+        {/* The RPG Dropdown */}
+        <Dropdown>
           <NavbarItem>
-            <div className="relative group">
-              <button className="flex items-center font-roboto">
+            <DropdownTrigger>
+              <Button
+                disableRipple
+                className="p-0 bg-transparent data-[hover=true]:bg-transparent font-roboto text-white"
+                endContent={<ChevronDown fill="currentColor" size={16} />}
+                radius="sm"
+                variant="light"
+              >
                 The RPG
-                <svg className="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-              </button>
-              <div className="absolute top-10 left-0 right-0 bg-white shadow-lg rounded-b-lg z-50 hidden group-hover:block md:w-48 w-full opacity-100">
-                <Link href="/how-to-play" className="block px-4 py-2 hover:bg-gray-100 font-roboto">How to Play</Link>
-                <Link href="/races" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Races</Link>
-                <Link href="/planets" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Planets</Link>
-                <Link href="/items" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Items</Link>
-                <Link href="/basic-techniques" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Basic Techniques</Link>
-                <Link href="/members" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Members</Link>
-                <Link href="/join" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Join the RPG</Link>
-                <Link href="/rule-book" className="block px-4 py-2 hover:bg-gray-100 font-roboto">Rule Book</Link>
-              </div>
-            </div>
+              </Button>
+            </DropdownTrigger>
           </NavbarItem>
-          <NavbarItem>
-            <Link href="/about" className="font-roboto transition-colors duration-200">About</Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link href="/forums" className="font-roboto transition-colors duration-200">Forums</Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link href="/contact" className="font-roboto transition-colors duration-200">Contact</Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link href="/store" className="font-roboto transition-colors duration-200">Store</Link>
-          </NavbarItem>
-        </NavbarContent>
-        <NavbarContent justify="end">
-          {session ? (
-            <>
-              <NavbarItem className="hidden md:block">
-                <Link href="/profile" className="font-roboto transition-colors duration-200">Profile</Link>
-              </NavbarItem>
-              <NavbarItem className="hidden md:block">
-                <Link href="/characters" className="font-roboto transition-colors duration-200">Characters</Link>
-              </NavbarItem>
-              {session.user.role === 'admin' && (
-                <NavbarItem className="hidden md:block">
-                  <Link href="/admin" className="font-roboto transition-colors duration-200">Staff</Link>
-                </NavbarItem>
-              )}
-              <NavbarItem>
-                <Button
-                  onClick={() => signOut({ callbackUrl: '/' })}
-                  variant="solid"
-                  className="hover:bg-gray-100 font-roboto font-medium"
+          <DropdownMenu
+            aria-label="RPG features"
+            className="w-[240px]"
+            itemClasses={{
+              base: "gap-4",
+            }}
+          >
+            {navLinks.map((link) => (
+              <DropdownItem key={link.href}>
+                <Link 
+                  href={link.href} 
+                  className="w-full font-roboto"
                 >
-                  Sign Out
-                </Button>
-              </NavbarItem>
-            </>
-          ) : (
-            <NavbarItem>
-              <Link href="/auth/signin">
-                <Button variant="solid" className="hover:bg-gray-100 font-roboto font-medium">
-                  Sign In
-                </Button>
+                  {link.label}
+                </Link>
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
+
+        <NavbarItem>
+          <Link href="/about" className="font-roboto text-white">
+            About
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link href="/forums" className="font-roboto text-white">
+            Forums
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link href="/contact" className="font-roboto text-white">
+            Contact
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link href="/store" className="font-roboto text-white">
+            Store
+          </Link>
+        </NavbarItem>
+      </NavbarContent>
+
+      {/* Auth buttons */}
+      <NavbarContent justify="end">
+        {session ? (
+          <>
+            <NavbarItem className="hidden sm:flex">
+              <Link href="/profile" className="font-roboto text-white">
+                Profile
               </Link>
             </NavbarItem>
-          )}
-        </NavbarContent>
+            <NavbarItem className="hidden sm:flex">
+              <Link href="/characters" className="font-roboto text-white">
+                Characters
+              </Link>
+            </NavbarItem>
+            {session.user.role === 'admin' && (
+              <NavbarItem className="hidden sm:flex">
+                <Link href="/admin" className="font-roboto text-white">
+                  Staff
+                </Link>
+              </NavbarItem>
+            )}
+            <NavbarItem>
+              <Button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                color="default"
+                variant="flat"
+                className="font-roboto font-medium text-white bg-transparent border border-white"
+              >
+                Sign Out
+              </Button>
+            </NavbarItem>
+          </>
+        ) : (
+          <NavbarItem>
+            <Button 
+              as={Link} 
+              color="default" 
+              href="/auth/signin" 
+              variant="flat"
+              className="font-roboto font-medium text-white bg-transparent border border-white"
+            >
+              Sign In
+            </Button>
+          </NavbarItem>
+        )}
       </NavbarContent>
-      <NavbarMenu className="bg-[#CB5C0D] text-white pt-4 h-full w-full md:w-auto md:h-auto overflow-y-auto md:overflow-visible z-50">
+
+      {/* Mobile menu */}
+      <NavbarMenu className="bg-[#CB5C0D] pt-0 mt-0">
         <NavbarMenuItem>
-          <Link href="/" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+          <Link 
+            href="/" 
+            className="w-full font-roboto text-white text-lg py-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
             Home
           </Link>
         </NavbarMenuItem>
+        
+        {/* Mobile RPG dropdown items */}
+        {navLinks.map((link, index) => (
+          <NavbarMenuItem key={`${link.href}-${index}`}>
+            <Link 
+              href={link.href} 
+              className="w-full font-roboto text-white text-lg py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {link.label}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+        
         <NavbarMenuItem>
-          <div className="relative group w-full">
-            <button className="flex items-center justify-between w-full text-left font-roboto py-2 border-b border-gray-200" onClick={toggleRpgDropdown}>
-              The RPG
-              <svg className={`ml-1 w-5 h-5 transform ${rpgDropdownOpen ? 'rotate-180' : ''} transition-transform`} fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
-            </button>
-            <div className={`absolute left-0 mt-2 w-full bg-[#CB5C0D] shadow-lg rounded-lg ${rpgDropdownOpen ? 'opacity-100 block' : 'opacity-0 hidden'} transition-opacity duration-300 z-50 md:w-48 md:left-full md:top-0 md:mt-0 md:group-hover:block md:${rpgDropdownOpen ? 'block' : 'hidden'} `}>
-              {navLinks.map((link) => (
-                <Link key={link.href} href={link.href} className="block px-4 py-2 text-sm font-roboto hover:bg-orange-700 rounded-t-lg" onClick={() => { setMenuOpen(false); setRpgDropdownOpen(false); }}>
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </NavbarMenuItem>
-        <NavbarMenuItem>
-          <Link href="/about" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+          <Link 
+            href="/about" 
+            className="w-full font-roboto text-white text-lg py-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
             About
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link href="/forums" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+          <Link 
+            href="/forums" 
+            className="w-full font-roboto text-white text-lg py-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
             Forums
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link href="/join" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
-            Join
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem>
-          <Link href="/members" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
-            Members
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem>
-          <Link href="/contact" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+          <Link 
+            href="/contact" 
+            className="w-full font-roboto text-white text-lg py-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
             Contact
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link href="/store" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+          <Link 
+            href="/store" 
+            className="w-full font-roboto text-white text-lg py-2"
+            onClick={() => setIsMenuOpen(false)}
+          >
             Store
           </Link>
         </NavbarMenuItem>
+        
+        {/* Conditional auth menu items */}
         {session ? (
           <>
             <NavbarMenuItem>
-              <Link href="/profile" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+              <Link 
+                href="/profile" 
+                className="w-full font-roboto text-white text-lg py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Profile
               </Link>
             </NavbarMenuItem>
             <NavbarMenuItem>
-              <Link href="/characters" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+              <Link 
+                href="/characters" 
+                className="w-full font-roboto text-white text-lg py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Characters
               </Link>
             </NavbarMenuItem>
             {session.user?.role === 'admin' && (
               <NavbarMenuItem>
-                <Link href="/admin" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+                <Link 
+                  href="/admin" 
+                  className="w-full font-roboto text-white text-lg py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Staff
                 </Link>
               </NavbarMenuItem>
             )}
             <NavbarMenuItem>
-              <button
+              <Link 
+                href="#" 
+                className="w-full font-roboto text-white text-lg py-2 text-danger"
                 onClick={() => {
                   signOut({ callbackUrl: '/' });
-                  setMenuOpen(false);
+                  setIsMenuOpen(false);
                 }}
-                className="text-left font-roboto py-2 border-b border-gray-200 w-full"
               >
                 Sign Out
-              </button>
+              </Link>
             </NavbarMenuItem>
           </>
         ) : (
           <NavbarMenuItem>
-            <Link href="/auth/signin" className="font-roboto py-2 border-b border-gray-200 w-full inline-block" onClick={() => setMenuOpen(false)}>
+            <Link 
+              href="/auth/signin" 
+              className="w-full font-roboto text-white text-lg py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
               Sign In
             </Link>
           </NavbarMenuItem>
