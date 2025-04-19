@@ -36,7 +36,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponseServerI
           data: { status: 'active', updatedAt: new Date() },
         });
         // Broadcast updated players at this location
-        broadcastPlayersAtLocation(io, room, planet, currentMap, xCoord, yCoord);
+        if (io) {
+          broadcastPlayersAtLocation(io, room, planet, currentMap, xCoord, yCoord);
+        }
       });
 
       // On activity (movement, action, etc)
