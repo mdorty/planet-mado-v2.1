@@ -67,7 +67,7 @@ export function Navigation() {
       isBordered 
       isMenuOpen={isMenuOpen} 
       onMenuOpenChange={setIsMenuOpen}
-      className="bg-[#CB5C0D] text-white shadow-md z-50"
+      className="bg-pm-navy text-pm-white shadow-md z-50"
       maxWidth="xl"
     >
       {/* Mobile menu toggle and brand for small screens */}
@@ -97,7 +97,7 @@ export function Navigation() {
             <DropdownTrigger>
               <Button
                 disableRipple
-                className="p-0 bg-transparent data-[hover=true]:bg-transparent font-roboto text-white"
+                className="p-0 bg-transparent data-[hover=true]:bg-transparent font-roboto text-pm-white"
                 endContent={<ChevronDown fill="currentColor" size={16} />}
                 radius="sm"
                 variant="light"
@@ -108,9 +108,9 @@ export function Navigation() {
           </NavbarItem>
           <DropdownMenu
             aria-label="RPG features"
-            className="w-[240px]"
+            className="w-[240px] bg-pm-white"
             itemClasses={{
-              base: "gap-4",
+              base: "gap-4 text-pm-navy",
             }}
           >
             {navLinks.map((link) => (
@@ -127,22 +127,22 @@ export function Navigation() {
         </Dropdown>
 
         <NavbarItem>
-          <Link href="/about" className="font-roboto text-white">
+          <Link href="/about" className="font-roboto text-pm-white">
             About
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link href="/forums" className="font-roboto text-white">
+          <Link href="/forums" className="font-roboto text-pm-white">
             Forums
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link href="/contact" className="font-roboto text-white">
+          <Link href="/contact" className="font-roboto text-pm-white">
             Contact
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link href="/store" className="font-roboto text-white">
+          <Link href="/store" className="font-roboto text-pm-white">
             Store
           </Link>
         </NavbarItem>
@@ -153,18 +153,18 @@ export function Navigation() {
         {session ? (
           <>
             <NavbarItem className="hidden sm:flex">
-              <Link href="/profile" className="font-roboto text-white">
+              <Link href="/profile" className="font-roboto text-pm-white">
                 Profile
               </Link>
             </NavbarItem>
             <NavbarItem className="hidden sm:flex">
-              <Link href="/characters" className="font-roboto text-white">
+              <Link href="/characters" className="font-roboto text-pm-white">
                 Characters
               </Link>
             </NavbarItem>
             {session.user.role === 'admin' && (
               <NavbarItem className="hidden sm:flex">
-                <Link href="/admin" className="font-roboto text-white">
+                <Link href="/admin" className="font-roboto text-pm-white">
                   Staff
                 </Link>
               </NavbarItem>
@@ -174,7 +174,7 @@ export function Navigation() {
                 onClick={() => signOut({ callbackUrl: '/' })}
                 color="default"
                 variant="flat"
-                className="font-roboto font-medium text-white bg-transparent border border-white"
+                className="font-roboto font-medium text-pm-white bg-transparent border border-pm-white hover:bg-pm-red hover:border-pm-red"
               >
                 Sign Out
               </Button>
@@ -196,11 +196,11 @@ export function Navigation() {
       </NavbarContent>
 
       {/* Mobile menu */}
-      <NavbarMenu className="bg-[#CB5C0D] pt-0 mt-0">
+      <NavbarMenu className="bg-pm-navy pt-0 mt-0">
         <NavbarMenuItem>
           <Link 
             href="/" 
-            className="w-full font-roboto text-white text-lg py-2"
+            className="w-full font-roboto text-pm-white text-lg py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Home
@@ -212,7 +212,7 @@ export function Navigation() {
           <NavbarMenuItem key={`${link.href}-${index}`}>
             <Link 
               href={link.href} 
-              className="w-full font-roboto text-white text-lg py-2"
+              className="w-full font-roboto text-pm-white text-lg py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               {link.label}
@@ -223,7 +223,7 @@ export function Navigation() {
         <NavbarMenuItem>
           <Link 
             href="/about" 
-            className="w-full font-roboto text-white text-lg py-2"
+            className="w-full font-roboto text-pm-white text-lg py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             About
@@ -232,7 +232,7 @@ export function Navigation() {
         <NavbarMenuItem>
           <Link 
             href="/forums" 
-            className="w-full font-roboto text-white text-lg py-2"
+            className="w-full font-roboto text-pm-white text-lg py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Forums
@@ -241,7 +241,7 @@ export function Navigation() {
         <NavbarMenuItem>
           <Link 
             href="/contact" 
-            className="w-full font-roboto text-white text-lg py-2"
+            className="w-full font-roboto text-pm-white text-lg py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Contact
@@ -250,7 +250,7 @@ export function Navigation() {
         <NavbarMenuItem>
           <Link 
             href="/store" 
-            className="w-full font-roboto text-white text-lg py-2"
+            className="w-full font-roboto text-pm-white text-lg py-2"
             onClick={() => setIsMenuOpen(false)}
           >
             Store
@@ -263,7 +263,7 @@ export function Navigation() {
             <NavbarMenuItem>
               <Link 
                 href="/profile" 
-                className="w-full font-roboto text-white text-lg py-2"
+                className="w-full font-roboto text-pm-white text-lg py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Profile
@@ -272,7 +272,7 @@ export function Navigation() {
             <NavbarMenuItem>
               <Link 
                 href="/characters" 
-                className="w-full font-roboto text-white text-lg py-2"
+                className="w-full font-roboto text-pm-white text-lg py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Characters
@@ -282,7 +282,7 @@ export function Navigation() {
               <NavbarMenuItem>
                 <Link 
                   href="/admin" 
-                  className="w-full font-roboto text-white text-lg py-2"
+                  className="w-full font-roboto text-pm-white text-lg py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Staff
@@ -292,7 +292,7 @@ export function Navigation() {
             <NavbarMenuItem>
               <Link 
                 href="#" 
-                className="w-full font-roboto text-white text-lg py-2 text-danger"
+                className="w-full font-roboto text-pm-red text-lg py-2"
                 onClick={() => {
                   signOut({ callbackUrl: '/' });
                   setIsMenuOpen(false);
@@ -306,7 +306,7 @@ export function Navigation() {
           <NavbarMenuItem>
             <Link 
               href="/auth/signin" 
-              className="w-full font-roboto text-white text-lg py-2"
+              className="w-full font-roboto text-pm-white text-lg py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Sign In

@@ -8,6 +8,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        'pm-dark-blue': '#1a1a2e',
+        'pm-blue': '#0f3461',
+        'pm-navy': '#15203c',
+        'pm-red': '#e9445f',
+        'pm-cream': '#f9fbc1',
+        'pm-white': '#fbfbfb',
+      },
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],
         anton: ['Anton', 'cursive'],

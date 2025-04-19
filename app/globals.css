@@ -75,10 +75,12 @@
 }
 
 :root {
-  --pm-nav-orange: #CB5C0D;
-  --pm-text-dark: #404040;
-  --pm-white: #ffffff;
-  --pm-nav-orange-hover: #b34f0b;
+  --pm-dark-blue: #1a1a2e;
+  --pm-blue: #0f3461;
+  --pm-navy: #15203c;
+  --pm-red: #e9445f;
+  --pm-cream: #f9fbc1;
+  --pm-white: #fbfbfb;
 }
 
 body {
