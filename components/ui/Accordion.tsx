@@ -43,7 +43,7 @@ export function Accordion({
         }`}
         aria-hidden={!isOpen}
       >
-        <div className={`p-4 bg-white ${contentClassName}`}>{children}</div>
+        <div className={`p-4 bg-pm-blue ${contentClassName}`}>{children}</div>
       </div>
     </div>
   );

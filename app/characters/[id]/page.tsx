@@ -6,50 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import { Button, Card, CardHeader, CardBody } from '@heroui/react';
-import MapScene from '../../../scenes/MapScene';
-import * as Phaser from 'phaser';
-
-interface CharacterPhaserDisplayProps {
-  characterData: any;
-  mapData: any;
-  gameConfig: Phaser.Types.Core.GameConfig;
-}
-
-const CharacterPhaserDisplay = ({ characterData, mapData, gameConfig }: CharacterPhaserDisplayProps) => {
-  const gameRef = useRef<Phaser.Game | null>(null);
-
-  useEffect(() => {
-    if (!gameRef.current) {
-      gameRef.current = new Phaser.Game(gameConfig);
-      // Set character data in the game's registry after initialization
-      if (gameRef.current && characterData) {
-        // Map the character data to ensure correct field names for Phaser scenes
-        const mappedCharacterData = {
-          currentPowerlevel: characterData.currentPowerlevel || characterData.powerLevel || 0,
-          basePowerlevel: characterData.basePowerlevel || characterData.basePowerLevel || characterData.currentPowerlevel || characterData.powerLevel || 0,
-          powerLevel: characterData.powerLevel || characterData.currentPowerlevel || 0,
-          basePowerLevel: characterData.basePowerLevel || characterData.basePowerlevel || characterData.currentPowerlevel || characterData.powerLevel || 0,
-          name: characterData.name || 'Unknown'
-        };
-        gameRef.current.registry.set('characterData', mappedCharacterData);
-        console.log('Set characterData in registry with mapped fields:', mappedCharacterData);
-      }
-    }
-
-    return () => {
-      if (gameRef.current) {
-        gameRef.current.destroy(true);
-        gameRef.current = null;
-      }
-    };
-  }, [gameConfig, characterData]);
-
-  return (
-    <div id="game-container" className="w-full h-full">
-      {/* Phaser game renders here */}
-    </div>
-  );
-};
+import CharacterPhaserDisplayWithInventory from '../../../components/CharacterPhaserDisplayWithInventory';
 
 export default function CharacterDetailPage({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
@@ -223,6 +180,9 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
                   <span id="current-powerlevel">{character.currentPowerlevel.toLocaleString()}</span>
                   {character.hiddenPowerlevel ? ')' : ''} / {character.basePowerlevel.toLocaleString()}
                 </p>
+              </div>
+              <div>
+                <CharacterPhaserDisplayWithInventory characterData={character} mapData={characterMap} />
               </div>
               <div>
                 <h3 className="text-xl font-anton mb-2">Basic Info</h3>
