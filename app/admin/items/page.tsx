@@ -155,11 +155,26 @@ const AdminItemsPage = () => {
   });
   const [editingItem, setEditingItem] = useState<Item | null>(null);
 
-  const { data: items, refetch, isLoading } = trpc.item.getAll.useQuery<Item[]>(undefined, {
+  const { data, refetch, isLoading } = trpc.item.getAll.useQuery(undefined, {
   staleTime: 30 * 1000, // Data remains fresh for 30 seconds
   refetchOnWindowFocus: false,
   retry: 1
 });
+const items: Item[] | undefined = data?.map((item: any) => ({
+  id: item.id,
+  name: item.name,
+  type: item.type,
+  description: item.description,
+  image: item.image,
+  effect: item.effect,
+  value: item.value,
+  durability: item.durability,
+  stackable: item.stackable,
+  maxStackSize: item.maxStackSize,
+  usableInBattle: item.usableInBattle,
+  equipmentSlot: item.equipmentSlot,
+  lootChance: item.lootChance,
+})) ?? undefined;
 
   const createItem = trpc.item.create.useMutation({
     onSuccess: () => {
