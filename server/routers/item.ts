@@ -14,9 +14,14 @@ export const itemRouter = router({
           type: true,
           description: true,
           image: true,
+          effect: true,
           value: true,
+          durability: true,
+          stackable: true,
+          maxStackSize: true,
+          usableInBattle: true,
           equipmentSlot: true,
-          usableInBattle: true
+          lootChance: true
         }
       });
     }),
