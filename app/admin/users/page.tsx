@@ -43,14 +43,14 @@ export default function AdminUsersPage() {
   });
 
   if (status === 'loading') {
-    return <div className="text-center">Loading...</div>;
+    return <div className="text-center text-pm-white">Loading...</div>;
   }
 
   if (status !== 'authenticated' || session?.user?.role !== 'admin') {
     return (
       <div className="text-center">
-        <p>Access denied. Admins only.</p>
-        <Link href="/" className="hover:underline">
+        <p className="text-pm-white">Access denied. Admins only.</p>
+        <Link href="/" className="hover:underline text-pm-red">
           Back to Home
         </Link>
       </div>
@@ -83,22 +83,22 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen p-4">
       <div className="container mx-auto">
-        <h1 className="text-3xl font-anton mb-6">User Management</h1>
-        <Link href="/admin" className="inline-block mb-4 hover:underline font-roboto">
+        <h1 className="text-3xl font-anton mb-6 text-pm-white">User Management</h1>
+        <Link href="/admin" className="inline-block mb-4 hover:underline font-roboto text-pm-white">
           Back to Admin Dashboard
         </Link>
 
-        <Card className="p-6 rounded shadow-md mb-8">
+        <Card className="p-6 rounded shadow-md mb-8 bg-pm-blue text-pm-white">
           <CardHeader className="border-b pb-2 mb-4">
-            <h2 className="text-xl font-anton">{userForm.id ? 'Edit User' : 'Create New User'}</h2>
+            <h2 className="text-xl font-anton text-pm-white">{userForm.id ? 'Edit User' : 'Create New User'}</h2>
           </CardHeader>
           <CardBody>
             {userError && <p className="text-red-500 mb-4 font-roboto">{userError}</p>}
             <form onSubmit={handleUserSubmit} className="space-y-4 mb-6">
               <div>
-                <label htmlFor="username" className="block font-roboto font-medium mb-1">Username</label>
+                <label htmlFor="username" className="block font-roboto font-medium mb-1 text-pm-white">Username</label>
                 <Input
                   id="username"
                   type="text"
@@ -109,7 +109,7 @@ export default function AdminUsersPage() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block font-roboto font-medium mb-1">Email</label>
+                <label htmlFor="email" className="block font-roboto font-medium mb-1 text-pm-white">Email</label>
                 <Input
                   id="email"
                   type="email"
@@ -120,7 +120,7 @@ export default function AdminUsersPage() {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block font-roboto font-medium mb-1">Password {userForm.id && '(Leave blank to keep unchanged)'}</label>
+                <label htmlFor="password" className="block font-roboto font-medium mb-1 text-pm-white">Password {userForm.id && '(Leave blank to keep unchanged)'}</label>
                 <Input
                   id="password"
                   type="password"
@@ -131,7 +131,7 @@ export default function AdminUsersPage() {
                 />
               </div>
               <div>
-                <label htmlFor="role" className="block font-roboto font-medium mb-1">Role</label>
+                <label htmlFor="role" className="block font-roboto font-medium mb-1 text-pm-white">Role</label>
                 <select
                   id="role"
                   value={userForm.role}
@@ -149,7 +149,7 @@ export default function AdminUsersPage() {
                 <Button
                   type="button"
                   variant="ghost"
-                  className="ml-2 border-gray-300 text-gray-700 hover:bg-gray-100 font-roboto font-medium"
+                  className="ml-2 border-pm-navy text-pm-white hover:bg-pm-dark-blue font-roboto font-medium"
                   onClick={() => setUserForm({ id: '', username: '', email: '', password: '', role: 'user' })}
                 >
                   Cancel Edit
@@ -159,37 +159,37 @@ export default function AdminUsersPage() {
           </CardBody>
         </Card>
 
-        <Card className="p-6 rounded shadow-md mb-8">
+        <Card className="p-6 rounded shadow-md mb-8 bg-pm-blue text-pm-white">
           <CardHeader className="border-b pb-2 mb-4">
-            <h2 className="text-xl font-anton">Existing Users</h2>
+            <h2 className="text-xl font-anton text-pm-white">User List</h2>
           </CardHeader>
           <CardBody>
             <div className="overflow-x-auto">
               {users.length > 0 ? (
-                <table className="min-w-full border-collapse border border-gray-300">
+                <table className="min-w-full border-collapse border border-pm-navy">
                   <thead>
-                    <tr className="bg-gray-200">
-                      <th className="font-roboto p-3 text-left border-b border-gray-300">ID</th>
-                      <th className="font-roboto p-3 text-left border-b border-gray-300">Username</th>
-                      <th className="font-roboto p-3 text-left border-b border-gray-300">Email</th>
-                      <th className="font-roboto p-3 text-left border-b border-gray-300">Role</th>
-                      <th className="font-roboto p-3 text-left border-b border-gray-300">Created</th>
-                      <th className="font-roboto p-3 text-left border-b border-gray-300">Actions</th>
+                    <tr className="bg-pm-dark-blue text-pm-white">
+                      <th className="font-roboto p-3 text-left border-b border-pm-navy text-pm-white">ID</th>
+                      <th className="font-roboto p-3 text-left border-b border-pm-navy text-pm-white">Username</th>
+                      <th className="font-roboto p-3 text-left border-b border-pm-navy text-pm-white">Email</th>
+                      <th className="font-roboto p-3 text-left border-b border-pm-navy text-pm-white">Role</th>
+                      <th className="font-roboto p-3 text-left border-b border-pm-navy text-pm-white">Created</th>
+                      <th className="font-roboto p-3 text-left border-b border-pm-navy text-pm-white">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {users.map((user: any) => (
-                      <tr key={user.id} className="border-b border-gray-300 hover:bg-gray-100">
-                        <td className="font-roboto p-3 border-b border-gray-300">{user.id}</td>
-                        <td className="font-roboto p-3 border-b border-gray-300">{user.username}</td>
-                        <td className="font-roboto p-3 border-b border-gray-300">{user.email}</td>
-                        <td className="font-roboto p-3 border-b border-gray-300">{user.role}</td>
-                        <td className="font-roboto p-3 border-b border-gray-300">{new Date(user.createdAt).toLocaleDateString()}</td>
-                        <td className="font-roboto p-3 border-b border-gray-300">
+                      <tr key={user.id} className="border-b border-pm-navy hover:bg-pm-navy">
+                        <td className="font-roboto p-3 border-b border-pm-navy text-pm-white">{user.id}</td>
+                        <td className="font-roboto p-3 border-b border-pm-navy text-pm-white">{user.username}</td>
+                        <td className="font-roboto p-3 border-b border-pm-navy text-pm-white">{user.email}</td>
+                        <td className="font-roboto p-3 border-b border-pm-navy text-pm-white">{user.role}</td>
+                        <td className="font-roboto p-3 border-b border-pm-navy text-pm-white">{new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td className="font-roboto p-3 border-b border-pm-navy text-pm-white">
                           <div className="flex gap-2">
                             <Button
                               variant="ghost"
-                              className="border-gray-300 text-gray-700 hover:bg-gray-100 font-roboto font-medium"
+                              className="border-pm-navy text-pm-white hover:bg-pm-dark-blue font-roboto font-medium"
                               onClick={() => editUser(user)}
                             >
                               Edit
@@ -208,7 +208,7 @@ export default function AdminUsersPage() {
                   </tbody>
                 </table>
               ) : (
-                <p className="font-roboto text-gray-500">No users found.</p>
+                <p className="text-sm text-pm-cream">No users found.</p>
               )}
             </div>
           </CardBody>

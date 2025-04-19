@@ -98,14 +98,14 @@ export default function AdminCharactersPage() {
   });
 
   if (status === 'loading') {
-    return <div className="text-center">Loading...</div>;
+    return <div className="text-center text-pm-white">Loading...</div>;
   }
 
   if (status !== 'authenticated' || session?.user?.role !== 'admin') {
     return (
       <div className="text-center">
-        <p>Access denied. Admins only.</p>
-        <Link href="/" className="hover:underline">
+        <p className="text-pm-white">Access denied. Admins only.</p>
+        <Link href="/" className="hover:underline text-pm-red">
           Back to Home
         </Link>
       </div>
@@ -143,16 +143,16 @@ export default function AdminCharactersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen p-4">
       <div className="container mx-auto">
-        <h1 className="text-3xl font-anton mb-6">Character Management</h1>
-        <Link href="/admin" className="inline-block mb-4 hover:underline font-roboto">
+        <h1 className="text-3xl font-anton mb-6 text-pm-white">Character Management</h1>
+        <Link href="/admin" className="inline-block mb-4 hover:underline font-roboto text-pm-white">
           Back to Admin Dashboard
         </Link>
 
         {/* Characters Section */}
-        <div className="p-6 rounded shadow-md mb-8">
-          <h2 className="text-xl font-anton mb-4">Manage Characters</h2>
+        <div className="p-6 rounded shadow-md mb-8 bg-pm-blue">
+          <h2 className="text-xl font-anton mb-4 text-pm-white">Manage Characters</h2>
           {charError && <p className="text-red-500 mb-4 font-roboto">{charError}</p>}
           
           <Accordion 
@@ -162,7 +162,7 @@ export default function AdminCharactersPage() {
           >
             <form onSubmit={handleCharacterSubmit} className="space-y-4 font-roboto">
               <div>
-                <label htmlFor="userId" className="block font-roboto font-medium mb-1">User</label>
+                <label htmlFor="userId" className="block font-roboto font-medium mb-1 text-pm-white">User</label>
                 <select
                   id="userId"
                   value={charForm.userId}
@@ -179,7 +179,7 @@ export default function AdminCharactersPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium">Name</label>
+                <label className="block text-sm font-medium text-pm-white">Name</label>
                 <input
                   type="text"
                   value={charForm.name}
@@ -189,7 +189,7 @@ export default function AdminCharactersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Level</label>
+                <label className="block text-sm font-medium text-pm-white">Level</label>
                 <input
                   type="number"
                   value={charForm.level}
@@ -299,7 +299,7 @@ export default function AdminCharactersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Jobs</label>
+                <label className="block text-sm font-medium text-pm-white">Jobs</label>
                 <input
                   type="text"
                   value={charForm.jobs}
@@ -307,43 +307,45 @@ export default function AdminCharactersPage() {
                   className="w-full p-2 border rounded"
                 />
               </div>
-              <button type="submit" className="p-2 rounded hover:opacity-90 transition-opacity">
-                {charForm.id ? 'Update Character' : 'Create Character'}
-              </button>
-              {charForm.id && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setCharForm({
-                      id: '',
-                      userId: '',
-                      name: '',
-                      level: 1,
-                      currentPowerlevel: 1000,
-                      basePowerlevel: 1000,
-                      hiddenPowerlevel: 0,
-                      race: 'Unknown',
-                      planet: '',
-                      alignment: 0,
-                      description: '',
-                      equippedItems: 'None',
-                      items: 'None',
-                      peopleYouHaveBeenTo: 'None',
-                      jobs: '',
-                    })
-                  }
-                  className="ml-2 p-2 rounded hover:opacity-90 transition-opacity"
-                >
-                  Cancel Edit
+              <div className="flex gap-2 mt-4">
+                <button type="submit" className="bg-pm-red text-white px-4 py-2 rounded hover:bg-red-700 font-roboto font-medium">
+                  {charForm.id ? 'Update Character' : 'Create Character'}
                 </button>
-              )}
+                {charForm.id && (
+                  <button
+                    type="button"
+                    className="border border-pm-navy text-pm-white px-4 py-2 rounded hover:bg-pm-dark-blue font-roboto font-medium"
+                    onClick={() =>
+                      setCharForm({
+                        id: '',
+                        userId: '',
+                        name: '',
+                        level: 1,
+                        currentPowerlevel: 1000,
+                        basePowerlevel: 1000,
+                        hiddenPowerlevel: 0,
+                        race: 'Unknown',
+                        planet: '',
+                        alignment: 0,
+                        description: '',
+                        equippedItems: 'None',
+                        items: 'None',
+                        peopleYouHaveBeenTo: 'None',
+                        jobs: '',
+                      })
+                    }
+                  >
+                    Cancel Edit
+                  </button>
+                )}
+              </div>
             </form>
           </Accordion>
 
-          <h3 className="text-lg font-anton mt-6 mb-2">Current Characters</h3>
+          <h3 className="text-lg font-anton mt-6 mb-2 text-pm-white">Current Characters</h3>
           <div className="space-y-2 max-h-96 overflow-y-auto font-roboto">
             {characters.map((char) => (
-              <div key={char.id} className="flex justify-between items-center p-2 border rounded">
+              <div key={char.id} className="flex justify-between items-center p-2 border border-pm-navy rounded bg-pm-dark-blue text-pm-white">
                 <div>
                   <p>{char.name}</p>
                   <p className="text-sm">User ID: {char.userId} - Power Level: {char.currentPowerlevel}</p>
@@ -351,13 +353,13 @@ export default function AdminCharactersPage() {
                 <div>
                   <button
                     onClick={() => editCharacter(char)}
-                    className="bg-blue-500 text-white p-1 rounded hover:opacity-90 transition-opacity mr-2"
+                    className="bg-pm-blue text-white p-1 rounded hover:bg-pm-navy transition-opacity mr-2 font-roboto"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteCharacter.mutate({ id: char.id })}
-                    className="bg-red-500 text-white p-1 rounded hover:opacity-90 transition-opacity"
+                    className="bg-pm-red text-white p-1 rounded hover:bg-red-700 transition-opacity font-roboto"
                   >
                     Delete
                   </button>
