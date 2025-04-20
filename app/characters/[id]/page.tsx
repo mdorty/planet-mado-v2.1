@@ -365,7 +365,6 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
               <div className="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                 <div className="relative w-full h-full flex items-center justify-center">
                   <CharacterPhaserDisplayWithInventory characterData={character} mapData={mapData} />
-                  />
                   <button
                     onClick={() => setIsModalOpen(false)}
                     className="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-white font-roboto font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out"
