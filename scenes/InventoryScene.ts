@@ -100,6 +100,7 @@ export default class InventoryScene extends Phaser.Scene {
       { fontFamily: 'Roboto, sans-serif', fontSize: '36px', color: '#fff', fontStyle: 'bold' }
     ).setInteractive().setDepth(2);
     closeBtn.on('pointerdown', () => {
+      this.game.events.emit('inventory-close');
       this.scene.stop();
     });
   }

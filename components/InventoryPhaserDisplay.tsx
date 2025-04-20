@@ -17,9 +17,10 @@ interface InventoryPhaserDisplayProps {
   inventory: InventoryItem[];
   width?: number;
   height?: number;
+  onClose?: () => void;
 }
 
-const InventoryPhaserDisplay: React.FC<InventoryPhaserDisplayProps> = ({ inventory, width = 720, height = 480 }) => {
+const InventoryPhaserDisplay: React.FC<InventoryPhaserDisplayProps> = ({ inventory, width = 720, height = 480, onClose }) => {
   const gameRef = useRef<any>(null);
   const containerId = "phaser-inventory-scene";
 
@@ -30,6 +31,7 @@ const InventoryPhaserDisplay: React.FC<InventoryPhaserDisplayProps> = ({ invento
     let config: any;
     let sceneInstance: any;
 
+    let cleanupInventoryClose: (() => void) | undefined;
     (async () => {
       Phaser = (await getPhaser()).default;
       InventoryScene = (await getInventoryScene()).default;
@@ -51,6 +53,13 @@ const InventoryPhaserDisplay: React.FC<InventoryPhaserDisplayProps> = ({ invento
       phaserInstance = new Phaser.Game(config);
       gameRef.current = phaserInstance;
 
+      // Listen for inventory-close event from Phaser and call onClose
+      if (onClose) {
+        const handler = () => { onClose(); };
+        phaserInstance.events.on("inventory-close", handler);
+        cleanupInventoryClose = () => phaserInstance.events.off("inventory-close", handler);
+      }
+
       // Wait for scene to boot, then pass inventory data
       phaserInstance.events.on("ready", () => {
         const scene = phaserInstance.scene.getScene("InventoryScene");
@@ -65,6 +74,7 @@ const InventoryPhaserDisplay: React.FC<InventoryPhaserDisplayProps> = ({ invento
       }, 300);
     })();
     return () => {
+      if (cleanupInventoryClose) cleanupInventoryClose();
       if (gameRef.current) {
         gameRef.current.destroy(true);
         gameRef.current = null;

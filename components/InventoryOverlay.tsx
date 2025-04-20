@@ -38,7 +38,7 @@ export default function InventoryOverlay({ characterId, onClose }: InventoryOver
       <div className="relative w-[720px] h-[480px] rounded-xl overflow-hidden shadow-2xl">
         {/* Phaser InventoryScene overlay */}
         {data && (
-          <InventoryPhaserDisplay inventory={data} width={720} height={480} />
+          <InventoryPhaserDisplay inventory={data} width={720} height={480} onClose={onClose} />
         )}
         
       </div>
