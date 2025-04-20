@@ -4,6 +4,17 @@ import { db } from '../../lib/prisma';
 
 export const adminRouter = router({
   /**
+   * Delete a user by ID (admin only)
+   */
+  deleteUser: procedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ input }) => {
+      const deleted = await db.user.delete({
+        where: { id: input.userId },
+      });
+      return deleted;
+    }),
+  /**
    * Delete a character by ID (admin only)
    */
   deleteCharacter: procedure
