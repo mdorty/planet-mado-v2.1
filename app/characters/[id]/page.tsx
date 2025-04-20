@@ -127,8 +127,11 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
     );
   }
 
-  // Calculate power level percentage
-  const percentage = Math.round((character.currentPowerlevel / character.basePowerlevel) * 100);
+  // Calculate power level percentage (safe against undefined/null)
+  let percentage = 0;
+  if (typeof character.currentPowerlevel === 'number' && typeof character.basePowerlevel === 'number' && character.basePowerlevel > 0) {
+    percentage = Math.round((character.currentPowerlevel / character.basePowerlevel) * 100);
+  }
   const circleCircumference = 440;
   const strokeDashoffset = circleCircumference - (circleCircumference * percentage / 100);
 
@@ -187,13 +190,13 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
                         />
                       </svg>
                       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl">
-                        {percentage}%
+                        {typeof character.currentPowerlevel === 'number' && typeof character.basePowerlevel === 'number' && character.basePowerlevel > 0 ? `${percentage}%` : 'N/A'}
                       </div>
                     </div>
                     <p className="text-center mt-2">
                       {character.hiddenPowerlevel ? `${character.hiddenPowerlevel.toLocaleString()} (` : ''}
-                      <span id="current-powerlevel">{character.currentPowerlevel.toLocaleString()}</span>
-                      {character.hiddenPowerlevel ? ')' : ''} / {character.basePowerlevel.toLocaleString()}
+                      <span id="current-powerlevel">{typeof character.currentPowerlevel === 'number' ? character.currentPowerlevel.toLocaleString() : 'N/A'}</span>
+                      {character.hiddenPowerlevel ? ')' : ''} / {typeof character.basePowerlevel === 'number' ? character.basePowerlevel.toLocaleString() : 'N/A'}
                     </p>
                   </div>
                 </CardBody>
