@@ -32,7 +32,7 @@ const CharacterPhaserDisplayWithInventory: React.FC<CharacterPhaserDisplayWithIn
       />
       {/* Inventory Button - placed absolutely under power level area */}
       <Button
-        className="absolute left-4 top-[22rem] z-20 bg-orange-600 hover:bg-orange-700 text-white font-roboto font-medium px-6 py-2 rounded shadow-lg"
+        className="absolute left-4 top-[300px] z-20 bg-orange-600 hover:bg-orange-700 text-white font-roboto font-medium px-6 py-2 rounded shadow-lg"
         onClick={() => setShowInventory(true)}
         aria-label="Open Inventory"
       >
