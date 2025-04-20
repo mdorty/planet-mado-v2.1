@@ -6,6 +6,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Accordion, AccordionItem, Form, Input, Textarea, Select, Button } from '@heroui/react';
 
+import CharacterInventoryCard from './CharacterInventoryCard';
+
 export default function AdminCharactersPage() {
   const { data: session, status } = useSession();
 
@@ -339,38 +341,180 @@ export default function AdminCharactersPage() {
                     Cancel Edit
                   </button>
                 )}
-              </div>
-            </Form>
-  </AccordionItem>
-</Accordion>
-
-          <h3 className="text-lg font-anton mt-6 mb-2 text-pm-white">Current Characters</h3>
-          <div className="space-y-2 max-h-96 overflow-y-auto font-roboto">
-            {characters.map((char) => (
-              <div key={char.id} className="flex justify-between items-center p-2 border border-pm-navy rounded bg-pm-dark-blue text-pm-white">
-                <div>
-                  <p>{char.name}</p>
-                  <p className="text-sm">User ID: {char.userId} - Power Level: {char.currentPowerlevel}</p>
-                </div>
-                <div>
-                  <button
-                    onClick={() => editCharacter(char)}
-                    className="bg-pm-blue text-white p-1 rounded hover:bg-pm-navy transition-opacity mr-2 font-roboto"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteCharacter.mutate({ id: char.id })}
-                    className="bg-pm-red text-white p-1 rounded hover:bg-red-700 transition-opacity font-roboto"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
-        </div>
-      </div>
+          <div>
+            <label className="block text-sm font-medium text-pm-white">Name</label>
+            <input
+              type="text"
+              value={charForm.name}
+              onChange={(e) => setCharForm({ ...charForm, name: e.target.value })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-pm-white">Level</label>
+            <input
+              type="number"
+              value={charForm.level}
+              onChange={(e) => setCharForm({ ...charForm, level: Number(e.target.value) })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+              min="1"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Current Power Level</label>
+            <input
+              type="number"
+              value={charForm.currentPowerlevel}
+              onChange={(e) => setCharForm({ ...charForm, currentPowerlevel: Number(e.target.value) })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+              min="0"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Base Power Level</label>
+            <input
+              type="number"
+              value={charForm.basePowerlevel}
+              onChange={(e) => setCharForm({ ...charForm, basePowerlevel: Number(e.target.value) })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+              min="0"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Hidden Power Level</label>
+            <input
+              type="number"
+              value={charForm.hiddenPowerlevel}
+              onChange={(e) => setCharForm({ ...charForm, hiddenPowerlevel: Number(e.target.value) })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+              min="0"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Race</label>
+            <input
+              type="text"
+              value={charForm.race}
+              onChange={(e) => setCharForm({ ...charForm, race: e.target.value })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Planet</label>
+            <input
+              type="text"
+              value={charForm.planet}
+              onChange={(e) => setCharForm({ ...charForm, planet: e.target.value })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Alignment (-100 to 100)</label>
+            <input
+              type="number"
+              value={charForm.alignment}
+              onChange={(e) => setCharForm({ ...charForm, alignment: Number(e.target.value) })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+              min="-100"
+              max="100"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Description</label>
+            <textarea
+              value={charForm.description}
+              onChange={(e) => setCharForm({ ...charForm, description: e.target.value })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+              rows={3}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Equipped Items</label>
+            <input
+              type="text"
+              value={charForm.equippedItems}
+              onChange={(e) => setCharForm({ ...charForm, equippedItems: e.target.value })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Items</label>
+            <input
+              type="text"
+              value={charForm.items}
+              onChange={(e) => setCharForm({ ...charForm, items: e.target.value })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">People You Have Been To</label>
+            <input
+              type="text"
+              value={charForm.peopleYouHaveBeenTo}
+              onChange={(e) => setCharForm({ ...charForm, peopleYouHaveBeenTo: e.target.value })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-pm-white">Jobs</label>
+            <input
+              type="text"
+              value={charForm.jobs}
+              onChange={(e) => setCharForm({ ...charForm, jobs: e.target.value })}
+              className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+            />
+          </div>
+          <div className="flex gap-2 mt-4">
+            <button type="submit" className="bg-pm-red text-white px-4 py-2 rounded hover:bg-red-700 font-roboto font-medium">
+              {charForm.id ? 'Update Character' : 'Create Character'}
+            </button>
+            {charForm.id && (
+              <button
+                type="button"
+                className="border border-pm-navy text-pm-white px-4 py-2 rounded hover:bg-pm-dark-blue font-roboto font-medium"
+                onClick={() =>
+                  setCharForm({
+                    id: '',
+                    userId: '',
+                    name: '',
+                    level: 1,
+                    currentPowerlevel: 1000,
+                    basePowerlevel: 1000,
+                    hiddenPowerlevel: 0,
+                    race: 'Unknown',
+                    planet: '',
+                    alignment: 0,
+                    description: '',
+                    equippedItems: 'None',
+                    items: 'None',
+                    peopleYouHaveBeenTo: 'None',
+                    jobs: '',
+                  })
+                }
+              >
+                Cancel Edit
+              </button>
+            )}
+          </div>
+        </Form>
+      </AccordionItem>
+    </Accordion>
+
+    <h3 className="text-lg font-anton mt-6 mb-2 text-pm-white">Current Characters</h3>
+    <div className="space-y-2 max-h-96 overflow-y-auto font-roboto">
+      {characters.map((char) => (
+        <CharacterInventoryCard key={char.id} char={char} />
+      ))}
     </div>
-  );
+  </div>
+</div>
+</div>
+);
 }

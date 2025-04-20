@@ -3,6 +3,67 @@ import { z } from 'zod';
 import { db } from '../../lib/prisma';
 
 export const adminRouter = router({
+  /**
+   * Fetch a character with their inventory (including item details)
+   */
+  getCharacterWithInventory: procedure
+    .input(z.object({ characterId: z.string() }))
+    .query(async ({ input }) => {
+      const character = await db.character.findUnique({
+        where: { id: input.characterId },
+        include: {
+          inventory: {
+            include: {
+              item: true,
+            },
+          },
+        },
+      });
+      if (!character) {
+        throw new Error(`Character with ID ${input.characterId} not found`);
+      }
+      return character;
+    }),
+
+  /**
+   * Add multiple items to a character's inventory
+   * items: array of { itemId: number, quantity?: number }
+   */
+  addItemsToInventory: procedure
+    .input(z.object({
+      characterId: z.string(),
+      items: z.array(z.object({
+        itemId: z.number(),
+        quantity: z.number().optional(),
+      })),
+    }))
+    .mutation(async ({ input }) => {
+      const { characterId, items } = input;
+      const created = await Promise.all(
+        items.map(({ itemId, quantity }) =>
+          db.inventoryItem.create({
+            data: {
+              characterId,
+              itemId,
+              quantity: quantity ?? 1,
+            },
+          })
+        )
+      );
+      return created;
+    }),
+
+  /**
+   * Remove an item from a character's inventory by inventoryItemId
+   */
+  removeItemFromInventory: procedure
+    .input(z.object({ inventoryItemId: z.number() }))
+    .mutation(async ({ input }) => {
+      const deleted = await db.inventoryItem.delete({
+        where: { id: input.inventoryItemId },
+      });
+      return deleted;
+    }),
   getCharacters: procedure.query(async () => {
     try {
       const characters = await db.character.findMany({
@@ -14,7 +75,8 @@ export const adminRouter = router({
           level: true,
           userId: true
         }
-      });
+      
+});
       return characters;
     } catch (error: unknown) {
       throw new Error(`Failed to fetch characters: ${(error as Error).message}`);
@@ -41,7 +103,8 @@ export const adminRouter = router({
             name: true,
             currentPowerlevel: true
           }
-        });
+        
+});
         return updatedCharacter;
       } catch (error: unknown) {
         throw new Error(`Failed to update character: ${(error as Error).message}`);
@@ -57,7 +120,8 @@ export const adminRouter = router({
           role: true,
           createdAt: true
         }
-      });
+      
+});
       return users;
     } catch (error: unknown) {
       throw new Error(`Failed to fetch users: ${(error as Error).message}`);
@@ -87,7 +151,8 @@ export const adminRouter = router({
             email: true,
             role: true
           }
-        });
+        
+});
         return updatedUser;
       } catch (error: unknown) {
         throw new Error(`Failed to update user: ${(error as Error).message}`);
@@ -117,7 +182,8 @@ export const adminRouter = router({
             email: true,
             role: true
           }
-        });
+        
+});
         return newUser;
       } catch (error: unknown) {
         throw new Error(`Failed to create user: ${(error as Error).message}`);
@@ -150,7 +216,8 @@ export const adminRouter = router({
           let defaultUser = await db.user.findFirst({
             where: { email: 'default@test.com' },
             select: { id: true }
-          });
+          
+});
           if (!defaultUser) {
             defaultUser = await db.user.create({
               data: {
@@ -160,14 +227,16 @@ export const adminRouter = router({
                 role: 'user'
               },
               select: { id: true }
-            });
+            
+});
           }
           userId = defaultUser.id;
         }
         const userExists = await db.user.findUnique({
           where: { id: userId },
           select: { id: true }
-        });
+        
+});
         if (!userExists) {
           throw new Error(`User with ID ${userId} not found`);
         }
@@ -206,10 +275,12 @@ export const adminRouter = router({
             peopleYouHaveBeenTo: true,
             jobs: true,
           }
-        });
+        
+});
         return newCharacter;
       } catch (error: unknown) {
         throw new Error(`Failed to create character: ${(error as Error).message}`);
       }
     }),
+
 });
