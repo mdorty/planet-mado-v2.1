@@ -40,6 +40,7 @@ export default function ProfilePage() {
     }
 
     changePassword.mutate({
+      email: session?.user?.email || '',
       currentPassword: form.currentPassword,
       newPassword: form.newPassword,
     });

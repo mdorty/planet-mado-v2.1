@@ -15,6 +15,36 @@ if (typeof window === 'undefined' && !(global as any).prisma) {
  * Handles user authentication operations like signup and login
  */
 export const authRouter = router({
+  /**
+   * Change password for the currently authenticated user
+   */
+  changePassword: procedure
+    .input(z.object({
+      email: z.string().email(), // or use session context if available
+      currentPassword: z.string().min(8),
+      newPassword: z.string().min(8)
+    }))
+    .mutation(async ({ input }) => {
+      const { email, currentPassword, newPassword } = input;
+      // Find user
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (!user) {
+        throw new Error('User not found');
+      }
+      // Verify current password
+      const isValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isValid) {
+        throw new Error('Current password is incorrect');
+      }
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      // Update user password
+      await prisma.user.update({
+        where: { email },
+        data: { password: hashedPassword }
+      });
+      return { success: true };
+    }),
   signUp: procedure
     .input(z.object({
       email: z.string().email(),
