@@ -80,14 +80,36 @@ export const adminRouter = router({
       const characters = await db.character.findMany({
         select: {
           id: true,
+          userId: true,
           name: true,
-          currentPowerlevel: true,
-          race: true,
+          status: true,
           level: true,
-          userId: true
+          health: true,
+          energy: true,
+          strength: true,
+          speed: true,
+          currentPowerlevel: true,
+          hiddenPowerlevel: true,
+          basePowerlevel: true,
+          race: true,
+          planet: true,
+          alignment: true,
+          description: true,
+          equippedItems: true,
+          items: true,
+          peopleYouHaveBeenTo: true,
+          jobs: true,
+          died: true,
+          deathCount: true,
+          lastDateTrained: true,
+          lastDateMeditated: true,
+          createdAt: true,
+          updatedAt: true,
+          currentMap: true,
+          xCoord: true,
+          yCoord: true,
         }
-      
-});
+      });
       return characters;
     } catch (error: unknown) {
       throw new Error(`Failed to fetch characters: ${(error as Error).message}`);
