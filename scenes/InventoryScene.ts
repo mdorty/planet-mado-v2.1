@@ -15,6 +15,7 @@ export interface InventoryItem {
 export default class InventoryScene extends Phaser.Scene {
   public playerInventory: InventoryItem[] = [];
   private tooltip?: Phaser.GameObjects.Container;
+  private readonly placeholderKey = 'item-placeholder';
 
   constructor() {
     super({ key: 'InventoryScene' });
@@ -22,6 +23,18 @@ export default class InventoryScene extends Phaser.Scene {
 
   init(data: { inventory: InventoryItem[] }) {
     this.playerInventory = data.inventory || [];
+  }
+
+  preload() {
+    // Load a default placeholder image (ensure this exists in public/assets/)
+    this.load.image(this.placeholderKey, '/assets/no_image_placeholder.png');
+    // Dynamically load all item images
+    this.playerInventory.forEach((item) => {
+      if (item.imageKey && typeof item.imageKey === 'string' && item.imageKey.trim() !== '') {
+        // Use the imageKey as the key, and treat it as the URL
+        this.load.image(item.imageKey, item.imageKey);
+      }
+    });
   }
 
   create() {
@@ -60,7 +73,9 @@ export default class InventoryScene extends Phaser.Scene {
       const col = i % cols;
       const x = startX + col * (itemSize + spacing);
       const y = startY + row * (itemSize + spacing);
-      const icon = this.add.image(x, y, item.imageKey).setDisplaySize(itemSize, itemSize).setDepth(1).setInteractive();
+      // Use the loaded image if available, otherwise fallback to placeholder
+      const keyToUse = this.textures.exists(item.imageKey) ? item.imageKey : this.placeholderKey;
+      const icon = this.add.image(x, y, keyToUse).setDisplaySize(itemSize, itemSize).setDepth(1).setInteractive();
 
       // Quantity badge
       if (item.quantity > 1) {
