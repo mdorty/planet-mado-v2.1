@@ -40,13 +40,7 @@ export default function InventoryOverlay({ characterId, onClose }: InventoryOver
         {data && (
           <InventoryPhaserDisplay inventory={data} width={720} height={480} />
         )}
-        <button
-          className="absolute top-4 right-4 bg-orange-600 hover:bg-orange-700 text-white rounded-full w-10 h-10 flex items-center justify-center text-2xl font-bold shadow-lg focus:outline-none"
-          onClick={onClose}
-          aria-label="Close inventory"
-        >
-          ×
-        </button>
+        
       </div>
     </div>
   );
