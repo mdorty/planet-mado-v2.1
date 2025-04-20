@@ -65,7 +65,6 @@ export default function AdminUsersPage() {
         id: userForm.id,
         username: userForm.username,
         email: userForm.email,
-        password: userForm.password,
         role: userForm.role === 'admin' ? 'admin' : 'user'
       });
     } else {
