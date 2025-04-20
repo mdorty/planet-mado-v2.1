@@ -143,7 +143,7 @@ export default function CharactersPage() {
                   <h3 className="font-anton text-lg truncate text-pm-white">{char.name}</h3>
                 </CardHeader>
                 <CardBody className="p-4 flex flex-col gap-2">
-                  <p className="font-roboto text-sm text-pm-cream">Power Level: {char.currentPowerlevel || 'N/A'}</p>
+                  <p className="font-roboto text-sm text-pm-cream">Power Level: {char.currentPowerlevel ?? 'N/A'} / {char.basePowerlevel ?? 'N/A'}</p>
                   <p className="font-roboto text-sm text-pm-cream">Race: {char.race || 'Unknown'}</p>
                   <p className="font-roboto text-sm text-pm-cream">Level: {char.level || '1'}</p>
                 </CardBody>

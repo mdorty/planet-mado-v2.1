@@ -12,6 +12,7 @@ export const characterRouter = router({
           id: true,
           name: true,
           currentPowerlevel: true,
+          basePowerlevel: true,
           race: true,
           level: true
         }
