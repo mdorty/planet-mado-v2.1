@@ -1,6 +1,33 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
+
+// --- Types ---
+interface Move {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  percentDamage?: number | null;
+  percentCost?: number | null;
+  chargeable?: boolean | null;
+  stunTurns?: number | null;
+  stunChancePercent?: number | null;
+  powerlevelMultiplier?: number | null;
+}
+interface CharacterWithMoves {
+  id: string;
+  name: string;
+  currentMap: string;
+  currentPowerlevel: number;
+  basePowerlevel: number;
+  race: string;
+  planet?: string | null;
+  alignment: number;
+  moves: Move[];
+  [key: string]: any;
+}
+
 import { trpc } from '@/lib/trpc/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -11,7 +38,8 @@ import CharacterPhaserDisplayWithInventory from '../../../components/CharacterPh
 export default function CharacterDetailPage({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { data: character, isLoading: characterLoading, error: characterError } = trpc.character.getById.useQuery(
+  // Use the new endpoint to fetch both character and map
+  const { data, isLoading: characterLoading, error: characterError } = trpc.character.getCharacterWithMapById.useQuery(
     { id: params.id },
     { 
       enabled: !!session?.user?.id,
@@ -21,14 +49,8 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
       retry: 1
     }
   );
-  const { data: maps } = (trpc as any).map.getMaps.useQuery(
-    undefined,
-    {
-      staleTime: 5 * 60 * 1000, // Maps data remains fresh for 5 minutes
-      refetchOnWindowFocus: false,
-      refetchOnMount: false
-    }
-  );
+  const character = data?.character as CharacterWithMoves | undefined;
+  const mapData = data?.map;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -111,16 +133,14 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
   const strokeDashoffset = circleCircumference - (circleCircumference * percentage / 100);
 
   // Group moves by category
-  const movesByCategory = character.moves.reduce((acc, move) => {
+  const movesByCategory = character.moves.reduce<Record<string, Move[]>>((acc: Record<string, Move[]>, move: Move) => {
     if (!acc[move.category]) {
       acc[move.category] = [];
     }
     acc[move.category].push(move);
     return acc;
-  }, {} as Record<string, typeof character.moves>);
+  }, {});
 
-  // Find a map associated with this character or use a default map
-  const characterMap = maps?.find((map: any) => map.name.includes(character.name)) || maps?.[0];
 
   return (
     <div className="min-h-screen p-4">
@@ -344,14 +364,7 @@ export default function CharacterDetailPage({ params }: { params: { id: string }
             {isModalOpen && (
               <div className="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
                 <div className="relative w-full h-full flex items-center justify-center">
-                  <CharacterPhaserDisplayWithInventory 
-                    characterData={{ 
-                      currentPowerlevel: character.currentPowerlevel || 0, 
-                      basePowerlevel: character.basePowerlevel || 0, 
-                      name: character.name || 'Unknown',
-                      id: character.id
-                    }} 
-                    mapData={characterMap} 
+                  <CharacterPhaserDisplayWithInventory characterData={character} mapData={mapData} />
                   />
                   <button
                     onClick={() => setIsModalOpen(false)}

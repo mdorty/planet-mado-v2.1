@@ -42,6 +42,65 @@ export const characterRouter = router({
         throw new Error(`Failed to fetch character: ${(error as Error).message}`);
       }
     }),
+  /**
+   * Fetch character and corresponding map data by character ID.
+   * If character.currentMap is set and matches a map, return that map.
+   * Otherwise, return a default/hardcoded map object.
+   */
+  getCharacterWithMapById: procedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        // Fetch character
+        const character = await db.character.findUnique({
+          where: { id: input.id },
+          select: {
+            id: true,
+            name: true,
+            currentMap: true,
+            currentPowerlevel: true,
+            race: true,
+            level: true,
+            health: true,
+            energy: true,
+            xCoord: true,
+            yCoord: true,
+            moves: true,
+            // Add other fields you need here
+          },
+        });
+        if (!character) {
+          throw new Error(`Character with ID ${input.id} not found in database`);
+        }
+
+        // Determine which map to use
+        let mapData = null;
+        const currentMapName = character.currentMap && character.currentMap !== "Unknown" ? character.currentMap : null;
+        if (currentMapName) {
+          mapData = await db.map.findFirst({ where: { name: currentMapName } });
+        }
+
+        // If not found, use default map
+        if (!mapData) {
+          mapData = {
+            id: 0,
+            name: "Default",
+            description: "Default hardcoded map",
+            xCoord: 0,
+            yCoord: 0,
+            tileImage: "/assets/tiles.jpg",
+            createdAt: new Date(),
+          };
+        }
+
+        return {
+          character,
+          map: mapData,
+        };
+      } catch (error: unknown) {
+        throw new Error(`Failed to fetch character/map: ${(error as Error).message}`);
+      }
+    }),
   create: procedure
     .input(z.object({
       name: z.string(),
