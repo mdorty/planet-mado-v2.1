@@ -154,7 +154,7 @@ export default function CharacterInventoryCard({ char }: { char: Character }) {
                   type="submit"
                   size="sm"
                   className="bg-pm-orange text-white font-roboto"
-                  isLoading={addItemsMutation.isLoading}
+                  isLoading={addItemsMutation.status === 'pending'}
                 >
                   Add Selected Items
                 </Button>
