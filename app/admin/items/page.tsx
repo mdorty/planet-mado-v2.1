@@ -53,8 +53,8 @@ const ItemCard = memo(({ item, onEdit, onDelete }: {
   }, [item.id, onDelete]);
 
   return (
-    <Card className="bg-white shadow-md rounded-lg overflow-hidden mb-4">
-      <CardHeader className="bg-blue-600 text-white p-3">
+    <Card className="shadow-md rounded-lg overflow-hidden mb-4">
+      <CardHeader className="text-white p-3">
         <h3 className="font-anton text-lg">{item.name}</h3>
       </CardHeader>
       <CardBody className="p-4">
