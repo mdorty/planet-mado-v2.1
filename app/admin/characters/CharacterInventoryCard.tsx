@@ -33,7 +33,7 @@ interface Character {
   died: string | null;
   deathCount: number | null;
   lastDateTrained: string | null;
-  status: string;
+  status?: string;
   currentMap?: string;
 }
 
