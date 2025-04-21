@@ -27,9 +27,9 @@ interface Character {
   energy: number;
   strength: number;
   speed: number;
-  defense: number;
-  dexterity: number;
-  intelligence: number;
+  defense?: number;
+  dexterity?: number;
+  intelligence?: number;
   died: string | null;
   deathCount: number | null;
   lastDateTrained: string | null;
