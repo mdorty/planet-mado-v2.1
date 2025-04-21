@@ -8,7 +8,31 @@ interface Character {
   name: string;
   level: number;
   currentPowerlevel: number;
-  // ...other fields as needed
+  basePowerlevel: number;
+  hiddenPowerlevel: number | null;
+  race: string;
+  planet: string | null;
+  alignment: number;
+  description: string | null;
+  equippedItems: string | null;
+  items: string | null;
+  peopleYouHaveBeenTo: string | null;
+  jobs: string | null;
+  xCoord: number;
+  yCoord: number;
+  createdAt: string;
+  updatedAt: string;
+  lastDateMeditated: string | null;
+  health: number;
+  energy: number;
+  strength: number;
+  speed: number;
+  defense: number;
+  dexterity: number;
+  intelligence: number;
+  died: string | null;
+  deathCount: number | null;
+  lastDateTrained: string | null;
 }
 
 interface Item {
@@ -25,7 +49,12 @@ interface InventoryItem {
   item: Item;
 }
 
-export default function CharacterInventoryCard({ char }: { char: Character }) {
+interface CharacterInventoryCardProps {
+  char: Character;
+  onEdit?: (char: Character) => void;
+}
+
+export default function CharacterInventoryCard({ char, onEdit }: CharacterInventoryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [selectedItemIds, setSelectedItemIds] = useState<number[]>([]);
   const [quantity, setQuantity] = useState(1);
@@ -90,6 +119,16 @@ export default function CharacterInventoryCard({ char }: { char: Character }) {
           <Button size="sm" className="bg-pm-blue text-white font-roboto" onClick={(e) => { e.stopPropagation(); setExpanded((exp) => !exp); }}>
             {expanded ? 'Hide Inventory' : 'Show Inventory'}
           </Button>
+          {onEdit && (
+            <Button
+              size="sm"
+              className="bg-pm-orange text-white font-roboto"
+              onClick={(e) => { e.stopPropagation(); onEdit(char); }}
+              aria-label={`Edit ${char.name}`}
+            >
+              Edit
+            </Button>
+          )}
         </div>
       </div>
       {expanded && (

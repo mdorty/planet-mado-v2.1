@@ -510,17 +510,7 @@ export default function AdminCharactersPage() {
     <h3 className="text-lg font-anton mt-6 mb-2 text-pm-white">Current Characters</h3>
     <div className="space-y-2 max-h-96 overflow-y-auto font-roboto">
       {characters.map((char) => (
-        <div key={char.id} className="flex items-center gap-2">
-          <CharacterInventoryCard char={char} />
-          <Button
-            size="sm"
-            className="bg-pm-orange text-white font-roboto"
-            onClick={() => editCharacter(char)}
-            aria-label={`Edit ${char.name}`}
-          >
-            Edit
-          </Button>
-        </div>
+        <CharacterInventoryCard key={char.id} char={char} onEdit={editCharacter} />
       ))}
     </div>
   </div>
