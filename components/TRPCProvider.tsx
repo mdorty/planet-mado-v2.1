@@ -4,6 +4,7 @@ import { trpc } from '../utils/trpc';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
 import { useState } from 'react';
+import superjson from 'superjson';
 
 interface TRPCProviderProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ export function TRPCProvider({ children }: TRPCProviderProps) {
           url: '/api/trpc',
           // Add batching for improved performance
           maxURLLength: 2083, // Maximum URL length for most browsers
+          transformer: superjson, // Add superjson transformer for consistent data types
         }),
       ],
     })
