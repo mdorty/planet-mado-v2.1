@@ -15,6 +15,6 @@ export async function getServerSideHelpers(userId?: string) {
       db,
       session: userId ? { user: { id: userId } } as SessionContext : null 
     },
-    transformer: superjson,
+    transformer: superjson // Still need to specify the transformer here
   });
 }
