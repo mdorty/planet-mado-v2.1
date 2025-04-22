@@ -13,12 +13,15 @@ export default function CharactersPage() {
 
   // Fetch characters for the logged-in user with optimized caching
   const { data: characters = [], refetch, isLoading } = trpc.character.getUserCharacters.useQuery(
-    undefined,
+    { userId: session?.user?.id },
     { 
       enabled: !!session?.user?.id,
-      staleTime: 30 * 1000, // Data remains fresh for 30 seconds
+      staleTime: 5 * 60 * 1000, // Data remains fresh for 5 minutes
+      gcTime: 10 * 60 * 1000, // Garbage collection time (formerly cacheTime)
       refetchOnWindowFocus: false,
-      retry: 1
+      retry: 1,
+      refetchOnMount: false, // Don't refetch when component mounts if data is fresh
+      suspense: false // Don't use React Suspense as it can cause layout shifts
     }
   );
 

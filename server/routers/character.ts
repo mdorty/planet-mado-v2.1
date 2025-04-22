@@ -3,26 +3,42 @@ import { z } from 'zod';
 import { db } from '../../lib/prisma';
 
 export const characterRouter = router({
-  getUserCharacters: procedure.query(async () => {
-    try {
-      // In a real implementation, you would get the user ID from the session or context
-      // For now, we'll return all characters as a placeholder with a note to implement proper filtering
-      const characters = await db.character.findMany({
-        select: {
-          id: true,
-          name: true,
-          currentPowerlevel: true,
-          basePowerlevel: true,
-          race: true,
-          level: true
+  getUserCharacters: procedure
+    .input(z.object({ userId: z.string().optional() }))
+    .query(async ({ input }) => {
+      try {
+        // Get user ID from input
+        const userId = input.userId;
+        
+        if (!userId) {
+          // If no user ID is available, return empty array
+          return [];
         }
-      });
-      // TODO: Filter characters by logged-in user ID once session context is available
-      return characters;
-    } catch (error: unknown) {
-      throw new Error(`Failed to fetch user characters: ${(error as Error).message}`);
-    }
-  }),
+        
+        // Fetch only characters belonging to the current user
+        const characters = await db.character.findMany({
+          where: {
+            userId: userId
+          },
+          select: {
+            id: true,
+            name: true,
+            currentPowerlevel: true,
+            basePowerlevel: true,
+            race: true,
+            level: true
+          },
+          // Add ordering to make results consistent
+          orderBy: {
+            name: 'asc'
+          }
+        });
+        
+        return characters;
+      } catch (error: unknown) {
+        throw new Error(`Failed to fetch user characters: ${(error as Error).message}`);
+      }
+    }),
   getById: procedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
