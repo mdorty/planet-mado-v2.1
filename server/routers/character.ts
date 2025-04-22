@@ -60,6 +60,7 @@ export const characterRouter = router({
             name: true,
             currentMap: true,
             currentPowerlevel: true,
+            basePowerlevel: true,
             race: true,
             level: true,
             health: true,
