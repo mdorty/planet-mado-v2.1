@@ -8,6 +8,26 @@ import { Accordion, AccordionItem, Form, Input, Textarea, Select, Button } from 
 
 import CharacterInventoryCard from './CharacterInventoryCard';
 
+// Utility function to convert all Date objects in a character to strings
+function convertDatesToStrings(character: any) {
+  const result = { ...character };
+  
+  // List of all possible date fields in the character object
+  const dateFields = [
+    'createdAt', 'updatedAt', 'lastDateMeditated', 'died', 'lastDateTrained',
+    'lastLogin', 'lastActivity', 'lastBattle', 'lastTraining'
+  ];
+  
+  // Convert each date field if it exists and is a Date object
+  dateFields.forEach(field => {
+    if (result[field] instanceof Date) {
+      result[field] = result[field].toISOString();
+    }
+  });
+  
+  return result;
+}
+
 export default function AdminCharactersPage() {
   const { data: session, status } = useSession();
 
@@ -124,7 +144,35 @@ export default function AdminCharactersPage() {
     }
   };
 
-  const editCharacter = (char: typeof characters[0]) => {
+  // Define a type that accepts either the DB character type or the CharacterInventoryCard type
+  type EditableCharacter = {
+    id: string;
+    userId: string;
+    name: string;
+    level: number;
+    currentPowerlevel: number;
+    basePowerlevel: number;
+    hiddenPowerlevel: number | null;
+    race: string;
+    planet: string | null;
+    alignment: number;
+    description: string | null;
+    equippedItems: string | null;
+    items: string | null;
+    peopleYouHaveBeenTo: string | null;
+    jobs: string | null;
+    // These can be either Date objects or strings
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    lastDateMeditated?: Date | string | null;
+    died?: Date | string | null;
+    lastDateTrained?: Date | string | null;
+    // Additional fields from CharacterInventoryCard
+    status?: string;
+    currentMap?: string;
+  };
+
+  const editCharacter = (char: EditableCharacter) => {
     setCharForm({
       id: char.id,
       userId: char.userId,
@@ -513,7 +561,8 @@ export default function AdminCharactersPage() {
         <CharacterInventoryCard
           key={char.id}
           char={{
-            ...char,
+            // Convert all Date objects to strings and add required fields
+            ...convertDatesToStrings(char),
             status: (char as any).status ?? "",
             currentMap: (char as any).currentMap ?? ""
           }}
