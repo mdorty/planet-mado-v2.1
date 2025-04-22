@@ -129,26 +129,59 @@ export const adminRouter = router({
   updateCharacter: procedure
     .input(z.object({
       id: z.string(),
-      name: z.string().optional(),
-      currentPowerlevel: z.number().optional(),
-      // Add other fields as needed
+      userId: z.string(),
+      name: z.string(),
+      level: z.number(),
+      currentPowerlevel: z.number(),
+      basePowerlevel: z.number(),
+      hiddenPowerlevel: z.number().nullable(),
+      race: z.string(),
+      planet: z.string().nullable(),
+      alignment: z.number(),
+      description: z.string().nullable(),
+      equippedItems: z.string().nullable(),
+      items: z.string().nullable(),
+      peopleYouHaveBeenTo: z.string().nullable(),
+      jobs: z.string().nullable()
     }))
     .mutation(async ({ input }) => {
       try {
         const updatedCharacter = await db.character.update({
           where: { id: input.id },
           data: {
+            userId: input.userId,
             name: input.name,
+            level: input.level,
             currentPowerlevel: input.currentPowerlevel,
-            // Add other fields as needed
+            basePowerlevel: input.basePowerlevel,
+            hiddenPowerlevel: input.hiddenPowerlevel,
+            race: input.race,
+            planet: input.planet,
+            alignment: input.alignment,
+            description: input.description,
+            equippedItems: input.equippedItems,
+            items: input.items,
+            peopleYouHaveBeenTo: input.peopleYouHaveBeenTo,
+            jobs: input.jobs
           },
           select: {
             id: true,
+            userId: true,
             name: true,
-            currentPowerlevel: true
+            level: true,
+            currentPowerlevel: true,
+            basePowerlevel: true,
+            hiddenPowerlevel: true,
+            race: true,
+            planet: true,
+            alignment: true,
+            description: true,
+            equippedItems: true,
+            items: true,
+            peopleYouHaveBeenTo: true,
+            jobs: true
           }
-        
-});
+        });
         return updatedCharacter;
       } catch (error: unknown) {
         throw new Error(`Failed to update character: ${(error as Error).message}`);
