@@ -91,11 +91,46 @@ export default function MapsAdmin() {
     setColumns(map.columns || 10);
   };
   
+  // Generate tiles for a map that doesn't have any
+  const generateTilesMutation = trpc.map.createMapTiles.useMutation({
+    onSuccess: () => {
+      refetchSelectedMap();
+    }
+  });
+
   // Handle map selection
   const handleSelectMap = (mapId: number) => {
     setSelectedMap(mapId);
     setEditingMap(null);
   };
+  
+  // Check if selected map has tiles and generate them if not
+  useEffect(() => {
+    if (selectedMapData && (!selectedMapData.tiles || selectedMapData.tiles.length === 0)) {
+      // Map exists but has no tiles - we need to generate default tiles
+      console.log('Generating default tiles for map:', selectedMapData.id);
+      
+      // Create default tiles for the entire map
+      const tilesData = [];
+      for (let y = 0; y < (selectedMapData.rows || 10); y++) {
+        for (let x = 0; x < (selectedMapData.columns || 10); x++) {
+          tilesData.push({
+            x,
+            y,
+            image: '/images/tiles/grass.png', // Default tile image
+            description: 'Empty tile',
+            isWalkable: true
+          });
+        }
+      }
+      
+      // Use tRPC mutation to create tiles
+      generateTilesMutation.mutate({
+        mapId: selectedMapData.id,
+        tiles: tilesData
+      });
+    }
+  }, [selectedMapData, generateTilesMutation]);
   
   // Handle tile selection
   const handleSelectTile = (tile: any) => {

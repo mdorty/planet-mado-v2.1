@@ -188,5 +188,55 @@ export const mapRouter = router({
         const errorMessage = error instanceof Error ? error.message : 'Failed to update map tile';
         throw new Error(errorMessage);
       }
+    }),
+    
+  createMapTiles: procedure
+    .input(z.object({
+      mapId: z.number(),
+      tiles: z.array(z.object({
+        x: z.number(),
+        y: z.number(),
+        image: z.string().optional(),
+        description: z.string().optional(),
+        isWalkable: z.boolean().optional()
+      }))
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        // First check if the map exists
+        const map = await prisma.map.findUnique({
+          where: { id: input.mapId }
+        });
+        
+        if (!map) {
+          throw new Error(`Map with ID ${input.mapId} not found`);
+        }
+        
+        // Prepare the tile data with the mapId
+        const tilesData = input.tiles.map(tile => ({
+          mapId: input.mapId,
+          x: tile.x,
+          y: tile.y,
+          image: tile.image || '/images/tiles/grass.png',
+          description: tile.description || 'Empty tile',
+          isWalkable: tile.isWalkable !== undefined ? tile.isWalkable : true
+        }));
+        
+        // Create the tiles
+        await prisma.mapTile.createMany({
+          data: tilesData,
+          skipDuplicates: true // Skip any tiles that might already exist
+        });
+        
+        // Return the updated map with tiles
+        return await prisma.map.findUnique({
+          where: { id: input.mapId },
+          include: { tiles: true }
+        });
+      } catch (error: unknown) {
+        console.error('Error creating map tiles:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to create map tiles';
+        throw new Error(errorMessage);
+      }
     })
 });
