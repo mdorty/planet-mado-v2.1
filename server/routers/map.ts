@@ -190,6 +190,60 @@ export const mapRouter = router({
       }
     }),
     
+  // Map Tile Template operations
+  getMapTileTemplates: procedure.query(async () => {
+    try {
+      const templates = await prisma.mapTileTemplate.findMany({
+        orderBy: { name: 'asc' }
+      });
+      return templates;
+    } catch (error: unknown) {
+      console.error('Error fetching map tile templates:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch map tile templates';
+      throw new Error(errorMessage);
+    }
+  }),
+  
+  createMapTileTemplate: procedure
+    .input(z.object({
+      name: z.string(),
+      image: z.string(),
+      description: z.string().optional(),
+      isWalkable: z.boolean().optional()
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        return await prisma.mapTileTemplate.create({
+          data: {
+            name: input.name,
+            image: input.image,
+            description: input.description,
+            isWalkable: input.isWalkable !== undefined ? input.isWalkable : true
+          }
+        });
+      } catch (error: unknown) {
+        console.error('Error creating map tile template:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to create map tile template';
+        throw new Error(errorMessage);
+      }
+    }),
+    
+  deleteMapTileTemplate: procedure
+    .input(z.object({
+      id: z.number()
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        return await prisma.mapTileTemplate.delete({
+          where: { id: input.id }
+        });
+      } catch (error: unknown) {
+        console.error('Error deleting map tile template:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to delete map tile template';
+        throw new Error(errorMessage);
+      }
+    }),
+  
   createMapTiles: procedure
     .input(z.object({
       mapId: z.number(),

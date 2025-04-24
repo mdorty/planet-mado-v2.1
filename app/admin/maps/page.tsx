@@ -5,7 +5,19 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import Link from "next/link";
-import { Button, Card, CardHeader, CardBody, Tooltip } from '@heroui/react';
+import Image from "next/image";
+import { Button, Card, CardHeader, CardBody, Tooltip, Accordion, AccordionItem } from '@heroui/react';
+
+// Define types for our map-related data
+type MapTileTemplate = {
+  id: number;
+  name: string;
+  image: string;
+  description?: string;
+  isWalkable: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 /**
  * Admin Maps Management Page
@@ -25,6 +37,13 @@ export default function MapsAdmin() {
   const [tileDescription, setTileDescription] = useState("");
   const [isWalkable, setIsWalkable] = useState(true);
   
+  // Map tile template states
+  const [templateName, setTemplateName] = useState("");
+  const [templateImage, setTemplateImage] = useState("");
+  const [templateDescription, setTemplateDescription] = useState("");
+  const [templateIsWalkable, setTemplateIsWalkable] = useState(true);
+  const [selectedTemplate, setSelectedTemplate] = useState<any | null>(null);
+  
   // Redirect non-admin users
   useEffect(() => {
     if (status === "authenticated" && session?.user?.role !== "admin") {
@@ -41,6 +60,21 @@ export default function MapsAdmin() {
       refetch();
       setSelectedMap(null);
     } 
+  });
+  
+  // Fetch map tile templates
+  const { data: tileTemplates, refetch: refetchTileTemplates } = trpc.map.getMapTileTemplates.useQuery();
+  const createTemplateMutation = trpc.map.createMapTileTemplate.useMutation({
+    onSuccess: () => {
+      refetchTileTemplates();
+      setTemplateName("");
+      setTemplateImage("");
+      setTemplateDescription("");
+      setTemplateIsWalkable(true);
+    }
+  });
+  const deleteTemplateMutation = trpc.map.deleteMapTileTemplate.useMutation({
+    onSuccess: () => refetchTileTemplates()
   });
   
   // Fetch map details when a map is selected
@@ -139,6 +173,26 @@ export default function MapsAdmin() {
     setTileImage(tile.image || "");
     setTileDescription(tile.description || "");
     setIsWalkable(tile.isWalkable);
+    setSelectedTemplate(null);
+  };
+  
+  // Handle template selection for a tile
+  const handleSelectTemplateForTile = (template: MapTileTemplate) => {
+    setSelectedTemplate(template);
+    setTileImage(template.image);
+    setTileDescription(template.description || "");
+    setIsWalkable(template.isWalkable);
+  };
+  
+  // Handle tile template form submission
+  const handleTemplateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await createTemplateMutation.mutateAsync({
+      name: templateName,
+      image: templateImage,
+      description: templateDescription,
+      isWalkable: templateIsWalkable
+    });
   };
   
   // Handle tile update
@@ -245,6 +299,111 @@ export default function MapsAdmin() {
             </form>
           </CardBody>
         </Card>
+        
+        {/* Map Tile Templates Accordion */}
+        <Accordion className="mb-8">
+          <AccordionItem key="map-tiles" title="Map Tiles">
+            <Card className="p-6 rounded shadow-md bg-pm-blue">
+              <CardHeader className="border-b pb-2 mb-4">
+                <h2 className="text-2xl font-anton text-pm-white">Manage Map Tiles</h2>
+              </CardHeader>
+              <CardBody>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Form to add new tile template */}
+                  <div>
+                    <h3 className="text-xl font-anton mb-4 text-pm-white">Add New Tile</h3>
+                    <form onSubmit={handleTemplateSubmit} className="flex flex-col gap-4">
+                      <div>
+                        <label className="block font-roboto font-medium mb-1 text-pm-white">Tile Name</label>
+                        <input
+                          type="text"
+                          value={templateName}
+                          onChange={(e) => setTemplateName(e.target.value)}
+                          className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block font-roboto font-medium mb-1 text-pm-white">Image URL</label>
+                        <input
+                          type="text"
+                          value={templateImage}
+                          onChange={(e) => setTemplateImage(e.target.value)}
+                          className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+                          required
+                          placeholder="https://example.com/image.png"
+                        />
+                      </div>
+                      <div>
+                        <label className="block font-roboto font-medium mb-1 text-pm-white">Description</label>
+                        <textarea
+                          value={templateDescription}
+                          onChange={(e) => setTemplateDescription(e.target.value)}
+                          className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+                          rows={2}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="templateIsWalkable"
+                          checked={templateIsWalkable}
+                          onChange={(e) => setTemplateIsWalkable(e.target.checked)}
+                          className="h-4 w-4"
+                        />
+                        <label htmlFor="templateIsWalkable" className="font-roboto font-medium text-pm-white">Is Walkable</label>
+                      </div>
+                      <button
+                        type="submit"
+                        className="bg-pm-red text-white px-4 py-2 rounded hover:bg-red-700 font-roboto font-medium"
+                      >
+                        Add Tile
+                      </button>
+                    </form>
+                  </div>
+                  
+                  {/* Display existing tile templates */}
+                  <div>
+                    <h3 className="text-xl font-anton mb-4 text-pm-white">Available Tiles</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-2">
+                      {tileTemplates && tileTemplates.length > 0 ? (
+                        tileTemplates.map((template: MapTileTemplate) => (
+                          <Tooltip key={template.id} content={template.description || template.name}>
+                            <div className="relative bg-pm-dark-blue rounded p-2 flex flex-col items-center hover:bg-pm-navy transition-colors cursor-pointer">
+                              <div className="text-sm font-roboto text-center mb-1 text-pm-white truncate w-full">
+                                {template.name}
+                              </div>
+                              <div 
+                                className="w-16 h-16 bg-center bg-cover rounded"
+                                style={{ backgroundImage: `url(${template.image})` }}
+                              />
+                              <div className="mt-1 flex justify-between w-full">
+                                <span className="text-xs text-pm-white">
+                                  {template.isWalkable ? "Walkable" : "Blocked"}
+                                </span>
+                                <Button
+                                  size="sm"
+                                  color="danger"
+                                  variant="light"
+                                  onClick={() => deleteTemplateMutation.mutate({ id: template.id })}
+                                  className="p-0 h-5 min-w-0 text-xs"
+                                >
+                                  ×
+                                </Button>
+                              </div>
+                            </div>
+                          </Tooltip>
+                        ))
+                      ) : (
+                        <p className="text-pm-white col-span-full text-center">No tile templates available. Add some!</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          </AccordionItem>
+        </Accordion>
 
         <div className="flex gap-6 flex-col md:flex-row">
           {/* Left side - List of maps */}
@@ -351,16 +510,59 @@ export default function MapsAdmin() {
                     </CardHeader>
                     <CardBody>
                       <form onSubmit={handleUpdateTile} className="flex flex-col gap-4">
+                        {/* Tile selection grid */}
                         <div>
-                          <label className="block font-roboto font-medium mb-1 text-pm-white">Tile Image URL</label>
+                          <label className="block font-roboto font-medium mb-2 text-pm-white">Select Tile Image</label>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-60 overflow-y-auto p-2 bg-pm-dark-blue rounded">
+                            {tileTemplates && tileTemplates.length > 0 ? (
+                              tileTemplates.map((template: MapTileTemplate) => (
+                                <div 
+                                  key={template.id} 
+                                  className={`flex flex-col items-center p-1 rounded cursor-pointer ${selectedTemplate?.id === template.id ? 'bg-pm-navy border border-white' : 'hover:bg-pm-navy'}`}
+                                  onClick={() => handleSelectTemplateForTile(template)}
+                                >
+                                  <div className="text-xs font-roboto text-center mb-1 text-pm-white truncate w-full">
+                                    {template.name}
+                                  </div>
+                                  <div 
+                                    className="w-12 h-12 bg-center bg-cover rounded"
+                                    style={{ backgroundImage: `url(${template.image})` }}
+                                  />
+                                </div>
+                              ))
+                            ) : (
+                              <p className="text-pm-white col-span-full text-center text-sm">No tile templates available. Add some in the Map Tiles section above!</p>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Current selected image display */}
+                        {tileImage && (
+                          <div className="flex items-center gap-4 bg-pm-dark-blue p-2 rounded">
+                            <div className="text-pm-white font-roboto">Selected:</div>
+                            <div 
+                              className="w-12 h-12 bg-center bg-cover rounded"
+                              style={{ backgroundImage: `url(${tileImage})` }}
+                            />
+                            <div className="text-xs text-pm-white">{selectedTemplate?.name || 'Custom image'}</div>
+                          </div>
+                        )}
+                        
+                        {/* Manual URL input as fallback */}
+                        <div>
+                          <label className="block font-roboto font-medium mb-1 text-pm-white">Or enter image URL manually</label>
                           <input
                             type="text"
                             value={tileImage}
-                            onChange={(e) => setTileImage(e.target.value)}
+                            onChange={(e) => {
+                              setTileImage(e.target.value);
+                              setSelectedTemplate(null);
+                            }}
                             className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                             placeholder="Enter image URL for this tile"
                           />
                         </div>
+                        
                         <div>
                           <label className="block font-roboto font-medium mb-1 text-pm-white">Description</label>
                           <textarea

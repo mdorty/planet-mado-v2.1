@@ -177,6 +177,16 @@ model Map {
   tiles       MapTile[]
 }
 
+model MapTileTemplate {
+  id          Int      @id @default(autoincrement())
+  name        String
+  image       String
+  description String?
+  isWalkable  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model MapTile {
   id          Int      @id @default(autoincrement())
   mapId       Int
