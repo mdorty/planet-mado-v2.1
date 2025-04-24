@@ -85,6 +85,7 @@ export default function MapsAdmin() {
   // Handle edit button click for map
   const handleEdit = (map: any) => {
     setEditingMap(map.id);
+    setSelectedMap(map.id); // Also select the map to show the grid
     setName(map.name);
     setDescription(map.description || "");
     setRows(map.rows || 10);
@@ -311,10 +312,14 @@ export default function MapsAdmin() {
                         className="grid gap-1 bg-pm-dark-blue p-2 rounded"
                         style={{ 
                           gridTemplateColumns: `repeat(${selectedMapData.columns}, minmax(40px, 1fr))`,
+                          gridTemplateRows: `repeat(${selectedMapData.rows}, minmax(40px, 1fr))`,
                           width: 'fit-content'
                         }}
                       >
-                        {selectedMapData.tiles.map((tile: any) => (
+                        {/* Sort tiles by y then x to ensure proper grid layout */}
+                        {[...selectedMapData.tiles]
+                          .sort((a, b) => a.y === b.y ? a.x - b.x : a.y - b.y)
+                          .map((tile: any) => (
                           <Tooltip key={tile.id} content={tile.description || 'Empty tile'}>
                             <div 
                               className={`w-10 h-10 flex items-center justify-center rounded cursor-pointer border ${selectedTile?.id === tile.id ? 'border-2 border-white' : 'border-gray-700'}`}
@@ -322,7 +327,9 @@ export default function MapsAdmin() {
                                 backgroundImage: tile.image ? `url(${tile.image})` : 'none',
                                 backgroundColor: tile.image ? 'transparent' : (tile.isWalkable ? '#4a5568' : '#991b1b'),
                                 backgroundSize: 'cover',
-                                backgroundPosition: 'center'
+                                backgroundPosition: 'center',
+                                gridColumn: tile.x + 1,
+                                gridRow: tile.y + 1
                               }}
                               onClick={() => handleSelectTile(tile)}
                             >
