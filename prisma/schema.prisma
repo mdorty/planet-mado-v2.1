@@ -170,10 +170,27 @@ model Map {
   id          Int      @id @default(autoincrement())
   name        String
   description String?
-  xCoord      Int?
-  yCoord      Int?
-  tileImage   String?
+  rows        Int      @default(10)
+  columns     Int      @default(10)
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tiles       MapTile[]
+}
+
+model MapTile {
+  id          Int      @id @default(autoincrement())
+  mapId       Int
+  x           Int
+  y           Int
+  image       String?
+  description String?
+  isWalkable  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  map         Map      @relation(fields: [mapId], references: [id], onDelete: Cascade)
+
+  @@unique([mapId, x, y])
+  @@index([mapId], name: "maptile_mapId_idx")
 }
 
 model PasswordResetToken {

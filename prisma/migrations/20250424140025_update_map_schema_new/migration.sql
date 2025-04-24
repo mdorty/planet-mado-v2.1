@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Map" ALTER COLUMN "updatedAt" DROP DEFAULT;

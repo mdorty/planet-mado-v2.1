@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { trpc } from "../../../utils/trpc";
 import Link from "next/link";
-import { Button, Card, CardHeader, CardBody } from '@heroui/react';
+import { Button, Card, CardHeader, CardBody, Tooltip } from '@heroui/react';
 
 /**
  * Admin Maps Management Page
@@ -16,10 +16,14 @@ export default function MapsAdmin() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [xCoord, setXCoord] = useState(0);
-  const [yCoord, setYCoord] = useState(0);
-  const [tileImage, setTileImage] = useState("");
+  const [rows, setRows] = useState(10);
+  const [columns, setColumns] = useState(10);
   const [editingMap, setEditingMap] = useState<number | null>(null);
+  const [selectedMap, setSelectedMap] = useState<number | null>(null);
+  const [selectedTile, setSelectedTile] = useState<any | null>(null);
+  const [tileImage, setTileImage] = useState("");
+  const [tileDescription, setTileDescription] = useState("");
+  const [isWalkable, setIsWalkable] = useState(true);
   
   // Redirect non-admin users
   useEffect(() => {
@@ -32,32 +36,86 @@ export default function MapsAdmin() {
   const { data: maps, refetch } = trpc.map.getMaps.useQuery();
   const createMutation = trpc.map.createMap.useMutation({ onSuccess: () => refetch() });
   const updateMutation = trpc.map.updateMap.useMutation({ onSuccess: () => refetch() });
-  const deleteMutation = trpc.map.deleteMap.useMutation({ onSuccess: () => refetch() });
+  const deleteMutation = trpc.map.deleteMap.useMutation({ 
+    onSuccess: () => {
+      refetch();
+      setSelectedMap(null);
+    } 
+  });
+  
+  // Fetch map details when a map is selected
+  const { data: selectedMapData, refetch: refetchSelectedMap } = 
+    trpc.map.getMapById.useQuery(
+      { id: selectedMap || 0 }, // Use a fallback value
+      { enabled: selectedMap !== null }
+    );
+    
+  // Reset selected tile when map data changes
+  useEffect(() => {
+    if (selectedMapData) {
+      setSelectedTile(null);
+    }
+  }, [selectedMapData]);
+    
+  // Update map tile mutation
+  const updateTileMutation = trpc.map.updateMapTile.useMutation({
+    onSuccess: () => {
+      refetchSelectedMap();
+      setSelectedTile(null);
+      setTileImage("");
+      setTileDescription("");
+    }
+  });
 
-  // Handle form submission for create/update
+  // Handle form submission for create/update map
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingMap) {
-      await updateMutation.mutateAsync({ id: editingMap, name, description, xCoord, yCoord, tileImage });
+      await updateMutation.mutateAsync({ id: editingMap, name, description, rows, columns });
       setEditingMap(null);
     } else {
-      await createMutation.mutateAsync({ name, description, xCoord, yCoord, tileImage });
+      await createMutation.mutateAsync({ name, description, rows, columns });
     }
     setName("");
     setDescription("");
-    setXCoord(0);
-    setYCoord(0);
-    setTileImage("");
+    setRows(10);
+    setColumns(10);
   };
 
-  // Handle edit button click
+  // Handle edit button click for map
   const handleEdit = (map: any) => {
     setEditingMap(map.id);
     setName(map.name);
     setDescription(map.description || "");
-    setXCoord(map.xCoord || 0);
-    setYCoord(map.yCoord || 0);
-    setTileImage(map.tileImage || "");
+    setRows(map.rows || 10);
+    setColumns(map.columns || 10);
+  };
+  
+  // Handle map selection
+  const handleSelectMap = (mapId: number) => {
+    setSelectedMap(mapId);
+    setEditingMap(null);
+  };
+  
+  // Handle tile selection
+  const handleSelectTile = (tile: any) => {
+    setSelectedTile(tile);
+    setTileImage(tile.image || "");
+    setTileDescription(tile.description || "");
+    setIsWalkable(tile.isWalkable);
+  };
+  
+  // Handle tile update
+  const handleUpdateTile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedTile) {
+      await updateTileMutation.mutateAsync({
+        id: selectedTile.id,
+        image: tileImage,
+        description: tileDescription,
+        isWalkable
+      });
+    }
   };
 
   // Handle delete with confirmation
@@ -118,35 +176,29 @@ export default function MapsAdmin() {
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="block font-roboto font-medium mb-1 text-pm-white">X Coordinate</label>
+                  <label className="block font-roboto font-medium mb-1 text-pm-white">Rows</label>
                   <input
                     type="number"
-                    value={xCoord}
-                    onChange={(e) => setXCoord(parseInt(e.target.value))}
+                    value={rows}
+                    onChange={(e) => setRows(parseInt(e.target.value))}
+                    min={1}
+                    max={50}
                     className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                     required
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="block font-roboto font-medium mb-1 text-pm-white">Y Coordinate</label>
+                  <label className="block font-roboto font-medium mb-1 text-pm-white">Columns</label>
                   <input
                     type="number"
-                    value={yCoord}
-                    onChange={(e) => setYCoord(parseInt(e.target.value))}
+                    value={columns}
+                    onChange={(e) => setColumns(parseInt(e.target.value))}
+                    min={1}
+                    max={50}
                     className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
                     required
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block font-roboto font-medium mb-1 text-pm-white">Tile Image URL</label>
-                <input
-                  type="text"
-                  value={tileImage}
-                  onChange={(e) => setTileImage(e.target.value)}
-                  className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
-                  placeholder="Enter image URL for map tiles"
-                />
               </div>
               <button
                 type="submit"
@@ -158,111 +210,225 @@ export default function MapsAdmin() {
           </CardBody>
         </Card>
 
-        <Card className="p-6 rounded shadow-md mb-8 bg-pm-blue">
-          <CardHeader className="border-b pb-2 mb-4">
-            <h2 className="text-2xl font-anton text-pm-white">Existing Maps</h2>
-          </CardHeader>
-          <CardBody>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {maps && maps.length > 0 ? (
-                maps.map((map: any) => (
-                  <Card key={map.id} className="p-4 rounded shadow-md hover:shadow-lg transition-shadow duration-200 bg-pm-dark-blue">
-                    <CardHeader className="border-b pb-2 mb-3 border-pm-navy">
-                      <h3 className="text-xl font-anton text-pm-white">{map.name}</h3>
-                    </CardHeader>
-                    <CardBody className="flex flex-col gap-2 font-roboto text-sm text-pm-white">
-                      <p>{map.description || "No description provided."}</p>
-                      <p>X: {map.xCoord || 0}, Y: {map.yCoord || 0}</p>
-                      {map.tileImage && <p>Tile Image: <span className="truncate">{map.tileImage}</span></p>}
-                      <div className="flex gap-2 mt-2">
-                        <Button
-                          onClick={() => handleEdit(map)}
-                          className="bg-pm-blue text-white font-roboto font-medium hover:bg-pm-navy"
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          onClick={() => handleDelete(map.id)}
-                          className="bg-pm-red text-white font-roboto font-medium hover:bg-red-700"
-                        >
-                          Delete
-                        </Button>
+        <div className="flex gap-6 flex-col md:flex-row">
+          {/* Left side - List of maps */}
+          <Card className="p-6 rounded shadow-md mb-8 bg-pm-blue w-full md:w-1/3">
+            <CardHeader className="border-b pb-2 mb-4">
+              <h2 className="text-2xl font-anton text-pm-white">Existing Maps</h2>
+            </CardHeader>
+            <CardBody>
+              <div className="flex flex-col gap-4">
+                {maps && maps.length > 0 ? (
+                  maps.map((map: any) => (
+                    <Card 
+                      key={map.id} 
+                      className={`p-4 rounded shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer ${selectedMap === map.id ? 'bg-pm-navy border-2 border-white' : 'bg-pm-dark-blue'}`}
+                      onClick={() => handleSelectMap(map.id)}
+                    >
+                      <CardHeader className="border-b pb-2 mb-3 border-pm-navy">
+                        <h3 className="text-xl font-anton text-pm-white">{map.name}</h3>
+                      </CardHeader>
+                      <CardBody className="flex flex-col gap-2 font-roboto text-sm text-pm-white">
+                        <p>{map.description || "No description provided."}</p>
+                        <p>Size: {map.rows || 10} x {map.columns || 10}</p>
+                        <p>Tiles: {map._count?.tiles || 0}</p>
+                        <div className="flex gap-2 mt-2">
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(map);
+                            }}
+                            className="bg-pm-blue text-white font-roboto font-medium hover:bg-pm-navy"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(map.id);
+                            }}
+                            className="bg-pm-red text-white font-roboto font-medium hover:bg-red-700"
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  ))
+                ) : (
+                  <p className="font-roboto text-center text-pm-white">No maps found. Create a new map to get started.</p>
+                )}
+              </div>
+            </CardBody>
+          </Card>
+          
+          {/* Right side - Map grid or tile editor */}
+          <div className="w-full md:w-2/3">
+            {selectedMap && selectedMapData ? (
+              <div className="flex flex-col gap-4">
+                <Card className="p-6 rounded shadow-md mb-4 bg-pm-blue">
+                  <CardHeader className="border-b pb-2 mb-4">
+                    <h2 className="text-2xl font-anton text-pm-white">{selectedMapData.name} - Map Editor</h2>
+                  </CardHeader>
+                  <CardBody>
+                    <div className="mb-4 overflow-auto" style={{ maxHeight: '500px' }}>
+                      <div 
+                        className="grid gap-1 bg-pm-dark-blue p-2 rounded"
+                        style={{ 
+                          gridTemplateColumns: `repeat(${selectedMapData.columns}, minmax(40px, 1fr))`,
+                          width: 'fit-content'
+                        }}
+                      >
+                        {selectedMapData.tiles.map((tile: any) => (
+                          <Tooltip key={tile.id} content={tile.description || 'Empty tile'}>
+                            <div 
+                              className={`w-10 h-10 flex items-center justify-center rounded cursor-pointer border ${selectedTile?.id === tile.id ? 'border-2 border-white' : 'border-gray-700'}`}
+                              style={{ 
+                                backgroundImage: tile.image ? `url(${tile.image})` : 'none',
+                                backgroundColor: tile.image ? 'transparent' : (tile.isWalkable ? '#4a5568' : '#991b1b'),
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                              }}
+                              onClick={() => handleSelectTile(tile)}
+                            >
+                              <span className="text-xs text-white bg-black bg-opacity-50 px-1 rounded">
+                                {tile.x},{tile.y}
+                              </span>
+                            </div>
+                          </Tooltip>
+                        ))}
                       </div>
+                    </div>
+                  </CardBody>
+                </Card>
+                
+                {selectedTile && (
+                  <Card className="p-6 rounded shadow-md bg-pm-blue">
+                    <CardHeader className="border-b pb-2 mb-4">
+                      <h2 className="text-xl font-anton text-pm-white">Edit Tile ({selectedTile.x}, {selectedTile.y})</h2>
+                    </CardHeader>
+                    <CardBody>
+                      <form onSubmit={handleUpdateTile} className="flex flex-col gap-4">
+                        <div>
+                          <label className="block font-roboto font-medium mb-1 text-pm-white">Tile Image URL</label>
+                          <input
+                            type="text"
+                            value={tileImage}
+                            onChange={(e) => setTileImage(e.target.value)}
+                            className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+                            placeholder="Enter image URL for this tile"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-roboto font-medium mb-1 text-pm-white">Description</label>
+                          <textarea
+                            value={tileDescription}
+                            onChange={(e) => setTileDescription(e.target.value)}
+                            className="w-full p-2 border rounded bg-pm-cream text-pm-dark-blue"
+                            rows={2}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="isWalkable"
+                            checked={isWalkable}
+                            onChange={(e) => setIsWalkable(e.target.checked)}
+                            className="h-4 w-4"
+                          />
+                          <label htmlFor="isWalkable" className="font-roboto font-medium text-pm-white">Is Walkable</label>
+                        </div>
+                        <button
+                          type="submit"
+                          className="bg-pm-red text-white px-4 py-2 rounded hover:bg-red-700 font-roboto font-medium"
+                        >
+                          Update Tile
+                        </button>
+                      </form>
                     </CardBody>
                   </Card>
-                ))
-              ) : (
-                <p className="font-roboto col-span-full text-center text-pm-white">No maps found. Create a new map to get started.</p>
-              )}
-            </div>
-          </CardBody>
-        </Card>
+                )}
+              </div>
+            ) : (
+              <Card className="p-6 rounded shadow-md bg-pm-blue h-64 flex items-center justify-center">
+                <p className="font-roboto text-center text-pm-white text-lg">Select a map from the list to edit its tiles</p>
+              </Card>
+            )}
+          </div>
+        </div>
 
         {editingMap && (
           <Card className="p-6 rounded shadow-md mb-8">
             <CardHeader className="border-b pb-2 mb-4">
-              <h2 className="text-2xl font-anton">Edit Map</h2>
+              <h2 className="text-2xl font-anton">Editing Map</h2>
             </CardHeader>
             <CardBody>
               <form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-4">
                 <div>
-                  <label className="block font-roboto font-medium mb-1 text-pm-white">Map Name</label>
+                  <label className="block font-roboto font-medium mb-1">Map Name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
+                    className="w-full p-2 border rounded"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block font-roboto font-medium mb-1 text-pm-white">Description</label>
+                  <label className="block font-roboto font-medium mb-1">Description</label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
+                    className="w-full p-2 border rounded"
                     rows={3}
                   />
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
-                    <label className="block font-roboto font-medium mb-1 text-pm-white">X Coordinate</label>
+                    <label className="block font-roboto font-medium mb-1">Rows</label>
                     <input
                       type="number"
-                      value={xCoord}
-                      onChange={(e) => setXCoord(Number(e.target.value))}
-                      className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
+                      value={rows}
+                      onChange={(e) => setRows(parseInt(e.target.value))}
+                      min={1}
+                      max={50}
+                      className="w-full p-2 border rounded"
                       required
                     />
                   </div>
                   <div className="flex-1">
-                    <label className="block font-roboto font-medium mb-1 text-pm-white">Y Coordinate</label>
+                    <label className="block font-roboto font-medium mb-1">Columns</label>
                     <input
                       type="number"
-                      value={yCoord}
-                      onChange={(e) => setYCoord(Number(e.target.value))}
-                      className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
+                      value={columns}
+                      onChange={(e) => setColumns(parseInt(e.target.value))}
+                      min={1}
+                      max={50}
+                      className="w-full p-2 border rounded"
                       required
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block font-roboto font-medium mb-1 text-pm-white">Tile Image URL</label>
-                  <input
-                    type="text"
-                    value={tileImage}
-                    onChange={(e) => setTileImage(e.target.value)}
-                    className="w-full font-roboto p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pm-nav-orange"
-                    placeholder="Enter image URL for map tiles"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button type="submit" variant="solid" className="bg-blue-600 text-white hover:bg-blue-700 font-roboto font-medium">
-                    Save
-                  </Button>
-                  <Button type="button" variant="ghost" className="border-gray-300 text-gray-700 hover:bg-gray-100 font-roboto font-medium" onClick={() => setEditingMap(null)}>
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 font-roboto font-medium"
+                  >
+                    Update Map
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingMap(null);
+                      setName("");
+                      setDescription("");
+                      setRows(10);
+                      setColumns(10);
+                    }}
+                    className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 font-roboto font-medium"
+                  >
                     Cancel
-                  </Button>
+                  </button>
                 </div>
               </form>
             </CardBody>

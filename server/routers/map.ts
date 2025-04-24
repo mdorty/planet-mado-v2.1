@@ -18,7 +18,12 @@ export const mapRouter = router({
         return [];
       }
       const maps = await prisma.map.findMany({
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        include: {
+          _count: {
+            select: { tiles: true }
+          }
+        }
       });
       return maps;
     } catch (error: unknown) {
@@ -27,28 +32,67 @@ export const mapRouter = router({
       throw new Error(errorMessage);
     }
   }),
+  
+  getMapById: procedure
+    .input(z.object({
+      id: z.number()
+    }))
+    .query(async ({ input }) => {
+      try {
+        const map = await prisma.map.findUnique({
+          where: { id: input.id },
+          include: { tiles: true }
+        });
+        return map;
+      } catch (error: unknown) {
+        console.error('Error fetching map:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch map';
+        throw new Error(errorMessage);
+      }
+    }),
   createMap: procedure
     .input(z.object({
       name: z.string(),
       description: z.string().optional(),
-      xCoord: z.number().optional(),
-      yCoord: z.number().optional(),
-      tileImage: z.string().optional()
+      rows: z.number().min(1).max(50).default(10),
+      columns: z.number().min(1).max(50).default(10)
     }))
-    .mutation(async ({ input }: { input: { name: string; description?: string; xCoord?: number; yCoord?: number; tileImage?: string } }) => {
+    .mutation(async ({ input }) => {
       try {
         if (!prisma.map) {
           throw new Error('Unable to create map: Database client needs to be updated. Please contact the administrator or run "npx prisma generate" to update the client.');
         }
-        return await prisma.map.create({
+        
+        // Create the map first
+        const map = await prisma.map.create({
           data: {
             name: input.name,
             description: input.description,
-            xCoord: input.xCoord,
-            yCoord: input.yCoord,
-            tileImage: input.tileImage
+            rows: input.rows,
+            columns: input.columns
           }
         });
+        
+        // Create default tiles for the entire map
+        const tilesData = [];
+        for (let y = 0; y < input.rows; y++) {
+          for (let x = 0; x < input.columns; x++) {
+            tilesData.push({
+              mapId: map.id,
+              x,
+              y,
+              image: '/images/tiles/grass.png', // Default tile image
+              description: 'Empty tile',
+              isWalkable: true
+            });
+          }
+        }
+        
+        await prisma.mapTile.createMany({
+          data: tilesData
+        });
+        
+        return map;
       } catch (error: unknown) {
         console.error('Error creating map:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to create map';
@@ -60,11 +104,10 @@ export const mapRouter = router({
       id: z.number(),
       name: z.string(),
       description: z.string().optional(),
-      xCoord: z.number().optional(),
-      yCoord: z.number().optional(),
-      tileImage: z.string().optional()
+      rows: z.number().min(1).max(50).optional(),
+      columns: z.number().min(1).max(50).optional()
     }))
-    .mutation(async ({ input }: { input: { id: number; name: string; description?: string; xCoord?: number; yCoord?: number; tileImage?: string } }) => {
+    .mutation(async ({ input }) => {
       try {
         if (!prisma.map) {
           throw new Error('Unable to update map: Database client needs to be updated. Please contact the administrator or run "npx prisma generate" to update the client.');
@@ -74,9 +117,8 @@ export const mapRouter = router({
           data: {
             name: input.name,
             description: input.description,
-            xCoord: input.xCoord,
-            yCoord: input.yCoord,
-            tileImage: input.tileImage
+            rows: input.rows,
+            columns: input.columns
           }
         });
       } catch (error: unknown) {
@@ -89,17 +131,61 @@ export const mapRouter = router({
     .input(z.object({
       id: z.number()
     }))
-    .mutation(async ({ input }: { input: { id: number } }) => {
+    .mutation(async ({ input }) => {
       try {
         if (!prisma.map) {
           throw new Error('Unable to delete map: Database client needs to be updated. Please contact the administrator or run "npx prisma generate" to update the client.');
         }
+        // MapTiles will be automatically deleted due to the onDelete: Cascade relation
         return await prisma.map.delete({
           where: { id: input.id }
         });
       } catch (error: unknown) {
         console.error('Error deleting map:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to delete map';
+        throw new Error(errorMessage);
+      }
+    }),
+    
+  // Map Tile operations
+  getMapTiles: procedure
+    .input(z.object({
+      mapId: z.number()
+    }))
+    .query(async ({ input }) => {
+      try {
+        const tiles = await prisma.mapTile.findMany({
+          where: { mapId: input.mapId },
+          orderBy: [{ y: 'asc' }, { x: 'asc' }]
+        });
+        return tiles;
+      } catch (error: unknown) {
+        console.error('Error fetching map tiles:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch map tiles';
+        throw new Error(errorMessage);
+      }
+    }),
+    
+  updateMapTile: procedure
+    .input(z.object({
+      id: z.number(),
+      image: z.string().optional(),
+      description: z.string().optional(),
+      isWalkable: z.boolean().optional()
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        return await prisma.mapTile.update({
+          where: { id: input.id },
+          data: {
+            image: input.image,
+            description: input.description,
+            isWalkable: input.isWalkable
+          }
+        });
+      } catch (error: unknown) {
+        console.error('Error updating map tile:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to update map tile';
         throw new Error(errorMessage);
       }
     })
