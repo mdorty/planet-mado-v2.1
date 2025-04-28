@@ -1,6 +1,7 @@
 import { router, procedure } from '../trpc';
 import { z } from 'zod';
 import { db } from '../../lib/prisma';
+import bcrypt from 'bcrypt';
 
 export const adminRouter = router({
   /**
@@ -245,11 +246,14 @@ export const adminRouter = router({
     }))
     .mutation(async ({ input }) => {
       try {
+        // Hash the password before storing it
+        const hashedPassword = await bcrypt.hash(input.password, 10);
+        
         const newUser = await db.user.create({
           data: {
             username: input.username,
             email: input.email,
-            password: input.password,
+            password: hashedPassword,
             role: input.role || 'user',
             // Add other fields as needed
           },
@@ -259,8 +263,7 @@ export const adminRouter = router({
             email: true,
             role: true
           }
-        
-});
+        });
         return newUser;
       } catch (error: unknown) {
         throw new Error(`Failed to create user: ${(error as Error).message}`);
@@ -296,16 +299,18 @@ export const adminRouter = router({
           
 });
           if (!defaultUser) {
+            // Hash the default password
+            const hashedPassword = await bcrypt.hash('testpassword', 10);
+            
             defaultUser = await db.user.create({
               data: {
                 username: 'default-test-user',
                 email: 'default@test.com',
-                password: 'testpassword',
+                password: hashedPassword,
                 role: 'user'
               },
               select: { id: true }
-            
-});
+            });
           }
           userId = defaultUser.id;
         }
