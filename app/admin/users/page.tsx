@@ -196,7 +196,7 @@ export default function AdminUsersPage() {
                             <Button
                               variant="solid"
                               className="bg-red-600 text-white hover:bg-red-700 font-roboto font-medium"
-                              onClick={() => deleteUser.mutate(user.id)}
+                              onClick={() => deleteUser.mutate({ userId: user.id })}
                             >
                               Delete
                             </Button>
